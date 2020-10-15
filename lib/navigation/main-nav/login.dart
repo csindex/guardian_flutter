@@ -17,6 +17,10 @@ class _LoginState extends State<Login> {
   TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _validateUsername = false;
+  bool _validatePassword = false;
+  String _usernameErrorMsg = '';
+  String _passwordErrorMsg = '';
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +86,7 @@ class _LoginState extends State<Login> {
                   children: <Widget>[
                     Container(
                       width: 340.0,
-                      height: 46.0,
+                      height: 96.0,
                       child: TextField(
                         controller: _usernameController,
                         style: TextStyle(
@@ -94,19 +98,19 @@ class _LoginState extends State<Login> {
                           filled: true,
                           fillColor: colorPrimary,
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
                             borderSide: BorderSide(width: 1,color: Colors.white),
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
                             borderSide: BorderSide(width: 1,color: Colors.orange),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
                             borderSide: BorderSide(width: 1,color: Colors.white),
                           ),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                              borderRadius: BorderRadius.all(Radius.circular(4.0)),
                               borderSide: BorderSide(width: 1,)
                           ),
 //                      errorBorder: OutlineInputBorder(
@@ -117,7 +121,6 @@ class _LoginState extends State<Login> {
 //                          borderRadius: BorderRadius.all(Radius.circular(4)),
 //                          borderSide: BorderSide(width: 1,color: Colors.red)
 //                      ),
-//                      errorText: 'Invalid mobile number',
                           hintText: 'Input Email or Mobile Number here',
                           hintStyle: TextStyle(
                             color: Colors.white38,
@@ -126,15 +129,16 @@ class _LoginState extends State<Login> {
                           labelStyle: TextStyle(
                             color: Colors.white,
                           ),
+                          errorText: _validateUsername ? _usernameErrorMsg : null,
+                          errorStyle: TextStyle(
+                            letterSpacing: 2.0,
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
                     Container(
                       width: 340.0,
-                      height: 46.0,
+                      height: 96.0,
                       child: TextField(
                         controller: _passwordController,
                         style: TextStyle(
@@ -146,19 +150,19 @@ class _LoginState extends State<Login> {
                           filled: true,
                           fillColor: colorPrimary,
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
                             borderSide: BorderSide(width: 1,color: Colors.white),
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
                             borderSide: BorderSide(width: 1,color: Colors.orange),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
                             borderSide: BorderSide(width: 1,color: Colors.white),
                           ),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(4)),
+                              borderRadius: BorderRadius.all(Radius.circular(4.0)),
                               borderSide: BorderSide(width: 1,)
                           ),
 //                      errorBorder: OutlineInputBorder(
@@ -169,7 +173,6 @@ class _LoginState extends State<Login> {
 //                          borderRadius: BorderRadius.all(Radius.circular(4)),
 //                          borderSide: BorderSide(width: 1,color: Colors.red)
 //                      ),
-//                      errorText: 'Incorrect password',
                           hintText: 'Input Password here',
                           hintStyle: TextStyle(
                             color: Colors.white38,
@@ -178,21 +181,29 @@ class _LoginState extends State<Login> {
                           labelStyle: TextStyle(
                             color: Colors.white,
                           ),
+                          errorText: _validatePassword ? _passwordErrorMsg : null,
+                          errorStyle: TextStyle(
+                            letterSpacing: 2.0,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
                 SizedBox(
-                  height: 32.0,
+                  height: 24.0,
                 ),
-                Container(
+                _isLoading
+                    ? Container(
+                  width: 48.0,
+                  height: 48.0,
+                  margin: EdgeInsets.only(top: 8.0),
+                  child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),)
+                    : Container(
                   width: 340.0,
                   height: 46.0,
                   margin: EdgeInsets.only(top: 8.0),
-                  child: _isLoading
-                      ? CircularProgressIndicator()
-                      : FlatButton(
+                  child: FlatButton(
                     child: Text(
                       'Log-in',
                       style: TextStyle(
@@ -207,7 +218,19 @@ class _LoginState extends State<Login> {
                     color: btnColor1,
                     splashColor: Colors.grey.shade500,
                     onPressed: () {
-                      setState(() => _isLoading = true);
+                      if (_usernameController.text == '') {
+                        setState(() {
+                          _validateUsername = true;
+                          _usernameErrorMsg = 'Email / Mobile Number is empty';
+                        });
+                      } if (_passwordController.text == '') {
+                        setState(() {
+                          _validatePassword = true;
+                          _passwordErrorMsg = 'Password is empty';
+                        });
+                      } else {
+                        setState(() => _isLoading = true);
+                      }
                       // DialogHelper.login(context);
                     },
                   ),

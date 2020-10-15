@@ -52,13 +52,14 @@ class _GuardianHomeState extends State<GuardianHome> {
                   color: colorPrimary,
                 ),
               ),
-              title: Text(
-                'HOME',
-                style: TextStyle(
-                  fontSize: 10.0,
-  //                color: Colors.grey
-                ),
-              ),
+  //             title: Text(
+  //               'HOME',
+  //               style: TextStyle(
+  //                 fontSize: 10.0,
+  // //                color: Colors.grey
+  //               ),
+  //             ),
+              label: 'HOME',
             ),
             BottomNavigationBarItem(
               icon: Container(
