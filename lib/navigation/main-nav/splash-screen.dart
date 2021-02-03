@@ -3,20 +3,16 @@ import 'package:flutter/widgets.dart';
 import '../../utils/helpers/navigation-helper.dart';
 
 class SplashScreen extends StatefulWidget {
-
   @override
   _SplashScreenState createState() => _SplashScreenState();
-
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
 
-    _mockCheckForSession().then((value) =>
-        NavigationHelper.login(context));
+    _mockCheckForSession().then((value) => NavigationHelper.login(context));
   }
 
   Future<void> _mockCheckForSession() async {
@@ -50,5 +46,4 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
-
 }

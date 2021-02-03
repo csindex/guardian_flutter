@@ -6,11 +6,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../utils/constants/utils.dart';
 
 class Report extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: <Widget>[
+      children: [
         Container(
           height: 1.0,
           width: double.infinity,
@@ -19,7 +18,7 @@ class Report extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Row(
-            children: <Widget>[
+            children: [
               CircleAvatar(
                 radius: 48.0,
                 backgroundColor: colorPrimary,
@@ -35,7 +34,7 @@ class Report extends StatelessWidget {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
+                children: [
                   Text(
                     'John Doe',
                     style: TextStyle(
@@ -45,7 +44,7 @@ class Report extends StatelessWidget {
                     ),
                   ),
                   Row(
-                    children: <Widget>[
+                    children: [
                       Text(
                         'Volunteer',
                         style: TextStyle(
@@ -95,7 +94,7 @@ class Report extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 48.0),
           child: Row(
-            children: <Widget>[
+            children: [
               SvgPicture.asset(
                 'assets/alert-octagon.svg',
                 height: 20.0,
@@ -121,7 +120,7 @@ class Report extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 48.0),
           child: Row(
-            children: <Widget>[
+            children: [
               Icon(
                 CupertinoIcons.car,
                 size: 20.0,
@@ -147,7 +146,7 @@ class Report extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 48.0),
           child: Row(
-            children: <Widget>[
+            children: [
               SvgPicture.asset(
                 'assets/image.svg',
                 height: 20.0,
@@ -173,7 +172,7 @@ class Report extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 48.0),
           child: Row(
-            children: <Widget>[
+            children: [
               SvgPicture.asset(
                 'assets/map-pin.svg',
                 height: 20.0,
@@ -199,7 +198,7 @@ class Report extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 48.0),
           child: Row(
-            children: <Widget>[
+            children: [
               SvgPicture.asset(
                 'assets/calendar.svg',
                 height: 20.0,

@@ -7,7 +7,6 @@ import './utils/constants/utils.dart';
 import './notification.dart' as notif;
 
 class NewsFeed extends StatefulWidget {
-
 //  Widget _createRecommendedPages() => SizedBox(
 //    child: RecommendedPages(348.0),
 //    height: 348.0,
@@ -15,11 +14,9 @@ class NewsFeed extends StatefulWidget {
 
   @override
   _NewsFeedState createState() => _NewsFeedState();
-
 }
 
 class _NewsFeedState extends State<NewsFeed> {
-
   List<NotificationViewModel> notifs = List<NotificationViewModel>();
 
   void _pullNotifications() {
@@ -53,5 +50,4 @@ class _NewsFeedState extends State<NewsFeed> {
     _pullNotifications();
     return Future.value();
   }
-
 }

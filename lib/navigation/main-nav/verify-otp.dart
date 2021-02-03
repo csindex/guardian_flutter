@@ -1,11 +1,9 @@
-import 'package:GUARDIAN/utils/constants/utils.dart';
-import 'package:GUARDIAN/utils/helpers/dialog-helper.dart';
+import '../../utils/constants/utils.dart';
+import '../../utils/helpers/dialog-helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-
 class VerifyOtp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -18,7 +16,7 @@ class VerifyOtp extends StatelessWidget {
         color: colorPrimary,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
+          children: [
             SizedBox(
               height: 32.0,
             ),
@@ -32,8 +30,9 @@ class VerifyOtp extends StatelessWidget {
               height: 16.0,
             ),
             Column(
-              children: <Widget>[
-                Text('GUARDIAN',
+              children: [
+                Text(
+                  'GUARDIAN',
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -41,7 +40,8 @@ class VerifyOtp extends StatelessWidget {
                     letterSpacing: 2.5,
                   ),
                 ),
-                Text('Emergency Response',
+                Text(
+                  'Emergency Response',
                   style: TextStyle(
                     fontSize: 10.0,
                     color: Colors.white,
@@ -55,7 +55,7 @@ class VerifyOtp extends StatelessWidget {
               height: 152.0,
             ),
             Column(
-              children: <Widget>[
+              children: [
                 Container(
                   width: 340.0,
                   height: 46.0,
@@ -70,20 +70,21 @@ class VerifyOtp extends StatelessWidget {
                       fillColor: colorPrimary,
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(4)),
-                        borderSide: BorderSide(width: 1,color: Colors.white),
+                        borderSide: BorderSide(width: 1, color: Colors.white),
                       ),
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(4)),
-                        borderSide: BorderSide(width: 1,color: Colors.orange),
+                        borderSide: BorderSide(width: 1, color: Colors.orange),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(4)),
-                        borderSide: BorderSide(width: 1,color: Colors.white),
+                        borderSide: BorderSide(width: 1, color: Colors.white),
                       ),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(4)),
-                          borderSide: BorderSide(width: 1,)
-                      ),
+                          borderSide: BorderSide(
+                            width: 1,
+                          )),
 //                      errorBorder: OutlineInputBorder(
 //                          borderRadius: BorderRadius.all(Radius.circular(4)),
 //                          borderSide: BorderSide(width: 1,color: Colors.red.shade900)

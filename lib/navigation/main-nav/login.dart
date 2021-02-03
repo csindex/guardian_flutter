@@ -1,10 +1,19 @@
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
+import 'package:device_info/device_info.dart';
+import 'package:http/http.dart' as http;
 
 import '../../utils/constants/utils.dart';
+import '../../utils/constants/common-methods.dart';
 import '../../utils/helpers/navigation-helper.dart';
-
+import '../../utils/helpers/dialog-helper.dart';
+import '../../widgets/header.dart';
+import '../../widgets/login/footer.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -12,342 +21,491 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  TextEditingController _usernameController;
+  TextEditingController _passwordController;
 
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final _formPageKey = GlobalKey<FormState>();
+  final _pageKey = GlobalKey<ScaffoldState>();
 
   bool _isLoading = false;
-  bool _validateUsername = false;
-  bool _validatePassword = false;
-  String _usernameErrorMsg = '';
-  String _passwordErrorMsg = '';
+  bool _obscureText = true;
+
+  String _username;
+  String _password;
+
+  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  String _deviceID = 'Unknown';
+
+  // Future<void> _mockCheckForSession() async {
+  //   await Future.delayed(Duration(milliseconds: 3500), () {});
+  // }
+
+  Future<void> initPlatformState() async {
+    String deviceID = '';
+    try {
+      if (Platform.isAndroid) {
+        deviceID = _readAndroidDeviceID(await deviceInfoPlugin.androidInfo);
+      } else if (Platform.isIOS) {
+        deviceID = _readIOSDeviceID(await deviceInfoPlugin.iosInfo);
+      }
+    } on PlatformException {
+      deviceID = 'Failed to get Device ID';
+    }
+    if (!mounted) return;
+    setState(() {
+      _deviceID = deviceID;
+      // print('$deviceID x $macAddress');
+    });
+  }
+
+  String _readAndroidDeviceID(AndroidDeviceInfo build) {
+    return build.androidId;
+  }
+
+  String _readIOSDeviceID(IosDeviceInfo data) {
+    return data.identifierForVendor;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+    _usernameController = TextEditingController(text: '');
+    _passwordController = TextEditingController(text: '');
+  }
+
+  void _togglePassword() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    Orientation mQOrientation = MediaQuery.of(context).orientation;
+    print('Width: $width');
+    print('Height: $height');
+    print('Orientation: $mQOrientation');
+    print('DeviceID: $_deviceID');
     return Scaffold(
-      body: Container(
-        height: height,
-        width: width,
-        padding: EdgeInsets.fromLTRB(48.0, 48.0, 48.0, 32.0),
-        color: colorPrimary,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(
-                  height: 32.0,
-                ),
-                Image.asset(
-                  'assets/images/guardian.png',
-                  height: 48.0,
-                  width: 88.0,
-                  fit: BoxFit.fitWidth,
-                ),
-                SizedBox(
-                  height: 16.0,
-                ),
-                Column(
-                  children: <Widget>[
-                    Text('GUARDIAN',
-                      style: TextStyle(
-                        fontSize: 28.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 2.5,
-                      ),
-                    ),
-                    Text('Emergency Response',
-                      style: TextStyle(
-                        fontSize: 10.0,
-                        color: Colors.white,
-                        letterSpacing: 2.5,
-                        wordSpacing: 4.0,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 32.0,
-                ),
-                Text('Welcome Volunteer!',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  height: 32.0,
-                ),
-                Column(
-                  children: <Widget>[
-                    Container(
-                      width: 340.0,
-                      height: 96.0,
-                      child: TextField(
-                        controller: _usernameController,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.white,
-                        ),
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 32.0),
-                          filled: true,
-                          fillColor: colorPrimary,
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                            borderSide: BorderSide(width: 1,color: Colors.white),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                            borderSide: BorderSide(width: 1,color: Colors.orange),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                            borderSide: BorderSide(width: 1,color: Colors.white),
-                          ),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                              borderSide: BorderSide(width: 1,)
-                          ),
-//                      errorBorder: OutlineInputBorder(
-//                          borderRadius: BorderRadius.all(Radius.circular(4)),
-//                          borderSide: BorderSide(width: 1,color: Colors.red.shade900)
-//                      ),
-//                      focusedErrorBorder: OutlineInputBorder(
-//                          borderRadius: BorderRadius.all(Radius.circular(4)),
-//                          borderSide: BorderSide(width: 1,color: Colors.red)
-//                      ),
-                          hintText: 'Input Email or Mobile Number here',
-                          hintStyle: TextStyle(
-                            color: Colors.white38,
-                          ),
-                          labelText: 'Email / Mobile Number',
-                          labelStyle: TextStyle(
-                            color: Colors.white,
-                          ),
-                          errorText: _validateUsername ? _usernameErrorMsg : null,
-                          errorStyle: TextStyle(
-                            letterSpacing: 2.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 340.0,
-                      height: 96.0,
-                      child: TextField(
-                        controller: _passwordController,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.white,
-                        ),
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 32.0),
-                          filled: true,
-                          fillColor: colorPrimary,
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                            borderSide: BorderSide(width: 1,color: Colors.white),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                            borderSide: BorderSide(width: 1,color: Colors.orange),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                            borderSide: BorderSide(width: 1,color: Colors.white),
-                          ),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                              borderSide: BorderSide(width: 1,)
-                          ),
-//                      errorBorder: OutlineInputBorder(
-//                          borderRadius: BorderRadius.all(Radius.circular(4)),
-//                          borderSide: BorderSide(width: 1,color: Colors.red.shade900)
-//                      ),
-//                      focusedErrorBorder: OutlineInputBorder(
-//                          borderRadius: BorderRadius.all(Radius.circular(4)),
-//                          borderSide: BorderSide(width: 1,color: Colors.red)
-//                      ),
-                          hintText: 'Input Password here',
-                          hintStyle: TextStyle(
-                            color: Colors.white38,
-                          ),
-                          labelText: 'Password',
-                          labelStyle: TextStyle(
-                            color: Colors.white,
-                          ),
-                          errorText: _validatePassword ? _passwordErrorMsg : null,
-                          errorStyle: TextStyle(
-                            letterSpacing: 2.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 24.0,
-                ),
-                _isLoading
-                    ? Container(
-                  width: 48.0,
-                  height: 48.0,
-                  margin: EdgeInsets.only(top: 8.0),
-                  child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),)
-                    : Container(
-                  width: 340.0,
-                  height: 46.0,
-                  margin: EdgeInsets.only(top: 8.0),
-                  child: FlatButton(
-                    child: Text(
-                      'Log-in',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                    textColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                    color: btnColor1,
-                    splashColor: Colors.grey.shade500,
-                    onPressed: () {
-                      if (_usernameController.text == '') {
-                        setState(() {
-                          _validateUsername = true;
-                          _usernameErrorMsg = 'Email / Mobile Number is empty';
-                        });
-                      } if (_passwordController.text == '') {
-                        setState(() {
-                          _validatePassword = true;
-                          _passwordErrorMsg = 'Password is empty';
-                        });
-                      } else {
-                        setState(() => _isLoading = true);
-                      }
-                      // DialogHelper.login(context);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    NavigationHelper.createAccount(context);
-                  },
-                  child: Text('Create Account',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 16.0,
-                ),
-                GestureDetector(
-                  onTap: () {},
-                  child: Text('Forgot Password?',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 16.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        _launchURL(context, 'https://guardian4emergency.com/legal');},
-                      child: Text('Use Policy',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4.0),
-                      height: 16.0,
-                      width: 1.0,
-                      color: Colors.white,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _launchURL(context, 'https://guardian4emergency.com/legal');
-                      },
-                      child: Text('Privacy Policy',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4.0),
-                      height: 16.0,
-                      width: 1.0,
-                      color: Colors.white,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _launchURL(context, 'https://guardian4emergency.com/legal');
-                      },
-                      child: Text('Terms of Use',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+      key: _pageKey,
+      body: Form(
+        key: _formPageKey,
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            return mQOrientation == Orientation.portrait
+                ? _buildVerticalLayout(width, height)
+                : _buildHorizontalLayout(width, height);
+          },
         ),
       ),
     );
   }
 
-  void _launchURL(BuildContext context, String url) async {
-    try {
-      await launch(
-        url,
-        option: new CustomTabsOption(
-          toolbarColor: Theme.of(context).primaryColor,
-          enableDefaultShare: true,
-          enableUrlBarHiding: true,
-          showPageTitle: true,
-          animation: new CustomTabsAnimation(
-          startEnter: 'slide_up',
-          startExit: 'android:anim/fade_out',
-          endEnter: 'android:anim/fade_in',
-          endExit: 'slide_down',
+  Widget _buildVerticalLayout(double w, double h) => SingleChildScrollView(
+        child: Container(
+          height: h,
+          color: colorPrimary,
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // SizedBox(
+                      //   height: 32.0,
+                      // ),
+                      header(88.0, 48.0),
+                      SizedBox(
+                        height: 32.0,
+                      ),
+                      Text(
+                        'Welcome Volunteer!',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 32.0,
+                      ),
+                      _usernamePasswordField(),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      _isLoading
+                          ? Container(
+                              width: 48.0,
+                              height: 48.0,
+                              margin: EdgeInsets.only(
+                                top: 8.0,
+                              ),
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : Container(
+                              width: w,
+                              height: 48.0,
+                              margin: EdgeInsets.only(
+                                  top: 8.0, left: 64.0, right: 64.0),
+                              child: FlatButton(
+                                child: Text(
+                                  'Log-in',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                textColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                                color: btnColor1,
+                                splashColor: Colors.grey.shade500,
+                                onPressed: () {
+                                  FocusScope.of(context).unfocus();
+                                  // WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+                                  // SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                  if (_formPageKey.currentState.validate()) {
+                                    setState(() => _isLoading = true);
+                                    _formPageKey.currentState.save();
+                                    // _mockCheckForSession().then((value) {
+                                    //   setState(() => _isLoading = false);
+                                    //   NavigationHelper.navigateToHome(context);
+                                    // });
+                                    // }
+                                  }
+                                },
+                              ),
+                            ),
+                    ],
+                  ),
+                ),
+              ),
+              loginFooter(context),
+            ],
           ),
-          extraCustomTabs: <String>[
-          // ref. https://play.google.com/store/apps/details?id=org.mozilla.firefox
-          'org.mozilla.firefox',
-          // ref. https://play.google.com/store/apps/details?id=com.microsoft.emmx
-          'com.microsoft.emmx',
+        ),
+      );
+
+  Widget _buildHorizontalLayout(double w, double h) => SingleChildScrollView(
+        child: Container(
+          height: h,
+          width: w,
+          color: colorPrimary,
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    header(88.0, 48.0),
+                    SizedBox(
+                      height: 64.0,
+                    ),
+                    loginFooter(context),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Welcome Volunteer!',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 32.0,
+                    ),
+                    _usernamePasswordField(),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    _isLoading
+                        ? Container(
+                            width: 48.0,
+                            height: 48.0,
+                            margin: EdgeInsets.only(
+                              top: 8.0,
+                            ),
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Container(
+                            width: w,
+                            height: 48.0,
+                            margin: EdgeInsets.only(
+                                top: 8.0, left: 64.0, right: 64.0),
+                            child: FlatButton(
+                              child: Text(
+                                'Log-in',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              textColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
+                              color: btnColor1,
+                              splashColor: Colors.grey.shade500,
+                              onPressed: () {
+                                FocusScope.of(context).unfocus();
+                                if (_formPageKey.currentState.validate()) {
+                                  setState(() {
+                                    return _isLoading = true;
+                                  });
+                                  _formPageKey.currentState.save();
+                                  // _mockCheckForSession().then((value) {
+                                  //   setState(() => _isLoading = false);
+                                  //   NavigationHelper.navigateToHome(context);
+                                  // });
+                                  // }
+                                }
+                              },
+                            ),
+                          )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Widget _usernameField() => TextFormField(
+        key: Key('username'),
+        validator: (value) =>
+            value.isEmpty ? 'Please enter Email or Mobile Number' : null,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: _usernameController,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.white,
+        ),
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+          filled: true,
+          fillColor: colorPrimary,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderSide: BorderSide(width: 1, color: Colors.white),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderSide: BorderSide(width: 1, color: Colors.orange),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderSide: BorderSide(width: 1, color: Colors.white),
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(
+                width: 1,
+              )),
+          hintText: 'Input Email or Mobile Number here',
+          hintStyle: TextStyle(
+            color: Colors.white38,
+          ),
+          labelText: 'Email / Mobile Number',
+          labelStyle: TextStyle(
+            color: Colors.white,
+          ),
+          // errorText: _validateUsername ? _usernameErrorMsg : null,
+          errorStyle: TextStyle(
+            letterSpacing: 1.5,
+            fontSize: 10.0,
+          ),
+        ),
+        onSaved: (String val) => _username = val,
+      );
+
+  Widget _passwordField() => TextFormField(
+        key: Key('password'),
+        validator: (value) => value.isEmpty
+            ? 'Please enter Password'
+            : value.length < 8
+                ? 'Password must be not less than 8 characters'
+                : null,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: _passwordController,
+        obscureText: _obscureText,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.white,
+        ),
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 0.0),
+          filled: true,
+          fillColor: colorPrimary,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderSide: BorderSide(width: 1, color: Colors.white),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderSide: BorderSide(width: 1, color: Colors.orange),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            borderSide: BorderSide(width: 1, color: Colors.white),
+          ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              borderSide: BorderSide(
+                width: 1,
+              )),
+          hintText: 'Input Password here',
+          hintStyle: TextStyle(
+            color: Colors.white38,
+          ),
+          labelText: 'Password',
+          labelStyle: TextStyle(
+            color: Colors.white,
+          ),
+          // errorText: _validatePassword ? _passwordErrorMsg : null,
+          errorStyle: TextStyle(
+            letterSpacing: 1.5,
+            fontSize: 10.0,
+          ),
+          suffixIcon: InkWell(
+            onTap: _togglePassword,
+            child: Icon(
+              _obscureText ? Icons.visibility : Icons.visibility_off,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        onSaved: (String val) {
+          _password = val;
+          _login();
+        },
+      );
+
+  Widget _usernamePasswordField() => Container(
+        margin: EdgeInsets.symmetric(horizontal: 64.0),
+        child: Column(
+          children: [
+            _usernameField(),
+            SizedBox(
+              height: 16.0,
+            ),
+            _passwordField(),
           ],
         ),
       );
+
+  void _login() {
+    try {
+      // TODO: Login
+      _loginAPI2().then((value) {
+        setState(() {
+          _isLoading = false;
+          // if (value) {
+          //   NavigationHelper.navigateToHome(context);
+          // } else {
+          //   _pageKey.currentState.showSnackBar(
+          //       SnackBar(content: Text('Failed to Log-in'))
+          //   );
+          //   DialogHelper.login(context);
+          // }
+          var result = jsonDecode(value);
+          String token = result['token'];
+          if (token != null) {
+            NavigationHelper.navigateToHome(context, token);
+          } else {
+            var errorMsgs = jsonDecode(value)['errors'] as List;
+            String errorMsg = errorMsgs
+                .map((errorMsg) => Error.fromJson(errorMsg))
+                .toList()[0]
+                .errorMsg;
+            _pageKey.currentState
+                .showSnackBar(SnackBar(content: Text(errorMsg)));
+            DialogHelper.login(context);
+          }
+        });
+      });
     } catch (e) {
-      // An exception is thrown if browser app is not installed on Android device.
-      debugPrint(e.toString());
+      setState(() => _isLoading = false);
+      showError(context, e.message);
+      _pageKey.currentState
+          .showSnackBar(SnackBar(content: Text('Failed to Log-in')));
     }
   }
+
+  Future<bool> _loginAPI() async {
+    var url = 'https://ccc.guardian4emergency.com/mobile/login';
+    var response = await http.post(
+      url,
+      body: {
+        'username': _username,
+        'password': _password,
+        'imei': _deviceID,
+        'fcm_token': '$_deviceID$_deviceID',
+      },
+    );
+    print('response: $response');
+    final body = jsonDecode(response.body);
+    return body["success"];
+  }
+
+  Future<String> _loginAPI2() async {
+    var url = 'https://secret-hollows-28950.herokuapp.com/api/auth';
+    Map data = {'email': _username, 'password': _password};
+    var reqBody = json.encode(data);
+    var response = await http.post(
+      url,
+      headers: {
+        // 'Cache-Control' : 'no-cache',
+        // 'Postman-Token' : '<calculated when request is sent>',
+        // 'Content-Length' : '<calculated when request is sent>',
+        // 'Host' : '<calculated when request is sent>',
+        // 'Accept' : '*/*',
+        // 'Accept-Encoding' : 'gzip, deflate, br',
+        // 'Connection' : 'keep-alive',
+        'Content-Type': 'application/json',
+      },
+      body:
+          reqBody /*{
+        'email': _username,
+        'password': _password,
+        // 'imei': _deviceID,
+        // 'fcm_token': '$_deviceID$_deviceID',
+      }*/
+      ,
+    );
+    print('response: $response X ${response.body}');
+    // final body = jsonDecode(response.body);
+    // return body["success"];
+    return response.body;
+  }
+}
+
+class Error {
+  String errorMsg;
+
+  Error(this.errorMsg);
+
+  factory Error.fromJson(dynamic json) => Error(json['msg'] as String);
+
+  // @override
+  // String toString() =>
 
 }

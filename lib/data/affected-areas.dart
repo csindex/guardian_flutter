@@ -1,5 +1,4 @@
 class AffectedAreas {
-
   int id;
   int notificationId;
   String location;
@@ -9,8 +8,8 @@ class AffectedAreas {
   String createdAt;
   String updatedAt;
 
-  AffectedAreas.fromJsonMap(Map<String, dynamic> map):
-        notificationId = map["notification_id"],
+  AffectedAreas.fromJsonMap(Map<String, dynamic> map)
+      : notificationId = map["notification_id"],
         id = map["id"],
         location = map["location"],
         latitude = map["latitude"],
@@ -31,5 +30,4 @@ class AffectedAreas {
     data['updated_at'] = updatedAt;
     return data;
   }
-
 }

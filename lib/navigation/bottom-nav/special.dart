@@ -1,4 +1,4 @@
-import 'package:GUARDIAN/utils/helpers/dialog-helper.dart';
+import '../../utils/helpers/dialog-helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -8,7 +8,6 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 import '../../utils/constants/utils.dart';
 
 class Special extends StatefulWidget {
-
   const Special({
     Key key,
 
@@ -20,11 +19,9 @@ class Special extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _SpecialState();
-
 }
 
 class _SpecialState extends State<Special> {
-
   MapboxMapController mapController;
 
 //  Position _lastKnownLocation;
@@ -49,7 +46,10 @@ class _SpecialState extends State<Special> {
         ),
       );
       mapController.moveCamera(
-        CameraUpdate.newLatLngZoom(LatLng(lat, lng), 11.0,),
+        CameraUpdate.newLatLngZoom(
+          LatLng(lat, lng),
+          11.0,
+        ),
         /*CameraUpdate.newCameraPosition(
           CameraPosition(
             bearing: 270.0,
@@ -105,16 +105,16 @@ class _SpecialState extends State<Special> {
   Future<void> _initLastKnownLocation() async {
     Position location;
     // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      final Geolocator geolocator = Geolocator()
-        ..forceAndroidLocationManager = !widget.androidFusedLocation;
-      location = await geolocator.getLastKnownPosition(
-          desiredAccuracy: LocationAccuracy.best);
-      print('location: $location');
-    } on PlatformException {
-      print('exception');
-      location = null;
-    }
+    // try {
+    //   final Geolocator geolocator = Geolocator()
+    //     ..forceAndroidLocationManager = !widget.androidFusedLocation;
+    //   location = await geolocator.getLastKnownPosition(
+    //       desiredAccuracy: LocationAccuracy.best);
+    //   print('location: $location');
+    // } on PlatformException {
+    //   print('exception');
+    //   location = null;
+    // }
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -129,25 +129,25 @@ class _SpecialState extends State<Special> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   _initCurrentLocation() {
-    Geolocator()
-      ..forceAndroidLocationManager = !widget.androidFusedLocation
-      ..getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best,
-      ).then((position) {
-        print('current location = $position');
-        if (mounted) {
-          setState(() {
-            _currentLocation = position;
-          });
-        }
-      }).catchError((e) {
-        print('exception - $e');
-      });
+    // Geolocator()
+    //   ..forceAndroidLocationManager = !widget.androidFusedLocation
+    //   ..getCurrentPosition(
+    //     desiredAccuracy: LocationAccuracy.best,
+    //   ).then((position) {
+    //     print('current location = $position');
+    //     if (mounted) {
+    //       setState(() {
+    //         _currentLocation = position;
+    //       });
+    //     }
+    //   }).catchError((e) {
+    //     print('exception - $e');
+    //   });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<GeolocationStatus>(
+    return Container() /*FutureBuilder<GeolocationStatus>(
       future: Geolocator().checkGeolocationPermissionStatus(),
       builder: (BuildContext context, AsyncSnapshot<GeolocationStatus> snapshot) {
         if (!snapshot.hasData) {
@@ -161,7 +161,7 @@ class _SpecialState extends State<Special> {
           );
         }
         return Stack(
-          children: <Widget>[
+          children: [
             MapboxMap(
               onMapCreated: _onMapCreated,
               trackCameraPosition: true,
@@ -174,9 +174,9 @@ class _SpecialState extends State<Special> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
+                children: [
                   Row(
-                    children: <Widget>[
+                    children: [
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0)),
@@ -188,7 +188,7 @@ class _SpecialState extends State<Special> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
+                                  children: [
                                     Image.asset(
                                       'assets/images/ic_firetruck.png',
                                       height: 128.0,
@@ -228,7 +228,7 @@ class _SpecialState extends State<Special> {
                               child: SizedBox(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: <Widget>[
+                                  children: [
                                     Image.asset(
                                       'assets/images/ic_ambulance.png',
                                       height: 128.0,
@@ -261,7 +261,7 @@ class _SpecialState extends State<Special> {
                     height: 8.0,
                   ),
                   Row(
-                    children: <Widget>[
+                    children: [
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16.0)),
@@ -272,7 +272,7 @@ class _SpecialState extends State<Special> {
                               child: SizedBox(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: <Widget>[
+                                  children: [
                                     Image.asset(
                                       'assets/images/ic_police.png',
                                       height: 128.0,
@@ -312,7 +312,7 @@ class _SpecialState extends State<Special> {
                               child: SizedBox(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: <Widget>[
+                                  children: [
                                     Image.asset(
                                       'assets/images/ic_telephone.png',
                                       height: 128.0,
@@ -356,7 +356,7 @@ class _SpecialState extends State<Special> {
                               padding: EdgeInsets.symmetric(vertical: 16.0,),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
+                                children: [
                                   Image.asset(
                                     'assets/images/ic_corona_virus.png',
                                     height: 72.0,
@@ -385,7 +385,7 @@ class _SpecialState extends State<Special> {
           ],
         );
       },
-    );
+    )*/
+        ;
   }
-
 }

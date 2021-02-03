@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class Announcements extends StatelessWidget {
-
   final List<String> _images = [
     'assets/images/saber-squad.jpg',
     'assets/images/royal-squad.jpg',
@@ -26,9 +25,8 @@ class Announcements extends StatelessWidget {
   Announcements(this._height);
 
   Widget _createSampleAnnouncement() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 2.0),
-    child: Stack(
-        children: <Widget>[
+        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+        child: Stack(children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: Image.asset(_images[Random().nextInt(5)]),
@@ -43,42 +41,42 @@ class Announcements extends StatelessWidget {
                 backgroundColor: Colors.white,
                 child: CircleAvatar(
                   radius: 15.0,
-                  backgroundImage: AssetImage('assets/images/guardian-colored-primary.png'),
+                  backgroundImage:
+                      AssetImage('assets/images/guardian-colored-primary.png'),
                 ),
               ),
             ),
           ),
-        ]
-    ),
-  );
+        ]),
+      );
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      Container(
-        height: 4.0,
-        color: Colors.grey,
-      ),
-      Container(
-        height: _height - 4.0,
-        padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 8.0),
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-            _createSampleAnnouncement(),
-          ],
-        ),
-      ),
-    ],
-  );
+        children: [
+          Container(
+            height: 4.0,
+            color: Colors.grey,
+          ),
+          Container(
+            height: _height - 4.0,
+            padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 8.0),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+                _createSampleAnnouncement(),
+              ],
+            ),
+          ),
+        ],
+      );
 }

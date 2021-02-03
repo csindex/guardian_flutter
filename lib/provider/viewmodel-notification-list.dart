@@ -8,21 +8,18 @@ import '../data/uploads.dart';
 import '../data/affected-areas.dart';
 
 class NotificationListViewModel extends ChangeNotifier {
-
   List<NotificationViewModel> notifications = List<NotificationViewModel>();
 
   Future<List<NotificationViewModel>> fetchNotifications(String keyword) async {
-    final results =  await Webservice().fetchNotifications(keyword);
-    this.notifications = results.map((item) => NotificationViewModel(notif: item)).toList();
-//    print("${notifications.length}");
+    final results = await Webservice().fetchNotifications(keyword);
+    this.notifications =
+        results.map((item) => NotificationViewModel(notif: item)).toList();
     notifyListeners();
     return notifications;
   }
-
 }
 
 class NotificationViewModel {
-
   final Data notif;
 
   NotificationViewModel({this.notif});
@@ -44,13 +41,15 @@ class NotificationViewModel {
   }
 
   List<Uploads> get uploads {
-    return this.notif.uploads;
+    return List<Uploads>(); //this.notif.uploads;
+  }
+
+  String get imageFullPath {
+    return this.notif.imageFullPath; //this.notif.uploads;
   }
 
   String get date {
-    return
-      '${DateFormat('MMM, dd').format(DateTime.parse(this.notif.updatedAt))}'
-          ' at ${DateFormat('hh:mm a').format(DateTime.parse(this.notif.updatedAt))}';
+    return '${DateFormat('MMM, dd').format(DateTime.parse(this.notif.updatedAt))}'
+        ' at ${DateFormat('hh:mm a').format(DateTime.parse(this.notif.updatedAt))}';
   }
-
 }

@@ -1,15 +1,13 @@
-import 'package:GUARDIAN/utils/constants/utils.dart';
 import 'package:flutter/material.dart';
 
-class ReportCallScreen extends StatefulWidget {
+import '../utils/constants/utils.dart';
 
+class ReportCallScreen extends StatefulWidget {
   @override
   _ReportCallScreenState createState() => _ReportCallScreenState();
-
 }
 
 class _ReportCallScreenState extends State<ReportCallScreen> {
-
   String callStatus = '';
   bool btnVisibility = false;
   bool videoBtnVisibility = false;
@@ -23,7 +21,7 @@ class _ReportCallScreenState extends State<ReportCallScreen> {
       height: h,
       width: w,
       child: Stack(
-        children: <Widget>[
+        children: [
           Container(
             height: h,
             width: w,
@@ -48,12 +46,9 @@ class _ReportCallScreenState extends State<ReportCallScreen> {
               ),
             ),
           ),
-          Text(
-            'Incoming call'
-          ),
+          Text('Incoming call'),
         ],
       ),
     );
   }
-
 }

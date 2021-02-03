@@ -1,29 +1,50 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../main.dart';
-import '../../news-feed.dart';
+import '../../provider/user/viewmodel-user.dart';
+import '../../provider/user/viewmodel-user-profile.dart';
+import '../../widgets/posts/list-posts.dart';
+import '../../widgets/profile/profile-dashboard.dart';
 import '../../utils/constants/utils.dart';
 import '../../utils/schedule-notifications.dart';
+import '../../utils/helpers/navigation-helper.dart';
 import '../../services/socket-service.dart';
+import '../../services/web-service.dart';
 
 NotificationAppLaunchDetails notificationAppLaunchDetails;
 
 class Home extends StatefulWidget {
+  final String token;
+  final UserViewModel vm;
+  final UserProfileViewModel userProfileVM;
+  final Function openProfileScreen;
+
+  Home(
+      {Key key,
+      @required this.openProfileScreen,
+      this.token,
+      this.vm,
+      this.userProfileVM})
+      : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
-
+  _HomeState createState() => _HomeState(/*token: this.token, vm: this.vm*/);
 }
 
 class _HomeState extends State<Home> {
-
   FlutterLocalNotificationsPlugin plugin;
+
+  // String token;
+  // UserViewModel vm;
+  //
+  // _HomeState({this.token, this.vm});
+
+  String _page = 'posts';
 
   @override
   void initState() {
@@ -33,8 +54,9 @@ class _HomeState extends State<Home> {
 
     var android = AndroidInitializationSettings('@mipmap/ic_launcher');
     var ios = IOSInitializationSettings();
-    var initSettings = InitializationSettings(android, ios);
+    var initSettings = InitializationSettings(android: android, iOS: ios);
     plugin.initialize(initSettings, onSelectNotification: onSelectNotification);
+    // print('VM: ${widget.vm.name}');
   }
 
   Future onSelectNotification(String payload) {
@@ -67,7 +89,7 @@ class _HomeState extends State<Home> {
     });
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
+      children: [
         Container(
           height: 1.0,
           width: double.infinity,
@@ -75,11 +97,11 @@ class _HomeState extends State<Home> {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget> [
+          children: [
             Expanded(
               flex: 1,
               child: Material(
-                color: Colors.white,
+                color: colorPrimary,
                 child: InkWell(
                   onTap: () {
                     print('tapped notif');
@@ -91,21 +113,27 @@ class _HomeState extends State<Home> {
                     padding: EdgeInsets.symmetric(vertical: 4.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SvgPicture.asset(
-                          'assets/truck.svg',
-                          color: colorPrimary,
-                          height: 16.0,
-                          width: 16.0,
+                      children: [
+                        // SvgPicture.asset(
+                        //   'assets/truck.svg',
+                        //   color: colorPrimary,
+                        //   height: 16.0,
+                        //   width: 16.0,
+                        // ),
+                        FaIcon(
+                          FontAwesomeIcons.ambulance,
+                          size: 16.0,
+                          color: Colors.white,
                         ),
                         SizedBox(
                           width: 16.0,
                         ),
                         Text(
-                          'Services',
+                          // 'Services',
+                          'Responders',
                           style: TextStyle(
-                              fontSize: 12.0,
-                              color: colorPrimary
+                            fontSize: 12.0,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -117,28 +145,40 @@ class _HomeState extends State<Home> {
             Expanded(
               flex: 1,
               child: Material(
-                color: Colors.white,
+                color: colorPrimary,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    if (_page != 'posts') {
+                      setState(() {
+                        _page = 'posts';
+                      });
+                    }
+                  },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 4.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SvgPicture.asset(
-                          'assets/video.svg',
-                          color: colorPrimary,
-                          height: 16.0,
-                          width: 16.0,
+                      children: [
+                        // SvgPicture.asset(
+                        //   'assets/video.svg',
+                        //   color: colorPrimary,
+                        //   height: 16.0,
+                        //   width: 16.0,
+                        // ),
+                        FaIcon(
+                          FontAwesomeIcons.envelope,
+                          size: 16.0,
+                          color: Colors.white,
                         ),
                         SizedBox(
                           width: 16.0,
                         ),
                         Text(
-                          'Videos',
+                          // 'Videos',
+                          'Posts',
                           style: TextStyle(
-                              fontSize: 12.0,
-                              color: colorPrimary
+                            fontSize: 12.0,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -150,28 +190,40 @@ class _HomeState extends State<Home> {
             Expanded(
               flex: 1,
               child: Material(
-                color: Colors.white,
+                color: colorPrimary,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    // if (widget.vm != null && widget.userProfileVM != null) {
+                    // NavigationHelper.openProfileScreen(
+                    //     context, widget.vm, widget.userProfileVM, widget.token);
+                    widget.openProfileScreen();
+                    // }
+                  },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 4.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SvgPicture.asset(
-                          'assets/shopping-cart.svg',
-                          color: colorPrimary,
-                          height: 16.0,
-                          width: 16.0,
+                      children: [
+                        // SvgPicture.asset(
+                        //   'assets/shopping-cart.svg',
+                        //   color: colorPrimary,
+                        //   height: 16.0,
+                        //   width: 16.0,
+                        // ),
+                        FaIcon(
+                          FontAwesomeIcons.solidUser,
+                          size: 16.0,
+                          color: Colors.white,
                         ),
                         SizedBox(
                           width: 16.0,
                         ),
                         Text(
-                          'Store',
+                          // 'Store',
+                          'Profile',
                           style: TextStyle(
-                              fontSize: 12.0,
-                              color: colorPrimary
+                            fontSize: 12.0,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -182,9 +234,38 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        Flexible(
-          child: NewsFeed(),
-        ),
+        (_page == 'posts')
+            ? (widget.vm == null)
+                ? Container(
+                    height: MediaQuery.of(context).size.height / 2.0,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(colorPrimary),
+                      ),
+                    ),
+                  )
+                : Flexible(
+                    child: PostsList(
+                      token: widget.token,
+                      viewModel: widget.vm,
+                    ),
+                  )
+            : (_page == 'detailed-profile')
+                ? (widget.vm == null)
+                    ? Container(
+                        height: MediaQuery.of(context).size.height / 2.0,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(colorPrimary),
+                          ),
+                        ),
+                      )
+                    : Flexible(
+                        child: ProfileDashboard(
+                            token: widget.token, vm: widget.vm),
+                      )
+                : Container(),
       ],
     );
   }
@@ -192,13 +273,16 @@ class _HomeState extends State<Home> {
   showNotification() async {
     var android = new AndroidNotificationDetails(
         'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
-        priority: Priority.High,importance: Importance.Max
-    );
+        priority: Priority.high, importance: Importance.max);
     var iOS = new IOSNotificationDetails();
-    var platform = new NotificationDetails(android, iOS);
+    var platform = new NotificationDetails(android: android, iOS: iOS);
     await plugin.show(
         0, 'New Video is out', 'Flutter Local Notification', platform,
         payload: 'Sample notification by JorneL');
   }
+
+  // Future<Object> fetchUserProfile() async {
+  //   return await Webservice().fetchUserProfile(token);
+  // }
 
 }

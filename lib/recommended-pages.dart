@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import 'utils/constants/utils.dart';
 
-
 class RecommendedPages extends StatelessWidget {
-
   final List<String> _list = [
     'assets/images/mandaue-seal.png',
     'assets/images/mcpo.png',
@@ -37,7 +35,7 @@ class RecommendedPages extends StatelessWidget {
           padding: EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               Image.asset(
                 _list[index],
                 width: 220.0,
@@ -93,32 +91,31 @@ class RecommendedPages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-    child: Column(
-      children: <Widget>[
-        Container(
-          height: _height - 4.0,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: <Widget>[
-              _createSampleRecommendedPage(),
-              _createSampleRecommendedPage(),
-              _createSampleRecommendedPage(),
-              _createSampleRecommendedPage(),
-              _createSampleRecommendedPage(),
-              _createSampleRecommendedPage(),
-              _createSampleRecommendedPage(),
-              _createSampleRecommendedPage(),
-            ],
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Column(
+          children: [
+            Container(
+              height: _height - 4.0,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _createSampleRecommendedPage(),
+                  _createSampleRecommendedPage(),
+                  _createSampleRecommendedPage(),
+                  _createSampleRecommendedPage(),
+                  _createSampleRecommendedPage(),
+                  _createSampleRecommendedPage(),
+                  _createSampleRecommendedPage(),
+                  _createSampleRecommendedPage(),
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 4.0),
+              height: 4.0,
+              color: Colors.grey,
+            ),
+          ],
         ),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 4.0),
-          height: 4.0,
-          color: Colors.grey,
-        ),
-      ],
-    ),
-  );
-
+      );
 }

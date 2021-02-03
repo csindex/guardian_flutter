@@ -9,7 +9,27 @@ const Color dialogBtnColor = Color(0xFF567485);
 const Color btnColor1 = Color(0xFF44758D);
 const Color fbBtnColor = Color(0xFF3D5A98);
 
-final List<Widget> appBar = [
+final String prodEndPoint = 'https://ccc.guardian4emergency.com';
+final String devEndPoint = 'https://ccc.guardian4emergency.com';
+final String termsEndPoint = 'https://guardian4emergency.com';
+final String secretHollowsEndPoint =
+    'http://10.128.50.106:3000'; //https://secret-hollows-28950.herokuapp.com
+
+final const String gMAK = 'AIzaSyCoviUZrvv1kcF9gNDhdmuLevZDwSREJE8';
+
+const textInputDecoration = InputDecoration(
+  fillColor: Colors.white,
+  filled: true,
+  contentPadding: EdgeInsets.all(12.0),
+  enabledBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: colorPrimary, width: 2.0),
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: colorPrimary, width: 2.0),
+  ),
+);
+
+final List appBar = [
   CustomAppBarHome(
     height: 88.0,
     icon: Image.asset(
@@ -21,15 +41,14 @@ final List<Widget> appBar = [
     ),
     title: Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
+      children: [
         Text(
           'GUARDIAN',
           style: TextStyle(
               fontSize: 28.0,
               color: colorPrimary,
               fontWeight: FontWeight.bold,
-              letterSpacing: 4.0
-          ),
+              letterSpacing: 4.0),
         ),
         Text(
           'Emergency Response',
@@ -43,9 +62,10 @@ final List<Widget> appBar = [
       ],
     ),
     actions: Row(
-      children: <Widget>[
+      children: [
         ClipOval(
-          child: Material( // button color
+          child: Material(
+            // button color
             child: InkWell(
               splashColor: Colors.grey.shade700, // inkwell color
               child: SizedBox(
@@ -64,7 +84,8 @@ final List<Widget> appBar = [
           width: 2.0,
         ),
         ClipOval(
-          child: Material( // button color
+          child: Material(
+            // button color
             child: InkWell(
               splashColor: Colors.grey.shade700, // inkwell color
               child: SizedBox(
@@ -103,10 +124,7 @@ final List<Widget> appBar = [
     ),
     title: Text(
       'Report Incident',
-      style: TextStyle(
-          fontSize: 20.0,
-          color: colorPrimary
-      ),
+      style: TextStyle(fontSize: 20.0, color: colorPrimary),
     ),
     actions: Container(
       margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -135,19 +153,16 @@ final List<Widget> appBar = [
 
 //Widget getAppBar(int index) => _appBar[index];
 
-class CustomAppBarStandard extends StatelessWidget implements PreferredSizeWidget {
-
+class CustomAppBarStandard extends StatelessWidget
+    implements PreferredSizeWidget {
   final double height;
   final Widget icon;
   final Text title;
   final Widget actions;
 
-  const CustomAppBarStandard({
-    Key key,
-    this.height,
-    this.icon,
-    this.title,
-    this.actions}) : super(key: key);
+  const CustomAppBarStandard(
+      {Key key, this.height, this.icon, this.title, this.actions})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -158,9 +173,9 @@ class CustomAppBarStandard extends StatelessWidget implements PreferredSizeWidge
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
+        children: [
           Row(
-            children: <Widget>[
+            children: [
               icon,
               SizedBox(
                 width: 8.0,
@@ -176,22 +191,17 @@ class CustomAppBarStandard extends StatelessWidget implements PreferredSizeWidge
 
   @override
   Size get preferredSize => Size.fromHeight(height);
-
 }
 
 class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
-
   final double height;
   final Widget icon;
   final Widget title;
   final Widget actions;
 
-  const CustomAppBarHome({
-    Key key,
-    this.height,
-    this.icon,
-    this.title,
-    this.actions}) : super(key: key);
+  const CustomAppBarHome(
+      {Key key, this.height, this.icon, this.title, this.actions})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +212,7 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
+        children: [
           icon,
           title,
           actions,
@@ -213,16 +223,16 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(height);
-
 }
 
-class CustomAppBarSpecial extends StatelessWidget implements PreferredSizeWidget {
-
+class CustomAppBarSpecial extends StatelessWidget
+    implements PreferredSizeWidget {
   final double height;
 
   const CustomAppBarSpecial({
     Key key,
-    this.height,}) : super(key: key);
+    this.height,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +241,6 @@ class CustomAppBarSpecial extends StatelessWidget implements PreferredSizeWidget
 
   @override
   Size get preferredSize => Size.fromHeight(height);
-
 }
 
 class PlaceholderWidget extends StatelessWidget {
@@ -246,7 +255,7 @@ class PlaceholderWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
+        children: [
           Text(title,
               style: const TextStyle(fontSize: 32.0, color: Colors.black54),
               textAlign: TextAlign.center),

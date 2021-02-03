@@ -5,6 +5,7 @@ import 'package:flutter_reaction_button/flutter_reaction_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import './announcements.dart';
+import '././widgets/ExpandableText.dart';
 import './utils/constants/utils.dart';
 import './provider/viewmodel-notification-list.dart';
 
@@ -13,7 +14,7 @@ class Notification extends StatelessWidget {
 
   Notification({this.notifications});
 
-  final defaultInitialReaction = Reaction( // ignore: missing_required_param
+  final defaultInitialReaction = Reaction(
     previewIcon: _buildLikePreviewIcon(),
     icon: _buildLikeIcon(
       Text(
@@ -28,7 +29,7 @@ class Notification extends StatelessWidget {
   );
 
   final facebookReactions = [
-    Reaction( // ignore: missing_required_param
+    Reaction(
       previewIcon: _buildPreviewIcon('assets/like.gif'),
       icon: _buildLikeIconFill(
         Text(
@@ -41,7 +42,7 @@ class Notification extends StatelessWidget {
         ),
       ),
     ),
-    Reaction( // ignore: missing_required_param
+    Reaction(
       previewIcon: _buildPreviewIcon('assets/love.gif'),
       icon: _buildIcon(
         'assets/love.png',
@@ -55,7 +56,7 @@ class Notification extends StatelessWidget {
         ),
       ),
     ),
-    Reaction( // ignore: missing_required_param
+    Reaction(
       previewIcon: _buildPreviewIcon('assets/wow.gif'),
       icon: _buildIcon(
         'assets/wow.png',
@@ -69,7 +70,7 @@ class Notification extends StatelessWidget {
         ),
       ),
     ),
-    Reaction( // ignore: missing_required_param
+    Reaction(
       previewIcon: _buildPreviewIcon('assets/haha.gif'),
       icon: _buildIcon(
         'assets/haha.png',
@@ -83,7 +84,7 @@ class Notification extends StatelessWidget {
         ),
       ),
     ),
-    Reaction( // ignore: missing_required_param
+    Reaction(
       previewIcon: _buildPreviewIcon('assets/sad.gif'),
       icon: _buildIcon(
         'assets/sad.png',
@@ -97,7 +98,7 @@ class Notification extends StatelessWidget {
         ),
       ),
     ),
-    Reaction( // ignore: missing_required_param
+    Reaction(
       previewIcon: _buildPreviewIcon('assets/angry.gif'),
       icon: _buildIcon(
         'assets/angry.png',
@@ -124,7 +125,7 @@ class Notification extends StatelessWidget {
     return Container(
       color: Colors.transparent,
       child: Row(
-        children: <Widget>[
+        children: [
           Image.asset(path, height: 20),
           SizedBox(
             width: 16.0,
@@ -146,7 +147,7 @@ class Notification extends StatelessWidget {
     return Container(
       color: Colors.transparent,
       child: Row(
-        children: <Widget>[
+        children: [
           Icon(
             Icons.thumb_up,
             size: 20.0,
@@ -165,7 +166,7 @@ class Notification extends StatelessWidget {
     return Container(
       color: Colors.transparent,
       child: Row(
-        children: <Widget>[
+        children: [
           Icon(
             Icons.thumb_up,
             size: 20.0,
@@ -183,19 +184,20 @@ class Notification extends StatelessWidget {
   Widget _createSampleNewsFeedData(int index) {
     var notification = notifications[index];
 //    print('${notification.uploads.length} X $index');
+    print('path : ${notification.imageFullPath}');
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
+      children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(8.0, 8.0, 4.0, 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               Row(
-                children: <Widget>[
+                children: [
                   Container(
                     height: 56.0,
                     width: 56.0,
@@ -213,7 +215,7 @@ class Notification extends StatelessWidget {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                    children: [
                       Text(
                         'GUARDIAN COMMAND AND CONTROL',
                         style: TextStyle(
@@ -227,7 +229,7 @@ class Notification extends StatelessWidget {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
               ClipOval(
@@ -251,16 +253,17 @@ class Notification extends StatelessWidget {
           ),
         ),
         Visibility(
-          visible: (notification.uploads.length == 0) ? false : true,
+          visible: (notification.imageFullPath == '') ? false : true,
           child: Flexible(
             fit: FlexFit.loose,
             child: FadeInImage.assetNetwork(
               placeholder: 'assets/loading.gif',
-              image: (notification.uploads.length == 0)
+              image: (notification.imageFullPath == '')
                   ? 'https://vignette.wikia.nocookie.net/codegeass/images/7/7'
-                  'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
-                  'cb=20140311192830'
-                  : notification.uploads[0].fileFullPath,
+                      'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
+                      'cb=20140311192830'
+                  : notification
+                      .imageFullPath, //notification.uploads[0].fileFullPath,
               fit: BoxFit.contain,
             ),
           ),
@@ -270,7 +273,7 @@ class Notification extends StatelessWidget {
           color: Colors.grey.shade300,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               Text(
                 notification.title,
                 style: TextStyle(
@@ -296,28 +299,36 @@ class Notification extends StatelessWidget {
                   color: Colors.grey.shade500,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    (notification.body == null)
-                        ? ''
-                        : notification.body,
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                  Text(
-                    'read more...',
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: colorPrimary,
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Expanded(
+              /*child: Text(
+                      (notification.body == null)
+                          ? ''
+                          : notification.body,
+                      maxLines: 15,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),*/
+              ExpandableText(
+                  (notification.body == null) ? '' : notification.body),
+              // ),
+              //       Flexible(
+              //         child: Text(
+              //           'read more...',
+              //           style: TextStyle(
+              //             fontSize: 12.0,
+              //             fontWeight: FontWeight.bold,
+              //             color: colorPrimary,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
             ],
           ),
         ),
@@ -331,9 +342,9 @@ class Notification extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               Row(
-                children: <Widget>[
+                children: [
                   Image.asset(
                     'assets/love.png',
                     height: 12.0,
@@ -370,7 +381,7 @@ class Notification extends StatelessWidget {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
+                children: [
                   Text(
                     '260 Shares',
                     style: TextStyle(
@@ -403,14 +414,14 @@ class Notification extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               FlutterReactionButtonCheck(
-                onReactionChanged: (reaction, isChecked) {
-                  print('reaction changed at ${reaction.id}');
+                onReactionChanged: (reaction, ambotUnsaNi, isChecked) {
+                  print('reaction changed at $ambotUnsaNi');
                 },
                 reactions: facebookReactions,
                 initialReaction: defaultInitialReaction,
-                selectedReaction: Reaction( // ignore: missing_required_param
+                selectedReaction: Reaction(
                   icon: _buildLikeIconFill(
                     Text(
                       'Like',
@@ -426,7 +437,7 @@ class Notification extends StatelessWidget {
               Container(
                 color: Colors.transparent,
                 child: Row(
-                  children: <Widget>[
+                  children: [
                     Transform(
                       alignment: Alignment.center,
                       transform: Matrix4.rotationY(pi),
@@ -451,7 +462,7 @@ class Notification extends StatelessWidget {
               Container(
                 color: Colors.transparent,
                 child: Row(
-                  children: <Widget>[
+                  children: [
                     Container(
                       height: 36.0,
                       width: 36.0,
