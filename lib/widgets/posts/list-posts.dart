@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../utils/constants/utils.dart';
 import '../../provider/user/viewmodel-user.dart';
+import '../../provider/user/viewmodel-user-profile.dart';
 import '../../provider/posts/viewmodel-posts-list.dart';
 import '../../provider/posts/viewmodel-post.dart';
 import '../../widgets/posts/posts.dart';
@@ -11,8 +12,9 @@ import '../../widgets/posts/posts.dart';
 class PostsList extends StatefulWidget {
   final String token;
   final UserViewModel viewModel;
+  final List<UserProfileViewModel> userList;
 
-  PostsList({this.token, this.viewModel});
+  PostsList({this.token, this.viewModel, this.userList});
 
   @override
   _PostsListState createState() => _PostsListState();
@@ -46,8 +48,12 @@ class _PostsListState extends State<PostsList> {
       color: Colors.white,
       backgroundColor: colorPrimary,
       onRefresh: refresh,
-      child:
-          Posts(posts: posts, viewModel: widget.viewModel, token: widget.token),
+      child: Posts(
+        posts: posts,
+        viewModel: widget.viewModel,
+        token: widget.token,
+        userList: widget.userList,
+      ),
     );
   }
 

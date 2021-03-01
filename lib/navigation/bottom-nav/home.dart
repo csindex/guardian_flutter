@@ -23,13 +23,15 @@ class Home extends StatefulWidget {
   final UserViewModel vm;
   final UserProfileViewModel userProfileVM;
   final Function openProfileScreen;
+  final List<UserProfileViewModel> userList;
 
   Home(
       {Key key,
       @required this.openProfileScreen,
       this.token,
       this.vm,
-      this.userProfileVM})
+      this.userProfileVM,
+      this.userList})
       : super(key: key);
 
   @override
@@ -39,16 +41,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   FlutterLocalNotificationsPlugin plugin;
 
-  // String token;
-  // UserViewModel vm;
-  //
-  // _HomeState({this.token, this.vm});
-
   String _page = 'posts';
 
   @override
   void initState() {
     super.initState();
+
+    print('home.dart initState called - ${widget.userList.length}');
 
     plugin = FlutterLocalNotificationsPlugin();
 
@@ -73,6 +72,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    print('home.dart build called ${widget.userList}');
     final SocketService socketService = injector.get<SocketService>();
     socketService.createSocketConnection();
     socketService.socket.on("notificationAlert", (data) {
@@ -235,7 +235,7 @@ class _HomeState extends State<Home> {
           ],
         ),
         (_page == 'posts')
-            ? (widget.vm == null)
+            ? (widget.vm == null && widget.userList.length == 0)
                 ? Container(
                     height: MediaQuery.of(context).size.height / 2.0,
                     child: Center(
@@ -248,6 +248,7 @@ class _HomeState extends State<Home> {
                     child: PostsList(
                       token: widget.token,
                       viewModel: widget.vm,
+                      userList: widget.userList,
                     ),
                   )
             : (_page == 'detailed-profile')

@@ -18,18 +18,19 @@ class GuardianHome extends StatefulWidget {
   GuardianHome({this.token});
 
   @override
-  State<StatefulWidget> createState() => _GuardianHomeState(token: this.token);
+  State<StatefulWidget> createState() => _GuardianHomeState();
 }
 
 class _GuardianHomeState extends State<GuardianHome> {
-  String token;
+  // String token;
 
   UserViewModel vm;
   UserProfileViewModel userProfileVM;
+  List<UserProfileViewModel> userList = [];
 
   final _pageKey = GlobalKey<ScaffoldState>();
 
-  _GuardianHomeState({this.token});
+  // _GuardianHomeState({this.token});
 
   int _currentIndex = 0;
   List _children;
@@ -51,10 +52,11 @@ class _GuardianHomeState extends State<GuardianHome> {
     super.initState();
     _children = [
       Home(
-        token: token,
+        token: widget.token,
         vm: vm,
         userProfileVM: userProfileVM,
         openProfileScreen: openProfileScreen,
+        userList: userList,
       ),
       Container(),
       Report(),
@@ -62,46 +64,68 @@ class _GuardianHomeState extends State<GuardianHome> {
     ];
     getMessage();
 
-    fetchDetails(token).then((value) {
+    _fetchDetails().then((value) {
       setState(() {
         _children[0] = Home(
-          token: token,
+          token: widget.token,
           vm: value,
           userProfileVM: userProfileVM,
           openProfileScreen: openProfileScreen,
+          userList: userList,
         );
         // print('value: $value');
         vm = value;
       });
       var box = Hive.box('user_db');
       box.put('name', value.name);
-      box.put('token', token);
+      box.put('token', widget.token);
       box.put('id', value.id);
     });
 
-    fetchUserProfile(token).then((value) => setState(() {
-          _children[0] = Home(
-            token: token,
-            vm: vm,
-            userProfileVM: value,
-            openProfileScreen: openProfileScreen,
-          );
-          // print('UserProfileValue: ${value.profilePic}');
-          userProfileVM = value;
-        }));
+    _fetchUserProfile().then((value) => setState(() {
+      _children[0] = Home(
+        token: widget.token,
+        vm: vm,
+        userProfileVM: UserProfileViewModel(userDetails: value),
+        openProfileScreen: openProfileScreen,
+        userList: userList,
+      );
+      // print('UserProfileValue: ${value.profilePic}');
+      userProfileVM = UserProfileViewModel(userDetails: value);
+    }));
+
+    _fetchUsers().then((value) {
+      print('fetchUsers - $value');
+      setState(() {
+        _children[0] = Home(
+          token: widget.token,
+          vm: vm,
+          userProfileVM: userProfileVM,
+          openProfileScreen: openProfileScreen,
+          userList: value,
+        );
+        userList = value;
+      });
+    });
   }
 
-  Future<UserViewModel> fetchDetails(String token) async {
-    var result = await Webservice().fetchUserDetails(token);
+  Future<UserViewModel> _fetchDetails() async {
+    var result = await Webservice().fetchUserDetails(widget.token);
     print('User = $result');
     return UserViewModel(user: result);
   }
 
-  Future<Object> fetchUserProfile(String token) async {
-    var result = await Webservice().fetchUserProfile(token);
+  Future<Object> _fetchUserProfile() async {
+    var result = await Webservice().fetchUserProfile(widget.token);
     print('UserProfile = $result');
     // return UserProfileViewModel(userDetails: result);
     return result;
+  }
+
+  Future<List<UserProfileViewModel>> _fetchUsers() async {
+    var result = await Webservice().fetchUsers();
+    var userList = result.map((item) => UserProfileViewModel(userDetails: item)).toList();
+    return userList;
   }
 
   void getMessage() {
@@ -120,7 +144,7 @@ class _GuardianHomeState extends State<GuardianHome> {
   }
 
   openProfileScreen() => NavigationHelper.openProfileScreen2(
-      context, vm, userProfileVM, token /*, _editProfilePicture()*/);
+      context, vm, userProfileVM, widget.token /*, _editProfilePicture()*/);
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +166,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                   ),
                   child: GestureDetector(
                     onTap: () {
-                      fetchUserProfile(token).then((value) {
+                      _fetchUserProfile().then((value) {
                         Navigator.pop(context);
                         print('fetchUserProfile result - $value');
                         userProfileVM =
@@ -153,7 +177,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                           context,
                           vm,
                           userProfileVM,
-                          token,
+                          widget.token,
                         );
                       });
                     },
@@ -210,10 +234,10 @@ class _GuardianHomeState extends State<GuardianHome> {
                           ),
                           Text(
                             (userProfileVM == null ||
-                                    userProfileVM.status == null ||
+                                    // userProfileVM.status == null ||
                                     userProfileVM.company == null)
                                 ? ''
-                                : '${userProfileVM.status} at ${userProfileVM.company}',
+                                : /*'${userProfileVM.status} at */'${userProfileVM.company}',
                             style: TextStyle(
                               color: Colors.white,
                             ),

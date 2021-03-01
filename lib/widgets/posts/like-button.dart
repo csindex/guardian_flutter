@@ -54,28 +54,31 @@ class _LikeButtonState extends State<LikeButton> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'like-button build called ${widget.isChecked} X ${widget.postId} X ${widget.id}');
+    // print('like-button build called ${widget.isChecked} X ${widget.postId} X ${widget.id}');
     return ClipRRect(
       borderRadius: BorderRadius.circular(4.0),
       child: Material(
-        color: Colors.grey.shade400,
+        // color: Colors.grey.shade400,
         child: InkWell(
           key: _buttonKey,
           onTap: () {
             print('onTapped: $_isChecked');
             if (!_isChecked) {
               if (widget.likes.length == 0) {
-                setState(() {
-                  print('setStateif');
-                  _isChecked = true;
-                  _numLikes++;
-                });
                 likePost().then((value) {
-                  Iterable body = jsonDecode(value);
-                  var newData =
-                      body.map((data) => LikeData.fromJsonMap(data)).toList();
-                  widget.onLikeButtonChanged(newData, true);
+                  if (value != 'failed') {
+                    setState(() {
+                      print('setStateif');
+                      _isChecked = true;
+                      _numLikes++;
+                    });
+                    Iterable body = jsonDecode(value);
+                    var newData = body.map((data) =>
+                        LikeData.fromJsonMap(data)).toList();
+                    widget.onLikeButtonChanged(newData, true);
+                  } else {
+                    widget.onLikeButtonChanged([], false);
+                  }
                 });
               } else {
                 bool flag = false;
@@ -110,12 +113,25 @@ class _LikeButtonState extends State<LikeButton> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 FaIcon(
-                  FontAwesomeIcons.solidThumbsUp,
+                  FontAwesomeIcons.thumbsUp,
                   color: _isChecked ? colorPrimary : Colors.black,
                   size: 12.0,
                 ),
                 SizedBox(
                   width: 4.0,
+                ),
+                Text(
+                  'Like',
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: _isChecked ? colorPrimary : Colors.black,
+                  ),
+                ),
+                Visibility(
+                  visible: (_numLikes > 0) ? true : false,
+                  child: SizedBox(
+                    width: 8.0,
+                  ),
                 ),
                 Visibility(
                   visible: (_numLikes > 0) ? true : false,
@@ -123,7 +139,7 @@ class _LikeButtonState extends State<LikeButton> {
                     '$_numLikes',
                     style: TextStyle(
                       fontSize: 12.0,
-                      color: Colors.black,
+                      color: _isChecked ? colorPrimary : Colors.black,
                     ),
                   ),
                 ),
@@ -146,7 +162,8 @@ class _LikeButtonState extends State<LikeButton> {
     if (response.statusCode == 200) {
       return response.body;
     } else {
-      throw Exception("Failed to like post!");
+      print('like response - ${response.body}');
+      return 'failed';
     }
   }
 }

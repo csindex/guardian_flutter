@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import '../../data/user/data-user-details.dart';
 import '../../data/user/data-education.dart';
 import '../../data/user/data-experience.dart';
@@ -41,8 +43,28 @@ class UserProfileViewModel {
     return this.userDetails.bio;
   }
 
-  String get status {
-    return this.userDetails.status;
+  String get gender {
+    return this.userDetails.gender;
+  }
+
+  String get civilStatus {
+    return this.userDetails.civilStatus;
+  }
+
+  String get birthDate {
+    return DateFormat('MM/dd/yyyy').format(DateTime.parse(this.userDetails.birthDate).add(Duration(hours: 8)));
+  }
+
+  String get homeAddress {
+    return this.userDetails.homeAddress;;
+  }
+
+  double get lat {
+    return this.userDetails.homeLat;
+  }
+
+  double get lng {
+    return this.userDetails.homeLng;
   }
 
   List<ExperienceData> get experience {

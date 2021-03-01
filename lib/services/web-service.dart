@@ -32,12 +32,10 @@ class Webservice {
         'Accept': '*/*',
       },
     );
-    // print('response: ${response.body}x${response.statusCode}');
     if (response.statusCode == 200) {
       final Iterable body = jsonDecode(response.body);
       return body.map((data) => PostData.fromJsonMap(data)).toList();
     } else {
-      // print('${response.body}');
       throw Exception("Failed to fetch posts!");
     }
   }
@@ -74,6 +72,24 @@ class Webservice {
       return jsonDecode(response.body)['msg'];
     } else {
       throw Exception("Failed to fetch user profile!");
+    }
+  }
+
+  Future<List<UserDetailsData>> fetchUsers() async {
+    // print('token: $token');
+    final url = "$secretHollowsEndPoint/api/profile";
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      },
+    );
+    if (response.statusCode == 200) {
+      final Iterable body = jsonDecode(response.body);
+      return body.map((data) => UserDetailsData.fromJsonMap(data)).toList();
+    } else {
+      throw Exception("Failed to fetch users!");
     }
   }
 }

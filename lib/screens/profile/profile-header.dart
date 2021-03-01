@@ -1,9 +1,14 @@
 import 'dart:math';
+import 'dart:io';
+import 'dart:async';
 
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:network_to_file_image/network_to_file_image.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../../provider/user/viewmodel-user.dart';
 import '../../provider/user/viewmodel-user-profile.dart';
@@ -20,9 +25,18 @@ class ProfileHeader extends StatelessWidget {
   FlipDirection _flipDirectionRandomizer() =>
       (Random().nextBool()) ? FlipDirection.HORIZONTAL : FlipDirection.VERTICAL;
 
+  Future<File> _file(String filename) async {
+    Directory dir = await getExternalStorageDirectory();
+    String pathName = p.join(dir.path, filename);
+    return File(pathName);
+  }
+
   @override
   Widget build(BuildContext context) {
     GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+
+    // var myFile = _file('defaultProfPic.png');
+
     var _direction;
     void _displayBottomSheet() {
       showModalBottomSheet(
@@ -57,8 +71,13 @@ class ProfileHeader extends StatelessWidget {
                 FlatButton(
                   splashColor: Colors.grey,
                   onPressed: () {
-                    Navigator.pop(context);
-                    NavigationHelper.openCameraScreen(context, token);
+                    if (userProfileVM == null || userProfileVM.gender == null) {
+                      print('No Profile');
+                    } else {
+                      print('unsa d i sulod? ${userProfileVM} X ${userProfileVM.gender}');
+                      Navigator.pop(context);
+                      NavigationHelper.openCameraScreen(context, token, userProfileVM);
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -70,8 +89,13 @@ class ProfileHeader extends StatelessWidget {
                 FlatButton(
                   splashColor: Colors.grey,
                   onPressed: () {
-                    Navigator.pop(context);
-                    NavigationHelper.openGalleryScreen(context, token);
+                    if (userProfileVM == null || userProfileVM.gender == null) {
+                      print('No Profile');
+                    } else {
+                      print('unsa d i sulod? ${userProfileVM} X ${userProfileVM.gender}');
+                      Navigator.pop(context);
+                      NavigationHelper.openGalleryScreen(context, token, userProfileVM);
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -88,108 +112,126 @@ class ProfileHeader extends StatelessWidget {
     }
 
     _direction = _flipDirectionRandomizer();
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      color: colorPrimary,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 36.0),
-          Stack(
-            children: [
-              FlipCard(
-                key: cardKey,
-                direction: _direction,
-                front: GestureDetector(
-                  onTap: _displayBottomSheet,
-                  child: CircleAvatar(
-                    radius: 80.0,
-                    backgroundColor: Colors.white,
-                    child: CircleAvatar(
-                      radius: 79.0,
-                      backgroundColor: Colors.white,
-                      backgroundImage: NetworkImage(
-                        (userProfileVM == null)
-                            ? 'https://drive.google.com/uc?export=view&id=0BzgvL4WSy8RwZDhTMGo3LVA0akE'
-                            : (userProfileVM.profilePic == null ||
-                                    userProfileVM.profilePic.contains('null'))
-                                ? 'https://drive.google.com/uc?export=view&id=0BzgvL4WSy8RwZDhTMGo3LVA0akE'
-                                : userProfileVM.profilePic,
-                      ),
-                    ),
-                  ),
-                ),
-                back: GestureDetector(
-                  onTap: () {
-                    // _displayBottomSheet(context);
-                    NavigationHelper.openQRFull(context, vm.id);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white,
-                      ),
-                    ),
-                    height: 160.0,
-                    width: 160.0,
-                    child: QrImage(
-                      data: vm.id,
-                      version: QrVersions.auto,
-                      size: 160.0,
-                      gapless: false,
-                      embeddedImage: AssetImage('assets/images/guardian.png'),
-                      embeddedImageStyle: QrEmbeddedImageStyle(
-                        size: Size(48.0, 48.0),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 4.0,
-                right: 4.0,
-                child: ClipOval(
-                  child: Material(
-                    color: Colors.white, // button color
-                    child: InkWell(
-                      splashColor: Colors.grey.shade300, // inkwell color
-                      child: SizedBox(
-                        width: 36.0,
-                        height: 36.0,
-                        child: Icon(
-                          Icons.flip,
-                          color: colorPrimary,
+    return FutureBuilder<File>(
+      future: _file('defaultProfPic.png'),
+      builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+        Widget w;
+        if (snapshot.hasData) {
+          print('${snapshot.data}');
+          w = Container(
+            padding: EdgeInsets.all(16.0),
+            color: colorPrimary,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 36.0),
+                Stack(
+                  children: [
+                    FlipCard(
+                      key: cardKey,
+                      direction: _direction,
+                      front: GestureDetector(
+                        onTap: _displayBottomSheet,
+                        child: CircleAvatar(
+                          radius: 80.0,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(
+                            radius: 79.0,
+                            backgroundColor: Colors.white,
+                            backgroundImage: (userProfileVM == null)
+                                ? NetworkToFileImage(
+                                url: '$secretHollowsEndPoint/img/Spotter.png',
+                                file: snapshot.data,
+                                debug: true)
+                                : (userProfileVM.profilePic == null ||
+                                userProfileVM.profilePic.contains('null'))
+                                ? NetworkToFileImage(
+                                url: '$secretHollowsEndPoint/img/Spotter.png',
+                                file: snapshot.data,
+                                debug: true)
+                                : NetworkImage(userProfileVM.profilePic),
+                          ),
                         ),
                       ),
-                      onTap: () {
-                        cardKey.currentState.toggleCard();
-                      },
+                      back: GestureDetector(
+                        onTap: () {
+                          // _displayBottomSheet(context);
+                          NavigationHelper.openQRFull(context, vm.id);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                            ),
+                          ),
+                          height: 160.0,
+                          width: 160.0,
+                          child: QrImage(
+                            data: vm.id,
+                            version: QrVersions.auto,
+                            size: 160.0,
+                            gapless: false,
+                            embeddedImage: AssetImage('assets/images/guardian.png'),
+                            embeddedImageStyle: QrEmbeddedImageStyle(
+                              size: Size(48.0, 48.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 4.0,
+                      right: 4.0,
+                      child: ClipOval(
+                        child: Material(
+                          color: Colors.white, // button color
+                          child: InkWell(
+                            splashColor: Colors.grey.shade300, // inkwell color
+                            child: SizedBox(
+                              width: 36.0,
+                              height: 36.0,
+                              child: Icon(
+                                Icons.flip,
+                                color: colorPrimary,
+                              ),
+                            ),
+                            onTap: () {
+                              cardKey.currentState.toggleCard();
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Text(
+                    (vm == null)
+                        ? (userProfileVM == null)
+                        ? 'Unknown?'
+                        : userProfileVM.user.name
+                        : vm.name,
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.0),
-          Flexible(
-            fit: FlexFit.loose,
-            child: Text(
-              (vm == null)
-                  ? (userProfileVM == null)
-                      ? 'Unknown?'
-                      : userProfileVM.user.name
-                  : vm.name,
-              maxLines: 2,
-              style: TextStyle(
-                fontSize: 24.0,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
+          );
+        } else if (snapshot.hasError) {
+          w = Container(color: Colors.black,);
+        } else {
+          w = Container(color: Colors.red,);
+        }
+        return w;
+      },
     );
   }
 }

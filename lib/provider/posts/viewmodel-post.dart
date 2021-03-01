@@ -32,15 +32,15 @@ class PostViewModel {
     return this.post.authorName;
   }
 
-  String get avatar {
-    return this.post.authorAvatar.replaceAll("//", "https://");
-  }
+  // String get avatar {
+  //   return this.post.authorAvatar.replaceAll("//", "https://");
+  // }
 
-  String get profilePic {
-    return (this.post.authorProfilePic != null)
-        ? '$secretHollowsEndPoint/img/${this.post.authorProfilePic}'
-        : null;
-  }
+  // String get profilePic {
+  //   return (this.post.authorProfilePic != null)
+  //       ? '$secretHollowsEndPoint/img/${this.post.authorProfilePic}'
+  //       : null;
+  // }
 
   String get authorId {
     return this.post.authorId;

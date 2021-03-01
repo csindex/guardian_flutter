@@ -7,6 +7,8 @@ import '../../utils/constants/utils.dart';
 
 import 'profile-header.dart';
 import 'personal-info.dart';
+import 'organization-info.dart';
+import 'emergency-info.dart';
 
 class Profile extends StatefulWidget {
   final UserViewModel vm;
@@ -22,21 +24,31 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final SwiperController _swiperController = SwiperController();
 
-  final List<Widget> _info = [
-    PersonalInfo(),
-    Card(
-        child: Container(
-      height: 100.0,
-      width: 100.0,
-    )),
-    Card(
-        child: Container(
-      height: 100.0,
-      width: 100.0,
-    ))
-  ];
+  UserViewModel _vm;
+  UserProfileViewModel _userProfileVM;
+  String _token;
 
   int _index = 0;
+
+  Widget _getSwiperChild(int index) {
+    switch (index) {
+      case 1: return OrganizationInfo();
+      case 2: return EmergencyInfo();
+      default: return PersonalInfo(
+        vm: _vm,
+        userProfileVM: _userProfileVM,
+        token: _token,
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _vm = widget.vm;
+    _userProfileVM = widget.userProfileVM;
+    _token = widget.token;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +116,8 @@ class _ProfileState extends State<Profile> {
             Flexible(
               child: Swiper(
                 controller: _swiperController,
-                itemBuilder: (BuildContext context, int index) => _info[index],
+                itemBuilder: (BuildContext context, int index) =>
+                    _getSwiperChild(index),
                 itemCount: 3,
                 itemWidth: MediaQuery.of(context).size.width - 64.0,
                 pagination: SwiperPagination(),

@@ -371,7 +371,8 @@ class _LoginState extends State<Login> {
               borderRadius: BorderRadius.all(Radius.circular(4.0)),
               borderSide: BorderSide(
                 width: 1,
-              )),
+              ),
+          ),
           hintText: 'Input Password here',
           hintStyle: TextStyle(
             color: Colors.white38,

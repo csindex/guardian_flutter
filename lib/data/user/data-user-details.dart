@@ -11,13 +11,18 @@ class UserDetailsData {
   String website;
   String location;
   String bio;
-  String status;
+  String gender;
+  String civilStatus;
+  String birthDate;
+  String homeAddress;
+  double homeLat;
+  double homeLng;
   List<ExperienceData> experience;
   List<EducationData> education;
   String msg;
 
-  UserDetailsData.fromJsonMap(Map<String, dynamic> map)
-      : skills = List<String>.from(map["skills"]).toList(),
+  UserDetailsData.fromJsonMap(Map<String, dynamic> map):
+        skills = List<String>.from(map["skills"]).toList(),
         id = map["_id"],
         user = UserData.fromJsonMap(map["user"]),
         profilePic = map["profilepic"],
@@ -25,7 +30,12 @@ class UserDetailsData {
         website = map["website"],
         location = map["location"],
         bio = map["bio"],
-        status = map["status"],
+        gender = map["gender"],
+        civilStatus = map["civilstatus"],
+        birthDate = map["birthday"],
+        homeAddress = map["completeaddress"],
+        homeLat = map["lat"],
+        homeLng = map["lng"],
         msg = map["msg"],
         experience = List<ExperienceData>.from(
             map["experience"].map((it) => ExperienceData.fromJsonMap(it))),
@@ -42,7 +52,12 @@ class UserDetailsData {
     data['website'] = website;
     data['location'] = location;
     data['bio'] = bio;
-    data['status'] = status;
+    data['gender'] = gender;
+    data['civilstatus'] = civilStatus;
+    data['birthday'] = birthDate;
+    data['completeaddress'] = homeAddress;
+    data['lat'] = homeLat;
+    data['lng'] = homeLng;
     data['msg'] = msg;
     data['experience'] = experience;
     data['education'] = education;

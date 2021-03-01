@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../provider/user/viewmodel-user-profile.dart';
 import '../../utils/constants/utils.dart';
+import '../../utils/helpers/navigation-helper.dart';
+
 
 class EditPersonalInfo extends StatefulWidget {
+  final UserProfileViewModel userProfileVM;
+  final String token;
+
+  EditPersonalInfo({this.userProfileVM, this.token});
+
   @override
   _EditPersonalInfoState createState() => _EditPersonalInfoState();
 }
@@ -30,15 +39,30 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
   String _civilStatus;
   String _birthDate;
   String _homeAddress;
+  double _lat = 0.0;
+  double _lng = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _bio = 'This is a sample bio.';
-    _gender = 'LGBT';
-    _civilStatus = 'Single';
-    _birthDate = '03/23/1993';
-    _homeAddress = 'Unit 210, KRC Building, Subangdaku, Mandaue City, Cebu';
+    if (widget.userProfileVM != null) {
+      _bio = widget.userProfileVM.bio ?? '';
+      _gender = widget.userProfileVM.gender;
+      _civilStatus = widget.userProfileVM.civilStatus;
+      _birthDate = widget.userProfileVM.birthDate;
+      _homeAddress = widget.userProfileVM.homeAddress;
+      _lat = widget.userProfileVM.lat ?? 0.0;
+      _lng = widget.userProfileVM.lng ?? 0.0;
+    }
+  }
+
+  void _onAddressSelected(AddressLatLng aLL) {
+    print('address Selected x ${aLL.address} x ${aLL.lat} x ${aLL.lng}');
+    setState(() {
+      _homeAddress = aLL.address;
+      _lat = aLL.lat;
+      _lng = aLL.lng;
+    });
   }
 
   @override
@@ -63,20 +87,51 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
           SizedBox(
             height: 16.0,
           ),
-          TextFormField(
-            initialValue: _homeAddress,
-            decoration: textInputDecoration,
-            // validator: (val) => val.isEmpty ? 'Please enter your code' : null,
-            onChanged: (val) => _homeAddress = val,
-            minLines: 1,
-            maxLines: 2,
+          Padding(
+            padding: EdgeInsets.only(left: 12.0,),
+            child: Text(
+              'Home Address',
+              style: TextStyle(
+                fontSize: 12.0,
+              ),
+            ),
+          ),
+          FlatButton(
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+              NavigationHelper.openSelectAddress(context, _onAddressSelected, LatLng(_lat, _lng));
+            },
+            child: Container(
+              width: double.infinity,
+              height: 48.0,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  _homeAddress ?? 'Please select home address',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4.0),
+              side: BorderSide(
+                color: colorPrimary,
+                width: 2.0,
+              ),
+            ),
           ),
           SizedBox(
             height: 16.0,
           ),
           TextFormField(
             initialValue: _bio,
-            decoration: textInputDecoration,
+            decoration: editInputDecoration.copyWith(
+              labelText: 'Bio',
+              hintText: 'Please tell us a little about yourself'
+            ),
             // validator: (val) => val.isEmpty ? 'Please enter your code' : null,
             onChanged: (val) => _bio = val,
             minLines: 1,
@@ -89,8 +144,10 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
             onTap: () {
               FocusScope.of(context).unfocus();
             },
-            value: _gender ?? _genderOptions[0],
-            decoration: textInputDecoration,
+            value: _gender,
+            decoration: editInputDecoration.copyWith(
+              labelText: 'Gender',
+            ),
             items: _genderOptions.map((c) {
               return DropdownMenuItem(
                 value: c,
@@ -106,8 +163,10 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
             onTap: () {
               FocusScope.of(context).unfocus();
             },
-            value: _civilStatus ?? _civilStatusOptions[0],
-            decoration: textInputDecoration,
+            value: _civilStatus,
+            decoration: editInputDecoration.copyWith(
+              labelText: 'Civil Status',
+            ),
             items: _civilStatusOptions.map((c) {
               return DropdownMenuItem(
                 value: c,
@@ -117,7 +176,16 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
             onChanged: (val) => _civilStatus = val,
           ),
           SizedBox(
-            height: 16.0,
+            height: 12.0,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 12.0,),
+            child: Text(
+              'Birth date',
+              style: TextStyle(
+                fontSize: 12.0,
+              ),
+            ),
           ),
           FlatButton(
             onPressed: () {
@@ -161,6 +229,7 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
                   _birthDate ?? 'Select Birth date (mm/dd/yyyy)',
                   style: TextStyle(
                     fontSize: 16.0,
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ),
@@ -191,6 +260,15 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
               ),
               onPressed: () async {
                 if (_formKey.currentState.validate()) {
+                  // Map<String, String> params = {
+                  //   'completeaddress' : address,
+                  // };
+                  // _editProfile(widget.token,).then((value) {
+                  //   print('request ${value.reasonPhrase}');
+                  //   http.Response.fromStream(value).then((response) {
+                  //     print('save profile: ${response.body}');
+                  //   });
+                  // });
                   Navigator.pop(context);
                 }
               },

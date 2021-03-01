@@ -7,11 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../utils/constants/utils.dart';
+import '../../../../provider/user/viewmodel-user-profile.dart';
+
 
 class GalleryScreen extends StatefulWidget {
   final String token;
+  final UserProfileViewModel vm;
 
-  GalleryScreen(this.token);
+  GalleryScreen({this.token, this.vm});
 
   @override
   _GalleryScreenState createState() => _GalleryScreenState();

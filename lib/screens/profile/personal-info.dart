@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../provider/user/viewmodel-user.dart';
+import '../../provider/user/viewmodel-user-profile.dart';
 import '../../utils/constants/utils.dart';
 import '../../widgets/ExpandableDropDownEducation.dart';
 import '../../data/user/data-education.dart';
@@ -7,6 +9,12 @@ import '../../data/user/data-education.dart';
 import 'edit-personal-info.dart';
 
 class PersonalInfo extends StatefulWidget {
+  final UserViewModel vm;
+  final UserProfileViewModel userProfileVM;
+  final String token;
+
+  PersonalInfo({this.vm, this.userProfileVM, this.token});
+
   @override
   _PersonalInfoState createState() => _PersonalInfoState();
 }
@@ -21,7 +29,10 @@ class _PersonalInfoState extends State<PersonalInfo> {
           return Container(
             padding: EdgeInsets.only(
                 left: 16.0, top: 16.0, right: 16.0, bottom: 60.0),
-            child: EditPersonalInfo(),
+            child: EditPersonalInfo(
+              userProfileVM: widget.userProfileVM,
+              token: widget.token,
+            ),
           );
         },
       );
@@ -35,14 +46,17 @@ class _PersonalInfoState extends State<PersonalInfo> {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Personal Information',
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                    color: colorPrimary,
+                Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    'Personal Information',
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                      color: colorPrimary,
+                    ),
                   ),
                 ),
                 FlatButton(
@@ -81,15 +95,15 @@ class _PersonalInfoState extends State<PersonalInfo> {
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              border: Border.all(color: Colors.grey)),
+            color: Colors.grey.shade100,
+            border: Border.all(color: Colors.grey),
+          ),
           padding: EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                // '${widget.vm.name.substring(0, widget.vm.name.indexOf(' '))}*/\'s Bio',
-                'Jornel\'s Bio',
+                '${widget.vm.name.substring(0, widget.vm.name.indexOf(' ') ?? widget.vm.name.length - 1)}\'s Bio',
                 style: TextStyle(
                   color: colorPrimary,
                   fontSize: 24.0,
@@ -102,8 +116,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
               Flexible(
                 fit: FlexFit.loose,
                 child: Text(
-                  // '${widget.userProfileVM.bio}',
-                  'This is a sample bio lorem ipsum',
+                  (widget.userProfileVM != null)
+                      ? widget.userProfileVM.bio ?? 'Nothing to show'
+                      : 'Nothing to show',
                   style: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -137,7 +152,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
                           height: 4.0,
                         ),
                         Text(
-                          'Male',
+                          (widget.userProfileVM != null)
+                              ? widget.userProfileVM.gender
+                              : 'N/A',
                           style: TextStyle(
                             fontSize: 16.0,
                           ),
@@ -165,7 +182,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
                           height: 4.0,
                         ),
                         Text(
-                          'Single',
+                          (widget.userProfileVM != null)
+                              ? widget.userProfileVM.civilStatus
+                              : 'N/A',
                           style: TextStyle(
                             fontSize: 16.0,
                           ),
@@ -198,7 +217,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 height: 4.0,
               ),
               Text(
-                '03/23/1993',
+                (widget.userProfileVM != null)
+                    ? widget.userProfileVM.birthDate
+                    : 'N/A',
                 style: TextStyle(
                   fontSize: 16.0,
                 ),
@@ -215,7 +236,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 height: 16.0,
               ),
               Text(
-                // '${widget.vm.name.substring(0, widget.vm.name.indexOf(' '))}*/\'s Bio',
                 'Home Address',
                 style: TextStyle(
                   color: colorPrimary,
@@ -229,8 +249,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
               Flexible(
                 fit: FlexFit.loose,
                 child: Text(
-                  // '${widget.userProfileVM.bio}',
-                  'Abuno, Tunghaan, Minglanilla, Cebu',
+                  (widget.userProfileVM != null)
+                      ? widget.userProfileVM.homeAddress
+                      : 'N/A',
                   style: TextStyle(
                     fontSize: 16.0,
                   ),

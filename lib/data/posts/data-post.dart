@@ -5,8 +5,8 @@ class PostData {
   String postId;
   String text;
   String authorName;
-  String authorAvatar;
-  String authorProfilePic;
+  // String authorAvatar;
+  // String authorProfilePic;
   String authorId;
   String articleImage;
   List<LikeData> likes;
@@ -17,8 +17,8 @@ class PostData {
       : postId = map["_id"],
         text = map["text"],
         authorName = map["name"],
-        authorAvatar = map["avatar"],
-        authorProfilePic = map["profilepic"],
+        // authorAvatar = map["avatar"],
+        // authorProfilePic = map["profilepic"],
         authorId = map["user"],
         articleImage = map["articleImage"],
         likes = List<LikeData>.from(
@@ -32,8 +32,8 @@ class PostData {
     data['_id'] = postId;
     data['text'] = text;
     data['name'] = authorName;
-    data['avatar'] = authorAvatar;
-    data['profilepic'] = authorProfilePic;
+    // data['avatar'] = authorAvatar;
+    // data['profilepic'] = authorProfilePic;
     data['user'] = authorId;
     data['articleImage'] = articleImage;
     data['likes'] = likes;

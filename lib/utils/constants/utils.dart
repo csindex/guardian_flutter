@@ -12,20 +12,52 @@ const Color fbBtnColor = Color(0xFF3D5A98);
 final String prodEndPoint = 'https://ccc.guardian4emergency.com';
 final String devEndPoint = 'https://ccc.guardian4emergency.com';
 final String termsEndPoint = 'https://guardian4emergency.com';
-final String secretHollowsEndPoint =
-    'http://10.128.50.106:3000'; //https://secret-hollows-28950.herokuapp.com
+final String secretHollowsEndPoint = 'http://10.128.50.106:3000'; //https://secret-hollows-28950.herokuapp.com
 
-final const String gMAK = 'AIzaSyCoviUZrvv1kcF9gNDhdmuLevZDwSREJE8';
+const String gMAK = 'AIzaSyCoviUZrvv1kcF9gNDhdmuLevZDwSREJE8';
 
 const textInputDecoration = InputDecoration(
   fillColor: Colors.white,
   filled: true,
-  contentPadding: EdgeInsets.all(12.0),
+  contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 12.0),
   enabledBorder: OutlineInputBorder(
     borderSide: BorderSide(color: colorPrimary, width: 2.0),
   ),
   focusedBorder: OutlineInputBorder(
     borderSide: BorderSide(color: colorPrimary, width: 2.0),
+  ),
+);
+
+const editInputDecoration = InputDecoration(
+  contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+  filled: true,
+  fillColor: Colors.white,
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    borderSide: BorderSide(width: 2, color: colorPrimary),
+  ),
+  disabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    borderSide: BorderSide(width: 2, color: Colors.grey),
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    borderSide: BorderSide(width: 2, color: colorPrimary),
+  ),
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    borderSide: BorderSide(width: 2,),
+  ),
+  hintStyle: TextStyle(
+    color: Colors.grey,
+  ),
+  labelStyle: TextStyle(
+    color: Colors.black,
+  ),
+  // errorText: _validatePassword ? _passwordErrorMsg : null,
+  errorStyle: TextStyle(
+    letterSpacing: 1.5,
+    fontSize: 10.0,
   ),
 );
 
@@ -266,4 +298,11 @@ class PlaceholderWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class AddressLatLng {
+  final String address;
+  final double lat;
+  final double lng;
+  AddressLatLng({this.address, this.lat, this.lng});
 }

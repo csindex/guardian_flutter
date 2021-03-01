@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
 import '../../edit-profile-picture/preview-screen.dart';
+import '../../../../provider/user/viewmodel-user-profile.dart';
+
 
 class CameraScreen extends StatefulWidget {
   final String token;
+  final UserProfileViewModel vm;
 
-  CameraScreen(this.token);
+  CameraScreen({this.token, this.vm});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();

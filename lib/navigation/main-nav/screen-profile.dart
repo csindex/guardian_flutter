@@ -180,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         (widget.userProfileVM == null)
                             ? 'Status: \'N/A\' at Company: \'N/A\''
-                            : '${widget.userProfileVM.status} at ${widget.userProfileVM.company}',
+                            : /*'${widget.userProfileVM.status} at */'${widget.userProfileVM.company}',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -364,8 +364,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               FlatButton(
                 splashColor: Colors.grey,
                 onPressed: () {
-                  Navigator.pop(ctx);
-                  NavigationHelper.openCameraScreen(ctx, widget.token);
+                  if (widget.userProfileVM == null || widget.userProfileVM.gender == null) {
+                    print('No Profile');
+                  } else {
+                    print('unsa d i sulod? ${widget.userProfileVM} X ${widget.userProfileVM.gender}');
+                    Navigator.pop(ctx);
+                    NavigationHelper.openCameraScreen(ctx, widget.token, widget.userProfileVM);
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -377,8 +382,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               FlatButton(
                 splashColor: Colors.grey,
                 onPressed: () {
-                  Navigator.pop(context);
-                  NavigationHelper.openGalleryScreen(ctx, widget.token);
+                  if (widget.userProfileVM == null) {
+                    print('No Profile');
+                  } else {
+                    Navigator.pop(context);
+                    NavigationHelper.openGalleryScreen(ctx, widget.token, widget.userProfileVM);
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24.0),

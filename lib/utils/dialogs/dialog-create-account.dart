@@ -1,7 +1,8 @@
-import '../../utils/constants/utils.dart';
-import '../../utils/helpers/navigation-helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../utils/constants/utils.dart';
+import '../../utils/helpers/navigation-helper.dart';
 
 class CreateAccountDialog extends StatelessWidget {
   @override

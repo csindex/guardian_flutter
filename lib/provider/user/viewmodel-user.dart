@@ -10,7 +10,7 @@ class UserViewModel {
   }
 
   String get name {
-    return this.user.name;
+    return '${this.user.name} ${this.user.lname}';
   }
 
   String get email {
