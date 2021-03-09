@@ -26,92 +26,93 @@ class _ExpandableDropDownEducationState
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            border: Border.all(color: Colors.grey)),
+          color: Colors.grey.shade100,
+          border: Border.all(color: Colors.grey),
+        ),
         padding: EdgeInsets.all(16.0),
-        child: (expCtr == 0)
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Education',
-                    style: TextStyle(
-                      color: colorPrimary,
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 4.0,
-                  ),
-                  Text(
-                    'Nothing to show',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
-                  ),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Education',
-                        style: TextStyle(
-                          color: colorPrimary,
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      ClipOval(
-                        child: Material(
-                          color: Colors.grey.shade100, // button color
-                          child: InkWell(
-                            splashColor: Colors.grey, // inkwell color
-                            child: SizedBox(
-                              width: 36.0,
-                              height: 36.0,
-                              child: Icon(
-                                (_isExpanded)
-                                    ? Icons.arrow_drop_up
-                                    : Icons.arrow_drop_down,
-                                color: colorPrimary,
-                              ),
-                            ),
-                            onTap: () =>
-                                setState(() => _isExpanded = !_isExpanded),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 4.0,
-                  ),
-                  AnimatedSize(
-                    vsync: this,
-                    duration: const Duration(milliseconds: 350),
-                    child: new ConstrainedBox(
-                      constraints: _isExpanded
-                          ? new BoxConstraints()
-                          : new BoxConstraints(maxHeight: 0.0),
-                      child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context, index) {
-                          return _createExperienceItem(index);
-                        },
-                        itemCount: expCtr,
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                      ),
-                    ),
-                  ),
-                ],
+        child: (expCtr == 0) ?
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Education',
+              style: TextStyle(
+                color: colorPrimary,
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            SizedBox(
+              height: 4.0,
+            ),
+            Text(
+              'Nothing to show',
+              style: TextStyle(
+                fontSize: 16.0,
+              ),
+            ),
+          ],
+        ) :
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Education',
+                  style: TextStyle(
+                    color: colorPrimary,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                ClipOval(
+                  child: Material(
+                    color: Colors.grey.shade100, // button color
+                    child: InkWell(
+                      splashColor: Colors.grey, // inkwell color
+                      child: SizedBox(
+                        width: 36.0,
+                        height: 36.0,
+                        child: Icon(
+                          (_isExpanded)
+                              ? Icons.arrow_drop_up
+                              : Icons.arrow_drop_down,
+                          color: colorPrimary,
+                        ),
+                      ),
+                      onTap: () =>
+                          setState(() => _isExpanded = !_isExpanded),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 4.0,
+            ),
+            AnimatedSize(
+              vsync: this,
+              duration: Duration(milliseconds: 350),
+              child: ConstrainedBox(
+                constraints: _isExpanded ?
+                BoxConstraints() :
+                BoxConstraints(maxHeight: 0.0),
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    return _createExperienceItem(index);
+                  },
+                  itemCount: expCtr,
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -143,6 +144,7 @@ class _ExpandableDropDownEducationState
           ),
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
@@ -156,11 +158,14 @@ class _ExpandableDropDownEducationState
             SizedBox(
               width: 4.0,
             ),
-            Text(
-              item.degree,
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.black,
+            Flexible(
+              fit: FlexFit.loose,
+              child: Text(
+                item.degree,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
               ),
             ),
           ],

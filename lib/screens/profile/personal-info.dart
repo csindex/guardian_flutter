@@ -12,8 +12,9 @@ class PersonalInfo extends StatefulWidget {
   final UserViewModel vm;
   final UserProfileViewModel userProfileVM;
   final String token;
+  final UserProfileViewModel userOriginalVM;
 
-  PersonalInfo({this.vm, this.userProfileVM, this.token});
+  PersonalInfo({this.vm, this.userProfileVM, this.token, this.userOriginalVM});
 
   @override
   _PersonalInfoState createState() => _PersonalInfoState();
@@ -59,16 +60,20 @@ class _PersonalInfoState extends State<PersonalInfo> {
                     ),
                   ),
                 ),
-                FlatButton(
-                  padding: EdgeInsets.all(0.0),
-                  onPressed: _showModal,
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                    size: 16.0,
+                Visibility(
+                  visible: (widget.userOriginalVM.user.id ==
+                      widget.userProfileVM.user.id),
+                  child: FlatButton(
+                    padding: EdgeInsets.all(0.0),
+                    onPressed: _showModal,
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: 16.0,
+                    ),
+                    shape: CircleBorder(),
+                    color: colorPrimary,
                   ),
-                  shape: CircleBorder(),
-                  color: colorPrimary,
                 ),
               ],
             ),
@@ -78,7 +83,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 itemBuilder: (context, index) {
                   return (index == 0)
                       ? _personalInfoCorner()
-                      : ExpandableDropDownEducation(List<EducationData>());
+                      : ExpandableDropDownEducation(
+                      widget.userProfileVM.education ?? List<EducationData>());
                 },
                 itemCount: 2,
                 shrinkWrap: true,
@@ -103,7 +109,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '${widget.vm.name.substring(0, widget.vm.name.indexOf(' ') ?? widget.vm.name.length - 1)}\'s Bio',
+                '${widget.userProfileVM.user.name.substring(0,
+                    widget.userProfileVM.user.name.length)}\'s Bio',
                 style: TextStyle(
                   color: colorPrimary,
                   fontSize: 24.0,

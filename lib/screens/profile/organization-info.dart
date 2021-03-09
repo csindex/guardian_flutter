@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../../provider/user/viewmodel-user.dart';
+import '../../provider/user/viewmodel-user-profile.dart';
 import '../../utils/constants/utils.dart';
 import '../../widgets/ExpandableDropDownExperience.dart';
 import '../../data/user/data-experience.dart';
 
 import 'edit-organization-info.dart';
 
+
 class OrganizationInfo extends StatefulWidget {
+  final UserViewModel vm;
+  final UserProfileViewModel userProfileVM;
+  final UserProfileViewModel userOriginalVM;
+  final String token;
+
+  OrganizationInfo({
+    this.userProfileVM, this.vm, this.userOriginalVM, this.token});
+
+
   @override
   _OrganizationInfoState createState() => _OrganizationInfoState();
 }
@@ -51,16 +63,20 @@ class _OrganizationInfoState extends State<OrganizationInfo> {
                     ),
                   ),
                 ),
-                FlatButton(
-                  padding: EdgeInsets.all(0.0),
-                  onPressed: _showModal,
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                    size: 16.0,
+                Visibility(
+                  visible: (widget.userOriginalVM.user.id ==
+                      widget.userProfileVM.user.id),
+                  child: FlatButton(
+                    padding: EdgeInsets.all(0.0),
+                    onPressed: _showModal,
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: 16.0,
+                    ),
+                    shape: CircleBorder(),
+                    color: colorPrimary,
                   ),
-                  shape: CircleBorder(),
-                  color: colorPrimary,
                 ),
               ],
             ),
@@ -70,7 +86,8 @@ class _OrganizationInfoState extends State<OrganizationInfo> {
                 itemBuilder: (context, index) {
                   return (index == 0)
                       ? _orgInfoCorner()
-                      : ExpandableDropDownExperience(List<ExperienceData>());
+                      : ExpandableDropDownExperience(
+                      widget.userProfileVM.experience ?? List<ExperienceData>());
                 },
                 itemCount: 2,
                 shrinkWrap: true,
@@ -106,7 +123,8 @@ class _OrganizationInfoState extends State<OrganizationInfo> {
                 height: 4.0,
               ),
               Text(
-                'Minglanilla Sample Org.',
+                '${widget.userProfileVM.company ?? 'Nothing to show'}',
+                // 'Minglanilla Sample Org.',
                 style: TextStyle(
                   fontSize: 16.0,
                 ),
@@ -135,8 +153,8 @@ class _OrganizationInfoState extends State<OrganizationInfo> {
                 height: 4.0,
               ),
               Text(
-                // '${widget.userProfileVM.bio}',
-                'Volunteer',
+                '${widget.userProfileVM.positionStatus ?? 'Nothing to show'}',
+                // 'Volunteer',
                 style: TextStyle(
                   fontSize: 16.0,
                 ),
@@ -167,8 +185,8 @@ class _OrganizationInfoState extends State<OrganizationInfo> {
               Flexible(
                 fit: FlexFit.loose,
                 child: Text(
-                  // '${widget.userProfileVM.bio}',
-                  'Abuno, Tunghaan, Minglanilla, Cebu',
+                  '${widget.userProfileVM.location ?? 'Nothing to show'}',
+                  // 'Abuno, Tunghaan, Minglanilla, Cebu',
                   style: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -200,8 +218,8 @@ class _OrganizationInfoState extends State<OrganizationInfo> {
               Flexible(
                 fit: FlexFit.loose,
                 child: Text(
-                  // '${widget.userProfileVM.bio}',
-                  'https://www.minglanillasampleorg.blahblahblah.com',
+                  '${widget.userProfileVM.website ?? 'Nothing to show'}',
+                  // 'https://www.minglanillasampleorg.blahblahblah.com',
                   style: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -233,8 +251,8 @@ class _OrganizationInfoState extends State<OrganizationInfo> {
               Flexible(
                 fit: FlexFit.loose,
                 child: Text(
-                  // '✓ ${widget.userProfileVM.skills.toString().replaceAll('[', '').replaceAll(']', '').replaceAll(',', '    ✓')}',
-                  '✓ EMS  ✓ CPR',
+                  '${widget.userProfileVM.skills.toString().replaceAll('[', '✓ ').replaceAll(']', '').replaceAll(',', '    ✓') ?? 'Nothing to show'}',
+                  // '✓ EMS  ✓ CPR',
                   style: TextStyle(
                     fontSize: 16.0,
                   ),

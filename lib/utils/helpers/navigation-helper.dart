@@ -7,6 +7,7 @@ import '../../navigation/main-nav/signup.dart';
 import '../../navigation/main-nav/verify-otp.dart';
 import '../../reporting/report-call-screen.dart';
 import '../../navigation/main-nav/screen-profile.dart';
+import '../../screens/responders/responders.dart';
 import '../../widgets/posts/post-image-full.dart';
 import '../../widgets/profile/profile-picture-full.dart';
 import '../../widgets/profile/qr-code-full.dart';
@@ -57,13 +58,29 @@ class NavigationHelper {
         ),
       );
 
-  static openProfileScreen2(context, vm, userVM, token) => Navigator.push(
+  static openRespondersScreen(
+      context, token, userVM, vm, origin, responderList) =>
+      Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          Responders(
+            vm: vm,
+            userVM: userVM,
+            token: token,
+            origin: origin,
+            responderList: responderList,
+          ))
+      );
+
+  static openProfileScreen2(
+      context, vm, userVM, userOriginalVM, token, origin) =>
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => Profile(
             vm: vm,
             userProfileVM: userVM,
             token: token,
+            origin: origin,
+            userOriginalVM: userOriginalVM,
           ),
         ),
       );

@@ -14,8 +14,11 @@ class Profile extends StatefulWidget {
   final UserViewModel vm;
   final UserProfileViewModel userProfileVM;
   final String token;
+  final String origin;
+  final UserProfileViewModel userOriginalVM;
 
-  Profile({this.vm, this.userProfileVM, this.token});
+  Profile({
+    this.vm, this.userProfileVM, this.token, this.origin, this.userOriginalVM});
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -26,18 +29,25 @@ class _ProfileState extends State<Profile> {
 
   UserViewModel _vm;
   UserProfileViewModel _userProfileVM;
+  UserProfileViewModel _userOriginalVM;
   String _token;
 
   int _index = 0;
 
   Widget _getSwiperChild(int index) {
     switch (index) {
-      case 1: return OrganizationInfo();
+      case 1: return OrganizationInfo(
+        vm: _vm,
+        userProfileVM: _userProfileVM,
+        token: _token,
+        userOriginalVM: _userOriginalVM,
+      );
       case 2: return EmergencyInfo();
       default: return PersonalInfo(
         vm: _vm,
         userProfileVM: _userProfileVM,
         token: _token,
+        userOriginalVM: _userOriginalVM,
       );
     }
   }
@@ -47,6 +57,7 @@ class _ProfileState extends State<Profile> {
     super.initState();
     _vm = widget.vm;
     _userProfileVM = widget.userProfileVM;
+    _userOriginalVM = widget.userOriginalVM;
     _token = widget.token;
   }
 
@@ -58,9 +69,10 @@ class _ProfileState extends State<Profile> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ProfileHeader(
-              vm: widget.vm,
-              userProfileVM: widget.userProfileVM,
-              token: widget.token,
+              vm: _vm,
+              userProfileVM: _userProfileVM,
+              token: _token,
+              userOriginalVM: _userOriginalVM,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

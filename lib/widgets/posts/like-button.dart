@@ -130,16 +130,24 @@ class _LikeButtonState extends State<LikeButton> {
                 Visibility(
                   visible: (_numLikes > 0) ? true : false,
                   child: SizedBox(
-                    width: 8.0,
+                    width: 4.0,
                   ),
                 ),
                 Visibility(
                   visible: (_numLikes > 0) ? true : false,
-                  child: Text(
-                    '$_numLikes',
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      color: _isChecked ? colorPrimary : Colors.black,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(2.0),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 2.0, vertical: 2.0,),
+                      color: colorPrimary,
+                      child: Text(
+                        '$_numLikes',
+                        style: TextStyle(
+                          fontSize: 10.0,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),

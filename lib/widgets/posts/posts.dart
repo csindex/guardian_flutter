@@ -21,8 +21,9 @@ class Posts extends StatefulWidget {
   final UserViewModel viewModel;
   final String token;
   final List<UserProfileViewModel> userList;
+  final UserProfileViewModel userVM;
 
-  Posts({this.posts, this.viewModel, this.token, this.userList});
+  Posts({this.posts, this.viewModel, this.token, this.userList, this.userVM});
 
   @override
   _PostsState createState() => _PostsState();
@@ -76,7 +77,7 @@ class _PostsState extends State<Posts> {
     }
   }
 
-  Widget _firstDesign(int index) {
+  /*Widget _firstDesign(int index) {
     var _post = widget.posts[index];
     var _postLikes = _post.likes;
     var _isLiker = false;
@@ -94,9 +95,9 @@ class _PostsState extends State<Posts> {
               borderRadius: BorderRadius.circular(24.0),
               child: FadeInImage.assetNetwork(
                 placeholder: 'assets/loading.gif',
-                image: '$secretHollowsEndPoint/img/Spotter.png'/*(_post.profilePic == null)
+                image: '$secretHollowsEndPoint/img/Spotter.png'*//*(_post.profilePic == null)
                     ? _post.avatar
-                    : _post.profilePic*/, //notification.uploads[0].fileFullPath,
+                    : _post.profilePic*//*, //notification.uploads[0].fileFullPath,
                 fit: BoxFit.cover,
                 height: 48.0,
                 width: 48.0,
@@ -300,9 +301,9 @@ class _PostsState extends State<Posts> {
         ),
       ],
     );
-  }
+  }*/
 
-  Widget _secondDesign(int index) {
+  /*Widget _secondDesign(int index) {
     var _post = widget.posts[index];
     var _postLikes = _post.likes;
     var _isLiker = false;
@@ -326,9 +327,9 @@ class _PostsState extends State<Posts> {
               borderRadius: BorderRadius.circular(24.0),
               child: FadeInImage.memoryNetwork(
                 placeholder: kTransparentImage,
-                image: _getProfilePic(_post.authorId)/*(_post.profilePic == null)
+                image: _getProfilePic(_post.authorId)*//*(_post.profilePic == null)
                     ? _post.avatar
-                    : _post.profilePic*/, //notification.uploads[0].fileFullPath,
+                    : _post.profilePic*//*, //notification.uploads[0].fileFullPath,
                 fit: BoxFit.cover,
                 height: 36.0,
                 width: 36.0,
@@ -548,7 +549,7 @@ class _PostsState extends State<Posts> {
         ),
       ],
     );
-  }
+  }*/
 
   Widget _thirdDesign(int index) {
     var _post = widget.posts[index];
@@ -557,6 +558,16 @@ class _PostsState extends State<Posts> {
     for (var like in _post.likes) {
       if (like.likerId == widget.viewModel.id) {
         _isLiker = true;
+      }
+    }
+    var _profilePic = '';
+    var _fullName = '';
+    var _user;
+    for (var user in widget.userList) {
+      if (user.user.id == _post.authorId) {
+        _profilePic = user.profilePic;
+        _fullName = '${user.user.name} ${user.user.lname}';
+        _user = user;
       }
     }
     return Container(
@@ -575,54 +586,69 @@ class _PostsState extends State<Posts> {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 16.0,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.shade900,
-                      spreadRadius:2,
-                      blurRadius: 2,
+          GestureDetector(
+            onTap: () {
+              NavigationHelper.openProfileScreen2(
+                  context, widget.viewModel, _user,
+                  widget.userVM, widget.token, 'post');
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 16.0,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade900,
+                        spreadRadius:1.0,
+                        blurRadius: 4.0,
+                      ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    radius: 18.0,
+                    backgroundColor: Colors.white,
+                    child: CircleAvatar(
+                      radius: 17.5,
+                      backgroundColor: Colors.white,
+                      backgroundImage: NetworkImage(_profilePic),
+                    ),
+                  ),/*ClipRRect(
+                    borderRadius: BorderRadius.circular(24.0),
+                    child: FadeInImage.memoryNetwork(
+                      placeholder: kTransparentImage,
+                      image: _getProfilePic(_post.authorId),
+                      fit: BoxFit.cover,
+                      height: 36.0,
+                      width: 36.0,
+                    ),
+                  ),*/
+                ),
+                SizedBox(width: 16.0),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _fullName,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: colorPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      _post.date,
+                      style: TextStyle(fontSize: 12.0, color: Colors.grey.shade500),
                     ),
                   ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24.0),
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: _getProfilePic(_post.authorId),
-                    fit: BoxFit.cover,
-                    height: 36.0,
-                    width: 36.0,
-                  ),
-                ),
-              ),
-              SizedBox(width: 16.0),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _post.author,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: colorPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    _post.date,
-                    style: TextStyle(fontSize: 12.0, color: Colors.grey.shade500),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
           SizedBox(
             height: 12.0,
@@ -776,6 +802,8 @@ class _PostsState extends State<Posts> {
                             vertical: 8.0,
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               FaIcon(
                                 FontAwesomeIcons.comment,
@@ -801,17 +829,16 @@ class _PostsState extends State<Posts> {
                               Visibility(
                                 visible: (_post.comments.length > 0) ? true : false,
                                 child: ClipRRect(
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(24.0)),
-                                  child: Padding(
-                                    padding:
-                                    const EdgeInsets.symmetric(horizontal: 2.0),
+                                  borderRadius: BorderRadius.circular(2.0),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 2.0, vertical: 2.0,),
+                                    color: colorPrimary,
                                     child: Text(
                                       '${_post.comments.length}',
                                       style: TextStyle(
-                                        fontSize: 12.0,
-                                        color: colorPrimary,
-                                        backgroundColor: Colors.blueGrey.shade300,
+                                        fontSize: 10.0,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
@@ -893,18 +920,5 @@ class _PostsState extends State<Posts> {
         ],
       ),
     );
-  }
-
-  String _getProfilePic(String id) {
-    // print('getProfilePic called on $id - ${widget.userList}');
-    var profilePic = '';
-    for (var user in widget.userList) {
-      if (user.user.id == id) {
-        profilePic = user.profilePic;
-        // print('profile pic for $id - $profilePic');
-        return profilePic;
-      }
-    }
-    return profilePic;
   }
 }

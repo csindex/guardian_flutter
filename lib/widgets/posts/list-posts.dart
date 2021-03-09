@@ -12,9 +12,11 @@ import '../../widgets/posts/posts.dart';
 class PostsList extends StatefulWidget {
   final String token;
   final UserViewModel viewModel;
+  final UserProfileViewModel userProfileVM;
   final List<UserProfileViewModel> userList;
 
-  PostsList({this.token, this.viewModel, this.userList});
+  PostsList({
+    this.token, this.viewModel, this.userList, this.userProfileVM});
 
   @override
   _PostsListState createState() => _PostsListState();
@@ -53,6 +55,7 @@ class _PostsListState extends State<PostsList> {
         viewModel: widget.viewModel,
         token: widget.token,
         userList: widget.userList,
+        userVM: widget.userProfileVM,
       ),
     );
   }

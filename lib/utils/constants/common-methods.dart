@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 import 'utils.dart';
+import '../../services/web-service.dart';
+import '../../provider/user/viewmodel-user-profile.dart';
 
 
 void launchURL(BuildContext context, String url) async {
@@ -81,4 +83,10 @@ Future<http.StreamedResponse> _editProfile(
   //   print('result? $response x ${response.statusCode} x ${response.body}');
   //   return response;
   // });
+}
+
+Future<List<UserProfileViewModel>> fetchUsers() async {
+  var result = await Webservice().fetchUsers();
+  var userList = result.map((item) => UserProfileViewModel(userDetails: item)).toList();
+  return userList;
 }

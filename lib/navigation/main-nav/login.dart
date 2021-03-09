@@ -468,7 +468,7 @@ class _LoginState extends State<Login> {
   }
 
   Future<String> _loginAPI2() async {
-    var url = 'https://secret-hollows-28950.herokuapp.com/api/auth';
+    var url = '$secretHollowsEndPoint/api/auth';
     Map data = {'email': _username, 'password': _password};
     var reqBody = json.encode(data);
     var response = await http.post(

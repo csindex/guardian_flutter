@@ -23,7 +23,8 @@ class _CreatePostFormState extends State<CreatePostForm> {
   }
 
   @override
-  Widget build(BuildContext context) => Form(
+  Widget build(BuildContext context) =>
+      Form(
         key: _formPageKey,
         child: Container(
           color: Color(0xEEEEEE),

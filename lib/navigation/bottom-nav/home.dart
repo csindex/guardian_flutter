@@ -16,6 +16,7 @@ import '../../utils/helpers/navigation-helper.dart';
 import '../../services/socket-service.dart';
 import '../../services/web-service.dart';
 
+
 NotificationAppLaunchDetails notificationAppLaunchDetails;
 
 class Home extends StatefulWidget {
@@ -25,17 +26,16 @@ class Home extends StatefulWidget {
   final Function openProfileScreen;
   final List<UserProfileViewModel> userList;
 
-  Home(
-      {Key key,
-      @required this.openProfileScreen,
-      this.token,
-      this.vm,
-      this.userProfileVM,
-      this.userList})
-      : super(key: key);
+  Home({
+    Key key,
+    @required this.openProfileScreen,
+    this.token,
+    this.vm,
+    this.userProfileVM,
+    this.userList}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState(/*token: this.token, vm: this.vm*/);
+  _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -104,10 +104,18 @@ class _HomeState extends State<Home> {
                 color: colorPrimary,
                 child: InkWell(
                   onTap: () {
-                    print('tapped notif');
-                    Timer(Duration(seconds: 3), () {
-                      showNotification();
-                    });
+                    // print('tapped notif');
+                    // Timer(Duration(seconds: 3), () {
+                    //   showNotification();
+                    // });
+                    NavigationHelper.openRespondersScreen(
+                      context,
+                      widget.token,
+                      widget.userProfileVM,
+                      widget.vm,
+                      'post',
+                      widget.userList,
+                    );
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -249,6 +257,7 @@ class _HomeState extends State<Home> {
                       token: widget.token,
                       viewModel: widget.vm,
                       userList: widget.userList,
+                      userProfileVM: widget.userProfileVM,
                     ),
                   )
             : (_page == 'detailed-profile')

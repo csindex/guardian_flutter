@@ -183,6 +183,7 @@ class _ExpandableDropDownExperienceState
           ],
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
@@ -196,11 +197,14 @@ class _ExpandableDropDownExperienceState
             SizedBox(
               width: 4.0,
             ),
-            Text(
-              item.description,
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.black,
+            Flexible(
+              fit: FlexFit.loose,
+              child: Text(
+                item.description,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
               ),
             ),
           ],

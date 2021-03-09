@@ -27,6 +27,10 @@ class UserProfileViewModel {
     return '$secretHollowsEndPoint/img/${this.userDetails.profilePic}';
   }
 
+  String get positionStatus {
+    return this.userDetails.positionStatus;
+  }
+
   String get company {
     return this.userDetails.company;
   }

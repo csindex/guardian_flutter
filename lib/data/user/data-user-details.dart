@@ -7,6 +7,7 @@ class UserDetailsData {
   String id;
   UserData user;
   String profilePic;
+  String positionStatus;
   String company;
   String website;
   String location;
@@ -26,7 +27,8 @@ class UserDetailsData {
         id = map["_id"],
         user = UserData.fromJsonMap(map["user"]),
         profilePic = map["profilepic"],
-        company = map["company"],
+        positionStatus = map["status"],
+        company = map["organization"],
         website = map["website"],
         location = map["location"],
         bio = map["bio"],
@@ -48,7 +50,8 @@ class UserDetailsData {
     data['_id'] = id;
     data['user'] = user.toJson();
     data['profilepic'] = profilePic;
-    data['company'] = company;
+    data['status'] = positionStatus;
+    data['organization'] = company;
     data['website'] = website;
     data['location'] = location;
     data['bio'] = bio;

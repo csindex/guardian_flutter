@@ -7,6 +7,7 @@ import '../bottom-nav/home.dart';
 import '../bottom-nav/report.dart';
 import '../bottom-nav/special.dart';
 import '../../utils/constants/utils.dart';
+import '../../utils/constants/common-methods.dart';
 import '../../utils/helpers/navigation-helper.dart';
 import '../../provider/user/viewmodel-user.dart';
 import '../../provider/user/viewmodel-user-profile.dart';
@@ -94,7 +95,7 @@ class _GuardianHomeState extends State<GuardianHome> {
       userProfileVM = UserProfileViewModel(userDetails: value);
     }));
 
-    _fetchUsers().then((value) {
+    fetchUsers().then((value) {
       print('fetchUsers - $value');
       setState(() {
         _children[0] = Home(
@@ -122,12 +123,6 @@ class _GuardianHomeState extends State<GuardianHome> {
     return result;
   }
 
-  Future<List<UserProfileViewModel>> _fetchUsers() async {
-    var result = await Webservice().fetchUsers();
-    var userList = result.map((item) => UserProfileViewModel(userDetails: item)).toList();
-    return userList;
-  }
-
   void getMessage() {
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
@@ -144,7 +139,7 @@ class _GuardianHomeState extends State<GuardianHome> {
   }
 
   openProfileScreen() => NavigationHelper.openProfileScreen2(
-      context, vm, userProfileVM, widget.token /*, _editProfilePicture()*/);
+      context, vm, userProfileVM, userProfileVM, widget.token, 'post');
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +172,9 @@ class _GuardianHomeState extends State<GuardianHome> {
                           context,
                           vm,
                           userProfileVM,
+                          userProfileVM,
                           widget.token,
+                          'post',
                         );
                       });
                     },
