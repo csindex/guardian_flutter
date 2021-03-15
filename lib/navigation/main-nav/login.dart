@@ -138,53 +138,53 @@ class _LoginState extends State<Login> {
                       SizedBox(
                         height: 16.0,
                       ),
-                      _isLoading
-                          ? Container(
-                              width: 48.0,
-                              height: 48.0,
-                              margin: EdgeInsets.only(
-                                top: 8.0,
-                              ),
-                              child: CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : Container(
-                              width: w,
-                              height: 48.0,
-                              margin: EdgeInsets.only(
-                                  top: 8.0, left: 64.0, right: 64.0),
-                              child: FlatButton(
-                                child: Text(
-                                  'Log-in',
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                textColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                                color: btnColor1,
-                                splashColor: Colors.grey.shade500,
-                                onPressed: () {
-                                  FocusScope.of(context).unfocus();
-                                  // WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-                                  // SystemChannels.textInput.invokeMethod('TextInput.hide');
-                                  if (_formPageKey.currentState.validate()) {
-                                    setState(() => _isLoading = true);
-                                    _formPageKey.currentState.save();
-                                    // _mockCheckForSession().then((value) {
-                                    //   setState(() => _isLoading = false);
-                                    //   NavigationHelper.navigateToHome(context);
-                                    // });
-                                    // }
-                                  }
-                                },
-                              ),
+                      _isLoading ?
+                      Container(
+                        width: 48.0,
+                        height: 48.0,
+                        margin: EdgeInsets.only(
+                          top: 8.0,
+                        ),
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ) :
+                      Container(
+                        width: w,
+                        height: 48.0,
+                        margin: EdgeInsets.only(
+                            top: 8.0, left: 64.0, right: 64.0),
+                        child: FlatButton(
+                          child: Text(
+                            'Log-in',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
                             ),
+                          ),
+                          textColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          color: btnColor1,
+                          splashColor: Colors.grey.shade500,
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            // WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+                            // SystemChannels.textInput.invokeMethod('TextInput.hide');
+                            if (_formPageKey.currentState.validate()) {
+                              setState(() => _isLoading = true);
+                              _formPageKey.currentState.save();
+                              // _mockCheckForSession().then((value) {
+                              //   setState(() => _isLoading = false);
+                              //   NavigationHelper.navigateToHome(context);
+                              // });
+                              // }
+                            }
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -195,7 +195,8 @@ class _LoginState extends State<Login> {
         ),
       );
 
-  Widget _buildHorizontalLayout(double w, double h) => SingleChildScrollView(
+  Widget _buildHorizontalLayout(double w, double h) =>
+      SingleChildScrollView(
         child: Container(
           height: h,
           width: w,
@@ -289,7 +290,8 @@ class _LoginState extends State<Login> {
         ),
       );
 
-  Widget _usernameField() => TextFormField(
+  Widget _usernameField() =>
+      TextFormField(
         key: Key('username'),
         validator: (value) =>
             value.isEmpty ? 'Please enter Email or Mobile Number' : null,
@@ -337,7 +339,8 @@ class _LoginState extends State<Login> {
         onSaved: (String val) => _username = val,
       );
 
-  Widget _passwordField() => TextFormField(
+  Widget _passwordField() =>
+      TextFormField(
         key: Key('password'),
         validator: (value) => value.isEmpty
             ? 'Please enter Password'
@@ -400,7 +403,8 @@ class _LoginState extends State<Login> {
         },
       );
 
-  Widget _usernamePasswordField() => Container(
+  Widget _usernamePasswordField() =>
+      Container(
         margin: EdgeInsets.symmetric(horizontal: 64.0),
         child: Column(
           children: [
