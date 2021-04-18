@@ -38,10 +38,13 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   FlutterLocalNotificationsPlugin plugin;
 
   String _page = 'posts';
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -242,40 +245,40 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        (_page == 'posts')
-            ? (widget.vm == null && widget.userList.length == 0)
-                ? Container(
-                    height: MediaQuery.of(context).size.height / 2.0,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(colorPrimary),
-                      ),
-                    ),
-                  )
-                : Flexible(
-                    child: PostsList(
-                      token: widget.token,
-                      viewModel: widget.vm,
-                      userList: widget.userList,
-                      userProfileVM: widget.userProfileVM,
-                    ),
-                  )
-            : (_page == 'detailed-profile')
-                ? (widget.vm == null)
-                    ? Container(
-                        height: MediaQuery.of(context).size.height / 2.0,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(colorPrimary),
-                          ),
-                        ),
-                      )
-                    : Flexible(
-                        child: ProfileDashboard(
-                            token: widget.token, vm: widget.vm),
-                      )
-                : Container(),
+        (_page == 'posts') ?
+        (widget.vm == null && widget.userList.length == 0) ?
+        Container(
+          height: MediaQuery.of(context).size.height / 2.0,
+          child: Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(colorPrimary),
+            ),
+          ),
+        ) :
+        Flexible(
+          child: PostsList(
+            token: widget.token,
+            viewModel: widget.vm,
+            userList: widget.userList,
+            userProfileVM: widget.userProfileVM,
+          ),
+        ) :
+        (_page == 'detailed-profile') ?
+        (widget.vm == null) ?
+        Container(
+          height: MediaQuery.of(context).size.height / 2.0,
+          child: Center(
+            child: CircularProgressIndicator(
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(colorPrimary),
+            ),
+          ),
+        ) :
+        Flexible(
+          child: ProfileDashboard(
+              token: widget.token, vm: widget.vm),
+        ) :
+        Container(),
       ],
     );
   }

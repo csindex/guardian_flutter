@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hive/hive.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../bottom-nav/home.dart';
 import '../bottom-nav/report.dart';
@@ -11,6 +12,9 @@ import '../../utils/constants/common-methods.dart';
 import '../../utils/helpers/navigation-helper.dart';
 import '../../provider/user/viewmodel-user.dart';
 import '../../provider/user/viewmodel-user-profile.dart';
+import '../../screens/profile/profile.dart';
+import '../../screens/responders/responders.dart';
+import '../../screens/posts/posts.dart';
 import '../../services/web-service.dart';
 
 class GuardianHome extends StatefulWidget {
@@ -32,6 +36,8 @@ class _GuardianHomeState extends State<GuardianHome> {
   final _pageKey = GlobalKey<ScaffoldState>();
 
   // _GuardianHomeState({this.token});
+
+  final _scrollController = ScrollController();
 
   int _currentIndex = 0;
   List _children;
@@ -110,6 +116,12 @@ class _GuardianHomeState extends State<GuardianHome> {
     });
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<UserViewModel> _fetchDetails() async {
     var result = await Webservice().fetchUserDetails(widget.token);
     print('User = $result');
@@ -146,78 +158,113 @@ class _GuardianHomeState extends State<GuardianHome> {
     _register();
     return DefaultTabController(
       length: 3,
+      initialIndex: 1,
       child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          leading: Icon(Icons.person_outline),
-          title: Text('HOME SCREEN', style: TextStyle(fontSize: 16.0),),
-          bottom: PreferredSize(
-            child: TabBar(
-                isScrollable: true,
-                unselectedLabelColor: Colors.white.withOpacity(0.3),
-                indicatorColor: Colors.white,
-                tabs: [
-                  Tab(
-                    child: Text('Kumar'),
+        body: NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                backgroundColor: colorPrimary,
+                leading: Transform.translate(
+                  offset: Offset(16.0, 0.0),
+                  child: Image.asset(
+                    'assets/images/guardian.png',
+                    // height: 24.0,
+                    // width: 24.0,
+                    // fit: BoxFit.fitWidth,
+                    // alignment: FractionalOffset.center,
                   ),
-                  Tab(
-                    child: Text('Lokesh'),
+                ),
+                centerTitle: true,
+                title: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'GUARDIAN',
+                      style: TextStyle(
+                        fontSize: 28.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 5.0,
+                      ),
+                    ),
+                    Text(
+                      'Emergency Response',
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        color: Colors.white,
+                        letterSpacing: 4.0,
+                      ),
+                    ),
+                  ],
+                ),
+                pinned: true,                       //<-- pinned to true
+                floating: true,                     //<-- floating to true
+                forceElevated: innerBoxIsScrolled,  //<-- forceElevated to innerBoxIsScrolled
+                bottom: TabBar(
+                  labelStyle: TextStyle(
+                    fontSize: 16.0,
                   ),
-                  Tab(
-                    child: Text('Rathod'),
+                  unselectedLabelStyle: TextStyle(
+                    fontSize: 12.0,
                   ),
-                  Tab(
-                    child: Text('Raj'),
-                  ),
-                  Tab(
-                    child: Text('Madan'),
-                  ),
-                  Tab(
-                    child: Text('Manju'),
-                  )
-                ]),
-            preferredSize: Size.fromHeight(30.0),
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      text: "Responders",
+                      icon: FaIcon(
+                        FontAwesomeIcons.ambulance,
+                        size: 16.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Tab(
+                      text: "Posts",
+                      icon: FaIcon(
+                        FontAwesomeIcons.envelope,
+                        size: 16.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Tab(
+                      text: "Profile",
+                      icon: FaIcon(
+                        FontAwesomeIcons.solidUser,
+                        size: 16.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ];
+          },
+          body: TabBarView(
+            children: [
+              Responders(
+                vm: vm,
+                userVM: userProfileVM,
+                token: widget.token,
+                origin: 'posts',
+                responderList: userList,
+              ),
+              Posts(
+                token: widget.token,
+                vm: vm,
+                userProfileVM: userProfileVM,
+                openProfileScreen: openProfileScreen,
+                userList: userList,
+              ),
+              Profile(
+                vm: vm,
+                userProfileVM: userProfileVM,
+                token: widget.token,
+                origin: 'posts',
+                userOriginalVM: userProfileVM,
+              ),
+            ],
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: Icon(Icons.add_alert),
-            ),
-          ],
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            Container(
-              child: Center(
-                child: Text('Tab 1'),
-              ),
-            ),
-            Container(
-              child: Center(
-                child: Text('Tab 2'),
-              ),
-            ),
-            Container(
-              child: Center(
-                child: Text('Tab 3'),
-              ),
-            ),
-            Container(
-              child: Center(
-                child: Text('Tab 4'),
-              ),
-            ),
-            Container(
-              child: Center(
-                child: Text('Tab 5'),
-              ),
-            ),
-            Container(
-              child: Center(
-                child: Text('Tab 6'),
-              ),
-            ),
-          ],
         ),
       ),
     );

@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-import './navigation/main-nav/splash-screen.dart';
+import './screens/wrapper.dart';
 import './provider/viewmodel-notification-list.dart';
 import './provider/posts/viewmodel-posts-list.dart';
 import './widgets/posts/list-posts.dart';
@@ -73,7 +73,7 @@ class MainApp extends StatelessWidget {
       // closer together (more dense) than on mobile platforms.
 //        visualDensity: VisualDensity.adaptivePlatformDensity,
 //      ),
-      home: SplashScreen(),
+      home: Wrapper(),
     );
   }
 }

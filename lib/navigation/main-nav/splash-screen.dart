@@ -1,28 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import '../../utils/helpers/navigation-helper.dart';
 
-class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    _mockCheckForSession().then((value) => NavigationHelper.login(context));
-  }
-
-  Future<void> _mockCheckForSession() async {
-    await Future.delayed(Duration(milliseconds: 1000), () {});
-  }
+class SplashScreen extends StatelessWidget {
+  final double width;
+  final double height;
+  SplashScreen({this.width, this.height});
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(64.0),
@@ -46,4 +31,5 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+
 }

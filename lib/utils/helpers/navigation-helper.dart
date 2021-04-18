@@ -8,7 +8,8 @@ import '../../navigation/main-nav/verify-otp.dart';
 import '../../reporting/report-call-screen.dart';
 import '../../navigation/main-nav/screen-profile.dart';
 import '../../screens/responders/responders.dart';
-import '../../widgets/posts/post-image-full.dart';
+import '../../screens/posts/post-image-full.dart';
+import '../../screens/forgot-password/forgot-password-wrapper.dart';
 import '../../widgets/profile/profile-picture-full.dart';
 import '../../widgets/profile/qr-code-full.dart';
 import '../../widgets/profile/edit-profile-picture/camera/camera-screen.dart';
@@ -25,10 +26,13 @@ class NavigationHelper {
   static login(context) => Navigator.of(context)
       .pushReplacement(MaterialPageRoute(builder: (context) => Login()));
 
+  // static forgotPassword(context) => Navigator.push(
+  //   context, MaterialPageRoute(builder: (context) => ForgotPassword()),
+  // );
+
   static forgotPassword(context) => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ForgotPassword()),
-      );
+    context, MaterialPageRoute(builder: (context) => ForgotPasswordWrapper()),
+  );
 
   static verifyOtp(context) => Navigator.of(context)
       .pushReplacement(MaterialPageRoute(builder: (context) => VerifyOtp()));

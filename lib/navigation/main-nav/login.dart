@@ -16,8 +16,10 @@ import '../../widgets/header.dart';
 import '../../widgets/login/footer.dart';
 
 class Login extends StatefulWidget {
+
   @override
   _LoginState createState() => _LoginState();
+
 }
 
 class _LoginState extends State<Login> {
@@ -105,95 +107,95 @@ class _LoginState extends State<Login> {
   }
 
   Widget _buildVerticalLayout(double w, double h) => SingleChildScrollView(
-        child: Container(
-          height: h,
-          color: colorPrimary,
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // SizedBox(
-                      //   height: 32.0,
-                      // ),
-                      header(88.0, 48.0),
-                      SizedBox(
-                        height: 32.0,
-                      ),
-                      Text(
-                        'Welcome Volunteer!',
+    child: Container(
+      height: h,
+      color: colorPrimary,
+      child: Column(
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // SizedBox(
+                  //   height: 32.0,
+                  // ),
+                  header(88.0, 48.0),
+                  SizedBox(
+                    height: 32.0,
+                  ),
+                  Text(
+                    'Welcome Volunteer!',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 32.0,
+                  ),
+                  _usernamePasswordField(),
+                  SizedBox(
+                    height: 16.0,
+                  ),
+                  _isLoading ?
+                  Container(
+                    width: 48.0,
+                    height: 48.0,
+                    margin: EdgeInsets.only(
+                      top: 8.0,
+                    ),
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ) :
+                  Container(
+                    width: w,
+                    height: 48.0,
+                    margin: EdgeInsets.only(
+                        top: 8.0, left: 64.0, right: 64.0),
+                    child: FlatButton(
+                      child: Text(
+                        'Log-in',
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(
-                        height: 32.0,
+                      textColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
                       ),
-                      _usernamePasswordField(),
-                      SizedBox(
-                        height: 16.0,
-                      ),
-                      _isLoading ?
-                      Container(
-                        width: 48.0,
-                        height: 48.0,
-                        margin: EdgeInsets.only(
-                          top: 8.0,
-                        ),
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ) :
-                      Container(
-                        width: w,
-                        height: 48.0,
-                        margin: EdgeInsets.only(
-                            top: 8.0, left: 64.0, right: 64.0),
-                        child: FlatButton(
-                          child: Text(
-                            'Log-in',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          color: btnColor1,
-                          splashColor: Colors.grey.shade500,
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            // WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-                            // SystemChannels.textInput.invokeMethod('TextInput.hide');
-                            if (_formPageKey.currentState.validate()) {
-                              setState(() => _isLoading = true);
-                              _formPageKey.currentState.save();
-                              // _mockCheckForSession().then((value) {
-                              //   setState(() => _isLoading = false);
-                              //   NavigationHelper.navigateToHome(context);
-                              // });
-                              // }
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                      color: btnColor1,
+                      splashColor: Colors.grey.shade500,
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        // WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+                        // SystemChannels.textInput.invokeMethod('TextInput.hide');
+                        if (_formPageKey.currentState.validate()) {
+                          setState(() => _isLoading = true);
+                          _formPageKey.currentState.save();
+                          // _mockCheckForSession().then((value) {
+                          //   setState(() => _isLoading = false);
+                          //   NavigationHelper.navigateToHome(context);
+                          // });
+                          // }
+                        }
+                      },
+                    ),
                   ),
-                ),
+                ],
               ),
-              loginFooter(context),
-            ],
+            ),
           ),
-        ),
-      );
+          loginFooter(context),
+        ],
+      ),
+    ),
+  );
 
   Widget _buildHorizontalLayout(double w, double h) =>
       SingleChildScrollView(
