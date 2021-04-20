@@ -28,13 +28,13 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   String _email = '';
   String _otp = '';
   String _newPass = '';
-  String _confirmPass = '';
+  String _cnfrmPass = '';
   String _name = '';
   String _number;
   int _time = 300;
   Timer _timer;
   String _errorText = null;
-  int _pin;
+  String _pin;
 
   TextEditingController _emailController = TextEditingController(text: '');
   TextEditingController _otpController = TextEditingController(text: '');
@@ -346,10 +346,11 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
                                           // TODO : Reset timer and send new otp
                                           setState(() {
                                             _isLoading = true;
-                                          })
+                                          });
                                           _sendOtp().then((value) {
-                                            print('resend otp x $value')
+                                            print('resend otp x $value x $_pin');
                                             setState(() {
+                                              _pin = value;
                                               _isLoading = false;
                                               _timer.cancel();
                                               _timer = null;
@@ -382,9 +383,12 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
                                       key: Key('newPass'),
                                       validator: (value) => value.isEmpty
                                           ? 'Please enter new Password'
+                                          : value.length < 8
+                                          ? 'Password must not be less than 8 characters'
                                           : null,
                                       autovalidateMode: AutovalidateMode.onUserInteraction,
                                       controller: _passController,
+                                      obscureText: true,
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         color: colorPrimary,
@@ -449,9 +453,12 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
                                       key: Key('confirmPass'),
                                       validator: (value) => value.isEmpty
                                           ? 'Please confirm Password'
+                                          : _passController.text != value
+                                          ? 'Passwords do not match'
                                           : null,
                                       autovalidateMode: AutovalidateMode.onUserInteraction,
                                       controller: _newPassController,
+                                      obscureText: true,
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         color: colorPrimary,
@@ -508,7 +515,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
                                           fontSize: 10.0,
                                         ),
                                       ),
-                                      onSaved: (String val) => _confirmPass = val,
+                                      onSaved: (String val) => _cnfrmPass = val,
                                     )
                                   ]
                                 ),
@@ -549,6 +556,13 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
                                           {
                                             // toggleView('email');
                                             // TODO: change password then proceed to login.
+                                            _changePass().then((value) {
+                                              var result = jsonDecode(value);
+                                              String token = result['token'];
+                                              if (token != null) {
+                                                Navigator.pop(context);
+                                              }
+                                            });
                                           }
                                           break;
                                         default:
@@ -567,14 +581,14 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
                                                   });
                                                 } else /*if (err.length != 0) */{
                                                   _sendOtp().then((value) {
-                                                    print('otp');
+                                                    setState(() {
+                                                      print('$_name x dri pud? x $_pin x $value');
+                                                      _isLoading = !_isLoading;
+                                                      _view = 'otp';
+                                                      _pin = value;
+                                                    });
+                                                    _startTimer();
                                                   });
-                                                  setState(() {
-                                                    print('$_name x dri pud?');
-                                                    _isLoading = !_isLoading;
-                                                    _view = 'otp';
-                                                  });
-                                                  _startTimer();
                                                 }/* else {
                                                 }*/
                                               } catch (e) {
@@ -637,7 +651,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   }
 
   Future<String> _sendOtp() async {
-    _pin = 100000 + Random().nextInt(999999 - 100000);
+    _pin = '${100000 + Random().nextInt(999999 - 100000)}';
     var url = '$secretHollowsEndPoint/api/sms/sendOtp';
     Map data = {'number': _number, 'msg': 'Hi $_name, Proceed with your Change Password for GUARDIAN Account, Your One-Time PIN is $_pin. OTP will expire 15 minutes. If you did not initiate this request, please call your Operation Center Administrator.'};
     var reqBody = json.encode(data);
@@ -655,7 +669,31 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
       },
       body: reqBody,
     );
-    print('sendOtp r: $response X ${response.body}');
+    print('sendOtp r: $response X ${response.body} X $_pin');
+    // final body = jsonDecode(response.body);
+    // return body["success"];
+    return _pin;
+  }
+
+  Future<String> _changePass() async {
+    var url = '$secretHollowsEndPoint/api/sms/changepassword';
+    Map data = {'number': _number, 'password': _newPass};
+    var reqBody = json.encode(data);
+    var response = await http.post(
+      url,
+      headers: {
+        // 'Cache-Control' : 'no-cache',
+        // 'Postman-Token' : '<calculated when request is sent>',
+        // 'Content-Length' : '<calculated when request is sent>',
+        // 'Host' : '<calculated when request is sent>',
+        // 'Accept' : '*/*',
+        // 'Accept-Encoding' : 'gzip, deflate, br',
+        // 'Connection' : 'keep-alive',
+        'Content-Type': 'application/json',
+      },
+      body: reqBody,
+    );
+    print('changePass r: $response X ${response.body}');
     // final body = jsonDecode(response.body);
     // return body["success"];
     return response.body;
