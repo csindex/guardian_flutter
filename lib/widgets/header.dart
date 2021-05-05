@@ -31,7 +31,8 @@ Widget _label() => Column(
       ],
     );
 
-Widget header(double icW, double icH) => Column(
+Widget header(double icW, double icH) =>
+    Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(

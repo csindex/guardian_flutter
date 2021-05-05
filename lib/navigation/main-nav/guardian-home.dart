@@ -15,6 +15,7 @@ import '../../provider/user/viewmodel-user-profile.dart';
 import '../../screens/profile/profile.dart';
 import '../../screens/responders/responders.dart';
 import '../../screens/posts/posts.dart';
+import '../../screens/id/id.dart';
 import '../../services/web-service.dart';
 
 class GuardianHome extends StatefulWidget {
@@ -157,8 +158,8 @@ class _GuardianHomeState extends State<GuardianHome> {
   Widget build(BuildContext context) {
     _register();
     return DefaultTabController(
-      length: 3,
-      initialIndex: 1,
+      length: 4,
+      initialIndex: 2,
       child: Scaffold(
         body: NestedScrollView(
           controller: _scrollController,
@@ -212,7 +213,35 @@ class _GuardianHomeState extends State<GuardianHome> {
                   indicatorColor: Colors.white,
                   tabs: [
                     Tab(
-                      text: "Responders",
+                      icon: ImageIcon(
+                        AssetImage('assets/id_ti.png'),
+                        size: 128,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Tab(
+                      icon: ImageIcon(
+                        AssetImage('assets/ambu_ti.png'),
+                        size: 128,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Tab(
+                      icon: ImageIcon(
+                        AssetImage('assets/post_ti.png'),
+                        size: 128,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Tab(
+                      icon: ImageIcon(
+                        AssetImage('assets/prof_ti.png'),
+                        size: 128,
+                        color: Colors.white,
+                      ),
+                    ),
+                    /*Tab(
+                      // text: "Responders",
                       icon: FaIcon(
                         FontAwesomeIcons.ambulance,
                         size: 16.0,
@@ -220,7 +249,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                       ),
                     ),
                     Tab(
-                      text: "Posts",
+                      // text: "Posts",
                       icon: FaIcon(
                         FontAwesomeIcons.envelope,
                         size: 16.0,
@@ -228,13 +257,13 @@ class _GuardianHomeState extends State<GuardianHome> {
                       ),
                     ),
                     Tab(
-                      text: "Profile",
+                      // text: "Profile",
                       icon: FaIcon(
                         FontAwesomeIcons.solidUser,
                         size: 16.0,
                         color: Colors.white,
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
               ),
@@ -242,6 +271,11 @@ class _GuardianHomeState extends State<GuardianHome> {
           },
           body: TabBarView(
             children: [
+              ID(
+                vm: vm,
+                userProfileVM: userProfileVM,
+                userOriginalVM: userProfileVM,
+              ),
               Responders(
                 vm: vm,
                 userVM: userProfileVM,

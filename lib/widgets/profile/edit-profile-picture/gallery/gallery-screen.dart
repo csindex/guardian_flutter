@@ -12,9 +12,9 @@ import '../../../../provider/user/viewmodel-user-profile.dart';
 
 class GalleryScreen extends StatefulWidget {
   final String token;
-  final UserProfileViewModel vm;
+  final UserProfileViewModel userProfileVM;
 
-  GalleryScreen({this.token, this.vm});
+  GalleryScreen({this.token, this.userProfileVM});
 
   @override
   _GalleryScreenState createState() => _GalleryScreenState();
@@ -101,8 +101,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
       'x-auth-token': widget.token,
     };
     Map<String, String> params = {
-      'status': 'Volunteer',
-      'skills': 'EMS, EMT',
+      'gender' : widget.userProfileVM.gender,
+      'civilstatus' : widget.userProfileVM.civilStatus,
+      'birthday' : widget.userProfileVM.birthDate,
+      'completeaddress' : widget.userProfileVM.homeAddress,
     };
     var request = http.MultipartRequest(
         'POST', Uri.parse('$secretHollowsEndPoint/api/profile'));

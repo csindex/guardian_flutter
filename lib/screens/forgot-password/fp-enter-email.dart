@@ -10,13 +10,12 @@ class FPEnterEmail extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(),
             Row(
               children: [
 
               ],
             ),
-            TextFormField(),,
+            TextFormField(),
           ],
         ),
       ),

@@ -65,7 +65,8 @@ Widget _termsAndPolicies(BuildContext ctx) => Row(
       ],
     );
 
-Widget loginFooter(BuildContext ctx) => Container(
+Widget loginFooter(BuildContext ctx) =>
+    Container(
       margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

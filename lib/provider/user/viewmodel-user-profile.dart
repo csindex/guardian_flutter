@@ -60,7 +60,7 @@ class UserProfileViewModel {
   }
 
   String get homeAddress {
-    return this.userDetails.homeAddress;;
+    return this.userDetails.homeAddress;
   }
 
   double get lat {

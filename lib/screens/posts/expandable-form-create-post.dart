@@ -164,25 +164,28 @@ class _ExpandableCreatePostFormState extends State<ExpandableCreatePostForm>
                         // _getRegCode();
                       },
                     ),
-                      SizedBox(
-                        height: 8.0,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
-                        ),
-                        child: FlatButton(
-                          color: colorPrimary1,
-                          onPressed: () {},
-                          child: Text(
-                            'Submit',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.white,
+                      // SizedBox(
+                      //   height: 4.0,
+                      // ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 8.0,
+                            ),
+                            child: FlatButton(
+                              color: colorPrimary1,
+                              onPressed: () {},
+                              child: Text(
+                                'Submit',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
                       ),
                       SizedBox(
                         height: 16.0,

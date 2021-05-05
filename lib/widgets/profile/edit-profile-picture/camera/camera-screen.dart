@@ -7,9 +7,9 @@ import '../../../../provider/user/viewmodel-user-profile.dart';
 
 class CameraScreen extends StatefulWidget {
   final String token;
-  final UserProfileViewModel vm;
+  final UserProfileViewModel userProfileVM;
 
-  CameraScreen({this.token, this.vm});
+  CameraScreen({this.token, this.userProfileVM});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -185,6 +185,7 @@ class _CameraScreenState extends State<CameraScreen> {
               imgPath: tempPath,
               fileName: tempPath.split('/').last,
               token: widget.token,
+              userProfileVM: widget.userProfileVM,
             ),
           ),
         );

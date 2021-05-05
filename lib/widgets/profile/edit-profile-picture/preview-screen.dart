@@ -6,13 +6,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/constants/utils.dart';
+import '../../../provider/user/viewmodel-user-profile.dart';
 
 class PreviewScreen extends StatefulWidget {
   final String imgPath;
   final String fileName;
   final String token;
+  final UserProfileViewModel userProfileVM;
 
-  PreviewScreen({this.imgPath, this.fileName, this.token});
+  PreviewScreen({this.imgPath, this.fileName, this.token, this.userProfileVM});
 
   @override
   _PreviewScreenState createState() => _PreviewScreenState();
@@ -74,8 +76,10 @@ class _PreviewScreenState extends State<PreviewScreen> {
       'x-auth-token': widget.token,
     };
     Map<String, String> params = {
-      'status': 'Volunteer',
-      'skills': 'EMS, EMT',
+      'gender' : widget.userProfileVM.gender,
+      'civilstatus' : widget.userProfileVM.civilStatus,
+      'birthday' : widget.userProfileVM.birthDate,
+      'completeaddress' : widget.userProfileVM.homeAddress,
     };
     var request = http.MultipartRequest(
         'POST', Uri.parse('$secretHollowsEndPoint/api/profile'));

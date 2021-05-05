@@ -102,12 +102,12 @@ class NavigationHelper {
 
   static openCameraScreen(context, token, vm) => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => CameraScreen(token: token, vm: vm)),
+        MaterialPageRoute(builder: (context) => CameraScreen(token: token, userProfileVM: vm)),
       );
 
   static openGalleryScreen(context, token, vm) => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => GalleryScreen(token: token, vm: vm)),
+        MaterialPageRoute(builder: (context) => GalleryScreen(token: token, userProfileVM: vm)),
       );
 
   static openSelectAddress(context, onAddressSelected, initialLL) =>
