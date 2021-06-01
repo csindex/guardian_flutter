@@ -14,7 +14,6 @@ import '../../utils/constants/utils.dart';
 import '../../utils/schedule-notifications.dart';
 import '../../utils/helpers/navigation-helper.dart';
 import '../../services/socket-service.dart';
-import '../../services/web-service.dart';
 
 
 NotificationAppLaunchDetails notificationAppLaunchDetails;
@@ -75,6 +74,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print('home.dart build called ${widget.userList}');
     final SocketService socketService = injector.get<SocketService>();
     socketService.createSocketConnection();

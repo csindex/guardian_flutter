@@ -124,6 +124,8 @@ dependencies:
 
   email_validator: ^2.0.1
 
+  popup_menu: ^1.0.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

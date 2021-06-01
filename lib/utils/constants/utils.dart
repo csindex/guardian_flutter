@@ -12,7 +12,7 @@ const Color fbBtnColor = Color(0xFF3D5A98);
 final String prodEndPoint = 'https://ccc.guardian4emergency.com';
 final String devEndPoint = 'https://ccc.guardian4emergency.com';
 final String termsEndPoint = 'https://guardian4emergency.com';
-final String secretHollowsEndPoint = 'http://10.128.50.106:3000'; //https://secret-hollows-28950.herokuapp.com
+final String secretHollowsEndPoint = 'http://10.128.50.147:3000'; //'https://ce26c1b1-bc28-4a2e-b2cb-c1460f1e904f.mock.pstmn.io' //https://secret-hollows-28950.herokuapp.com
 
 const String gMAK = 'AIzaSyCoviUZrvv1kcF9gNDhdmuLevZDwSREJE8';
 

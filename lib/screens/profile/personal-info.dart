@@ -23,16 +23,19 @@ class PersonalInfo extends StatefulWidget {
 class _PersonalInfoState extends State<PersonalInfo> {
   @override
   Widget build(BuildContext context) {
+    print('NAME: ${widget.vm.name}');
     void _showModal() {
       showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            padding: EdgeInsets.only(
-                left: 16.0, top: 16.0, right: 16.0, bottom: 60.0),
-            child: EditPersonalInfo(
-              userProfileVM: widget.userProfileVM,
-              token: widget.token,
+          return SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.only(
+                  left: 16.0, top: 16.0, right: 16.0, bottom: 60.0),
+              child: EditPersonalInfo(
+                userProfileVM: widget.userProfileVM,
+                token: widget.token,
+              ),
             ),
           );
         },
@@ -61,8 +64,11 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   ),
                 ),
                 Visibility(
-                  visible: (widget.userOriginalVM.user.id ==
-                      widget.userProfileVM.user.id),
+                  visible: ((widget.userOriginalVM != null &&
+                          widget.userOriginalVM.user.id ==
+                              widget.userProfileVM.user.id) ||
+                      (widget.userProfileVM == null ||
+                          widget.userProfileVM.user.id == widget.vm.id)),
                   child: FlatButton(
                     padding: EdgeInsets.all(0.0),
                     onPressed: _showModal,
@@ -83,8 +89,10 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 itemBuilder: (context, index) {
                   return (index == 0)
                       ? _personalInfoCorner()
-                      : ExpandableDropDownEducation(
-                      widget.userProfileVM.education ?? List<EducationData>());
+                      : ExpandableDropDownEducation((widget.userProfileVM !=
+                              null)
+                          ? widget.userProfileVM.education ?? <EducationData>[]
+                          : <EducationData>[]);
                 },
                 itemCount: 2,
                 shrinkWrap: true,
@@ -109,8 +117,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '${widget.userProfileVM.user.name.substring(0,
-                    widget.userProfileVM.user.name.length)}\'s Bio',
+                '${(widget.userProfileVM != null) ? widget.userProfileVM.user.name.substring(0, widget.userProfileVM.user.name.length) : widget.vm.name}\'s Bio',
                 style: TextStyle(
                   color: colorPrimary,
                   fontSize: 24.0,

@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../main.dart';
 import '../../provider/user/viewmodel-user.dart';
 import '../../provider/user/viewmodel-user-profile.dart';
-import '../../widgets/profile/profile-dashboard.dart';
 import '../../utils/constants/utils.dart';
 import '../../utils/constants/common-methods.dart';
-import '../../utils/schedule-notifications.dart';
 import '../../utils/helpers/navigation-helper.dart';
-import '../../services/socket-service.dart';
-import '../../services/web-service.dart';
 
 class Responders extends StatefulWidget {
   final String token;
@@ -28,7 +23,7 @@ class Responders extends StatefulWidget {
 
 class _RespondersState extends State<Responders>
     with AutomaticKeepAliveClientMixin<Responders> {
-  List<UserProfileViewModel> _responderList = List<UserProfileViewModel>();
+  List<UserProfileViewModel> _responderList = <UserProfileViewModel>[];
 
   @override
   bool get wantKeepAlive => true;
@@ -71,6 +66,7 @@ class _RespondersState extends State<Responders>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print('build called on responders');
     return RefreshIndicator(
       color: Colors.white,
@@ -96,7 +92,7 @@ class _RespondersState extends State<Responders>
     );
   }
 
-  Widget get _appBar => CustomAppBarHome(
+  /*Widget get _appBar => CustomAppBarHome(
         height: 88.0,
         icon: Image.asset(
           'assets/images/guardian.png',
@@ -168,7 +164,7 @@ class _RespondersState extends State<Responders>
             ),
           ],
         ),
-      );
+      );*/
 
   Widget get _header => Row(
     mainAxisSize: MainAxisSize.min,

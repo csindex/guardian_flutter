@@ -190,12 +190,13 @@ class _EditPersonalInfoState extends State<EditPersonalInfo> {
           FlatButton(
             onPressed: () {
               FocusScope.of(context).unfocus();
-              DateTime _currentBirthDate = DateTime.now();
+              DateTime _currentBirthDate;
               try {
                 _currentBirthDate = DateTime.parse(DateFormat('yyyyMMdd')
                     .format(DateFormat('MM/dd/yyyy').parse(_birthDate)));
               } catch (e) {
                 print(e);
+                _currentBirthDate = DateTime.now();
               }
               DatePicker.showDatePicker(
                 context,

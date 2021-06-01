@@ -15,7 +15,6 @@ import '../../data/posts/data-like.dart';
 import '../../utils/constants/utils.dart';
 import '../../utils/helpers/navigation-helper.dart';
 
-
 class Posts extends StatefulWidget {
   final List<PostViewModel> posts;
   final UserViewModel viewModel;
@@ -34,7 +33,9 @@ class _PostsState extends State<Posts> {
     // print('${notification.uploads.length} X $index');
     // print('path : ${_post.avatar}');
     return Container(
-      margin: EdgeInsets.only(bottom: 4.0,),
+      margin: EdgeInsets.only(
+        bottom: 4.0,
+      ),
       // padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       // decoration: BoxDecoration(
       //   border: Border.all(color: Colors.grey.shade400),
@@ -51,7 +52,9 @@ class _PostsState extends State<Posts> {
       child: ListView.builder(
         itemBuilder: (context, index) {
           return (index == 0)
-              ? Container(child: CreatePostForm(),)
+              ? Container(
+                  child: CreatePostForm(),
+                )
               : _createPostItem(index - 1);
         },
         itemCount: widget.posts.length + 1,
@@ -95,9 +98,9 @@ class _PostsState extends State<Posts> {
               borderRadius: BorderRadius.circular(24.0),
               child: FadeInImage.assetNetwork(
                 placeholder: 'assets/loading.gif',
-                image: '$secretHollowsEndPoint/img/Spotter.png'*//*(_post.profilePic == null)
+                image: '$secretHollowsEndPoint/img/Spotter.png'*/ /*(_post.profilePic == null)
                     ? _post.avatar
-                    : _post.profilePic*//*, //notification.uploads[0].fileFullPath,
+                    : _post.profilePic*/ /*, //notification.uploads[0].fileFullPath,
                 fit: BoxFit.cover,
                 height: 48.0,
                 width: 48.0,
@@ -327,9 +330,9 @@ class _PostsState extends State<Posts> {
               borderRadius: BorderRadius.circular(24.0),
               child: FadeInImage.memoryNetwork(
                 placeholder: kTransparentImage,
-                image: _getProfilePic(_post.authorId)*//*(_post.profilePic == null)
+                image: _getProfilePic(_post.authorId)*/ /*(_post.profilePic == null)
                     ? _post.avatar
-                    : _post.profilePic*//*, //notification.uploads[0].fileFullPath,
+                    : _post.profilePic*/ /*, //notification.uploads[0].fileFullPath,
                 fit: BoxFit.cover,
                 height: 36.0,
                 width: 36.0,
@@ -571,7 +574,9 @@ class _PostsState extends State<Posts> {
       }
     }
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.0,),
+      margin: EdgeInsets.symmetric(
+        horizontal: 16.0,
+      ),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.grey.shade400,
@@ -580,7 +585,10 @@ class _PostsState extends State<Posts> {
         borderRadius: BorderRadius.circular(8.0),
         color: Colors.white,
       ),
-      padding: EdgeInsets.only(top: 16.0, bottom: 8.0,),
+      padding: EdgeInsets.only(
+        top: 16.0,
+        bottom: 8.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -588,9 +596,8 @@ class _PostsState extends State<Posts> {
         children: [
           GestureDetector(
             onTap: () {
-              NavigationHelper.openProfileScreen2(
-                  context, widget.viewModel, _user,
-                  widget.userVM, widget.token, 'post');
+              NavigationHelper.openProfileScreen2(context, widget.viewModel,
+                  _user, widget.userVM, widget.token, 'post');
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -604,7 +611,7 @@ class _PostsState extends State<Posts> {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.shade900,
-                        spreadRadius:1.0,
+                        spreadRadius: 1.0,
                         blurRadius: 4.0,
                       ),
                     ],
@@ -617,7 +624,7 @@ class _PostsState extends State<Posts> {
                       backgroundColor: Colors.white,
                       backgroundImage: NetworkImage(_profilePic),
                     ),
-                  ),/*ClipRRect(
+                  ), /*ClipRRect(
                     borderRadius: BorderRadius.circular(24.0),
                     child: FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
@@ -643,7 +650,8 @@ class _PostsState extends State<Posts> {
                     ),
                     Text(
                       _post.date,
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey.shade500),
+                      style: TextStyle(
+                          fontSize: 12.0, color: Colors.grey.shade500),
                     ),
                   ],
                 ),
@@ -656,7 +664,9 @@ class _PostsState extends State<Posts> {
           Container(
             height: 1.0,
             color: Colors.grey.shade400,
-            margin: EdgeInsets.symmetric(horizontal: 1.0,),
+            margin: EdgeInsets.symmetric(
+              horizontal: 1.0,
+            ),
           ),
           SizedBox(
             height: 8.0,
@@ -682,9 +692,10 @@ class _PostsState extends State<Posts> {
                   placeholder: kTransparentImage,
                   image: (_post.articleImage == '')
                       ? 'https://vignette.wikia.nocookie.net/codegeass/images/7/7'
-                      'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
-                      'cb=20140311192830'
-                      : _post.articleImage, //notification.uploads[0].fileFullPath,
+                          'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
+                          'cb=20140311192830'
+                      : _post.articleImage,
+                  //notification.uploads[0].fileFullPath,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -694,162 +705,171 @@ class _PostsState extends State<Posts> {
             height: 8.0,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0,),
+            padding: EdgeInsets.symmetric(
+              horizontal: 8.0,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 /*Expanded(
-                  child: */LikeButton(
-                    token: widget.token,
-                    isChecked: _isLiker,
-                    id: widget.viewModel.id,
-                    postId: _post.id,
-                    likes: _postLikes,
-                    onLikeButtonChanged: (_likes, isChecked) {
-                      if (isChecked) {
-                        widget.posts[index].likes.clear();
-                        widget.posts[index].likes.addAll(_likes);
-                      }
-                    },
-                  ),
+                  child: */
+                LikeButton(
+                  token: widget.token,
+                  isChecked: _isLiker,
+                  id: widget.viewModel.id,
+                  postId: _post.id,
+                  likes: _postLikes,
+                  onLikeButtonChanged: (_likes, isChecked) {
+                    if (isChecked) {
+                      widget.posts[index].likes.clear();
+                      widget.posts[index].likes.addAll(_likes);
+                    }
+                  },
+                ),
                 // ),
                 /*Expanded(
-                  child: */ClipRRect(
-                    // borderRadius: BorderRadius.circular(4.0),
-                    child: Material(
-                      // color: Colors.grey.shade400,
-                      child: InkWell(
-                        onTap: () {
-                          // if (_isLiker) {
-                          // print('isLiker $_isLiker');
-                          unlikePost(_post.id).then((value) {
-                            Iterable body = jsonDecode(value);
-                            var newData = body
-                                .map((data) => LikeData.fromJsonMap(data))
-                                .toList();
-                            if (newData.isEmpty) {
-                              widget.posts[index].likes.clear();
-                            } else {
-                              widget.posts[index].likes.clear();
-                              widget.posts[index].likes.addAll(newData);
-                            }
-                            setState(() {
-                              _isLiker = false;
-                            });
+                  child: */
+                ClipRRect(
+                  // borderRadius: BorderRadius.circular(4.0),
+                  child: Material(
+                    // color: Colors.grey.shade400,
+                    child: InkWell(
+                      onTap: () {
+                        // if (_isLiker) {
+                        // print('isLiker $_isLiker');
+                        unlikePost(_post.id).then((value) {
+                          Iterable body = jsonDecode(value);
+                          var newData = body
+                              .map((data) => LikeData.fromJsonMap(data))
+                              .toList();
+                          if (newData.isEmpty) {
+                            widget.posts[index].likes.clear();
+                          } else {
+                            widget.posts[index].likes.clear();
+                            widget.posts[index].likes.addAll(newData);
+                          }
+                          setState(() {
+                            _isLiker = false;
                           });
-                          // }
-                        },
-                        splashColor: Colors.grey.shade700,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0,
-                            vertical: 8.0,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              FaIcon(
-                                FontAwesomeIcons.thumbsDown,
+                        });
+                        // }
+                      },
+                      splashColor: Colors.grey.shade700,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.thumbsDown,
+                              color: Colors.black,
+                              size: 12.0,
+                            ),
+                            SizedBox(
+                              width: 4.0,
+                            ),
+                            Text(
+                              'Unlike',
+                              style: TextStyle(
+                                fontSize: 12.0,
                                 color: Colors.black,
-                                size: 12.0,
                               ),
-                              SizedBox(
-                                width: 4.0,
+                            ),
+                            Visibility(
+                              // visible: (post.likes.length > 0) ? true : false,
+                              visible: false,
+                              child: SizedBox(
+                                width: 8.0,
                               ),
-                              Text(
-                                'Unlike',
+                            ),
+                            Visibility(
+                              // visible: (post.likes.length > 0) ? true : false,
+                              visible: false,
+                              child: Text(
+                                '',
                                 style: TextStyle(
                                   fontSize: 12.0,
                                   color: Colors.black,
                                 ),
                               ),
-                              Visibility(
-                                // visible: (post.likes.length > 0) ? true : false,
-                                visible: false,
-                                child: SizedBox(
-                                  width: 8.0,
-                                ),
-                              ),
-                              Visibility(
-                                // visible: (post.likes.length > 0) ? true : false,
-                                visible: false,
-                                child: Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
+                ),
                 // ),
                 /*Expanded(
-                  child: */ClipRRect(
-                    borderRadius: BorderRadius.circular(4.0),
-                    child: Material(
-                      // color: colorPrimary,
-                      child: InkWell(
-                        onTap: () {},
-                        splashColor: Colors.grey.shade700,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0,
-                            vertical: 8.0,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              FaIcon(
-                                FontAwesomeIcons.comment,
+                  child: */
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4.0),
+                  child: Material(
+                    // color: colorPrimary,
+                    child: InkWell(
+                      onTap: () {},
+                      splashColor: Colors.grey.shade700,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.comment,
+                              color: Colors.black,
+                              size: 12.0,
+                            ),
+                            SizedBox(
+                              width: 4.0,
+                            ),
+                            Text(
+                              'Comments',
+                              style: TextStyle(
+                                fontSize: 12.0,
                                 color: Colors.black,
-                                size: 12.0,
                               ),
-                              SizedBox(
+                            ),
+                            Visibility(
+                              visible:
+                                  (_post.comments.length > 0) ? true : false,
+                              child: SizedBox(
                                 width: 4.0,
                               ),
-                              Text(
-                                'Comments',
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Visibility(
-                                visible: (_post.comments.length > 0) ? true : false,
-                                child: SizedBox(
-                                  width: 4.0,
-                                ),
-                              ),
-                              Visibility(
-                                visible: (_post.comments.length > 0) ? true : false,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(2.0),
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 2.0, vertical: 2.0,),
-                                    color: colorPrimary,
-                                    child: Text(
-                                      '${_post.comments.length}',
-                                      style: TextStyle(
-                                        fontSize: 10.0,
-                                        color: Colors.white,
-                                      ),
+                            ),
+                            Visibility(
+                              visible:
+                                  (_post.comments.length > 0) ? true : false,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(2.0),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 2.0,
+                                    vertical: 2.0,
+                                  ),
+                                  color: colorPrimary,
+                                  child: Text(
+                                    '${_post.comments.length}',
+                                    style: TextStyle(
+                                      fontSize: 10.0,
+                                      color: Colors.white,
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
+                ),
                 // ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4.0),
@@ -887,33 +907,35 @@ class _PostsState extends State<Posts> {
                   ),
                 ),
                 /*(widget.viewModel.id == _post.authorId)
-                    ? *//*Expanded(
-                  child: */Visibility(
-                    visible: (widget.viewModel.id == _post.authorId) ? true : false,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4.0),
-                      child: Material(
-                        color: Colors.redAccent,
-                        child: InkWell(
-                          onTap: () {},
-                          splashColor: Colors.grey.shade700,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12.0,
-                              vertical: 8.0,
-                            ),
-                            child: FaIcon(
-                              FontAwesomeIcons.times,
-                              color: Colors.white,
-                              size: 12.0,
-                            ),
+                    ? */ /*Expanded(
+                  child: */
+                Visibility(
+                  visible:
+                      (widget.viewModel.id == _post.authorId) ? true : false,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4.0),
+                    child: Material(
+                      color: Colors.redAccent,
+                      child: InkWell(
+                        onTap: () {},
+                        splashColor: Colors.grey.shade700,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 8.0,
+                          ),
+                          child: FaIcon(
+                            FontAwesomeIcons.times,
+                            color: Colors.white,
+                            size: 12.0,
                           ),
                         ),
                       ),
                     ),
                   ),
+                ),
                 // )
-                    /*: Visibility(visible: false, child: Container(),),*/
+                /*: Visibility(visible: false, child: Container(),),*/
               ],
             ),
           ),

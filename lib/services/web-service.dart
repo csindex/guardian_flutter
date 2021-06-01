@@ -1,5 +1,5 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import '../data/user/data-user.dart';
 import '../data/user/data-user-details.dart';

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class CommentData {
   String commentId;
   String text;
@@ -10,7 +12,7 @@ class CommentData {
       : commentId = map["_id"],
         text = map["text"],
         authorName = map["name"],
-        authorAvatar = map["avatar"],
+        authorAvatar = map["profilepic"],
         authorId = map["user"],
         date = map["date"];
 
@@ -19,7 +21,7 @@ class CommentData {
     data['_id'] = commentId;
     data['text'] = text;
     data['name'] = authorName;
-    data['avatar'] = authorAvatar;
+    data['profilepic'] = authorAvatar;
     data['user'] = authorId;
     data['date'] = date;
     return data;

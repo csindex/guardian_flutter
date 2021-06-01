@@ -75,7 +75,7 @@ class ProfileHeader extends StatelessWidget {
                     if (userProfileVM == null || userProfileVM.gender == null) {
                       print('No Profile');
                     } else {
-                      print('unsa d i sulod? ${userProfileVM} X ${userProfileVM.gender}');
+                      print('unsa d i sulod? $userProfileVM X ${userProfileVM.gender}');
                       Navigator.pop(context);
                       NavigationHelper.openCameraScreen(context, token, userProfileVM);
                     }
@@ -93,7 +93,7 @@ class ProfileHeader extends StatelessWidget {
                     if (userProfileVM == null || userProfileVM.gender == null) {
                       print('No Profile');
                     } else {
-                      print('unsa d i sulod? ${userProfileVM} X ${userProfileVM.gender}');
+                      print('unsa d i sulod? $userProfileVM X ${userProfileVM.gender}');
                       Navigator.pop(context);
                       NavigationHelper.openGalleryScreen(context, token, userProfileVM);
                     }
@@ -129,7 +129,7 @@ class ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 36.0),
-                (userProfileVM.user.id == userOriginalVM.user.id) ?
+                (userProfileVM != null && userOriginalVM != null && userProfileVM.user.id == userOriginalVM.user.id) ?
                 Stack(
                   children: [
                     FlipCard(

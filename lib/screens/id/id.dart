@@ -40,239 +40,339 @@ class _IDState extends State<ID> {
       builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
         Widget w;
         if (snapshot.hasData) {
-          w = Container(
-            child: FlipCard(
-              key: cardKey,
-              // direction: _direction,
-              front: Column(
-                children: [
-                  SizedBox(height: 36.0,),
-                  GestureDetector(
-                    onTap: () {
-                      cardKey.currentState.toggleCard();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(112.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade900,
-                            spreadRadius:1.0,
-                            blurRadius: 4.0,
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 100.0,
-                        backgroundColor: Colors.white,
+          w = SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              child: FlipCard(
+                key: cardKey,
+                // direction: _direction,
+                front: Column(
+                  children: [
+                    SizedBox(
+                      height: 36.0,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        cardKey.currentState.toggleCard();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(112.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade900,
+                              spreadRadius:1.0,
+                              blurRadius: 4.0,
+                            ),
+                          ],
+                        ),
                         child: CircleAvatar(
-                          radius: 98.0,
+                          radius: 100.0,
                           backgroundColor: Colors.white,
-                          backgroundImage: (widget.userProfileVM == null) ?
-                          NetworkToFileImage(
-                            url: '$secretHollowsEndPoint/img/Spotter.png',
-                            file: snapshot.data,
-                            debug: true,
-                          ) :
-                          (widget.userProfileVM.profilePic == null ||
-                              widget.userProfileVM.profilePic.contains('null')) ?
-                          NetworkToFileImage(
-                            url: '$secretHollowsEndPoint/img/Spotter.png',
-                            file: snapshot.data,
-                            debug: true,
-                          ) :
-                          NetworkImage(widget.userProfileVM.profilePic),
+                          child: CircleAvatar(
+                            radius: 98.0,
+                            backgroundColor: Colors.white,
+                            backgroundImage: (widget.userProfileVM == null) ?
+                            NetworkToFileImage(
+                              url: '$secretHollowsEndPoint/img/Spotter.png',
+                              file: snapshot.data,
+                              debug: true,
+                            ) :
+                            (widget.userProfileVM.profilePic == null ||
+                                widget.userProfileVM.profilePic.contains('null')) ?
+                            NetworkToFileImage(
+                              url: '$secretHollowsEndPoint/img/Spotter.png',
+                              file: snapshot.data,
+                              debug: true,
+                            ) :
+                            NetworkImage(widget.userProfileVM.profilePic),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 24.0,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        'Tap photo to show QR Code',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: colorPrimary,
+                    SizedBox(
+                      height: 24.0,
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          'Tap photo to show QR Code',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: colorPrimary,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        color: Colors.red,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 8.0,
-                            ),
-                            child: Text(
-                              'Valid Until: DEC 31, 2021',
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                color: Colors.white,
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          color: Colors.red,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
+                              child: Text(
+                                'Valid Until: DEC 31, 2021',
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 16.0,
-                      ),
-                      Text(
-                        '${widget.userProfileVM.user.lname}, ${widget.userProfileVM.user.name}',
-                        style: TextStyle(
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(
+                          height: 16.0,
                         ),
-                      ),
-                      SizedBox(
-                        height: 16.0,
-                      ),
-                      Container(
-                        height: 1.0,
-                        width: double.infinity,
-                        color: Colors.grey.shade500,
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Text(
-                        'Complete Name',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.grey,
+                        Text(
+                          '${widget.userProfileVM.user.lname}, ${widget.userProfileVM.user.name}',
+                          style: TextStyle(
+                            fontSize: 36.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        color: Colors.green,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 24.0,
-                            ),
-                            child: Text(
-                              'Authorized Person Outside Residence',
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                        SizedBox(
+                          height: 16.0,
+                        ),
+                        Container(
+                          height: 1.0,
+                          width: double.infinity,
+                          color: Colors.grey.shade500,
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        Text(
+                          'Complete Name',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          color: Colors.green,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 24.0,
+                              ),
+                              child: Text(
+                                'Authorized Person Outside Residence',
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 24.0,
-                      ),
-                      Text(
-                        '${widget.userProfileVM.positionStatus}',
-                        style: TextStyle(
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(
+                          height: 24.0,
                         ),
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Text(
-                        'at',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
+                        Text(
+                          '${widget.userProfileVM.positionStatus}',
+                          style: TextStyle(
+                            fontSize: 36.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Text(
-                        '${widget.userProfileVM.company}',
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(
+                          height: 4.0,
                         ),
-                      ),
-                      SizedBox(
-                        height: 24.0,
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: Color(0xffafbfc6),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '${widget.userProfileVM.location}',
-                                    style: TextStyle(
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.bold,
+                        Text(
+                          'at',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        Text(
+                          '${widget.userProfileVM.company}',
+                          style: TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 24.0,
+                        ),
+                      ],
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Container(
+                        color: Color(0xffafbfc6),
+                        padding: EdgeInsets.symmetric(vertical: 8.0,),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '${widget.userProfileVM.location}',
+                                      style: TextStyle(
+                                        fontSize: 24.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 16.0,
-                                  ),
-                                  Text(
-                                    'Operation Center',
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: Colors.grey.shade700,
+                                    SizedBox(
+                                      height: 16.0,
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      'Operation Center',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        color: Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: CircleAvatar(
-                              radius: 50.0,
-                              backgroundColor: Colors.white,
+                            Expanded(
                               child: CircleAvatar(
-                                radius: 49.0,
+                                radius: 40.0,
                                 backgroundColor: Colors.white,
-                                backgroundImage: AssetImage('assets/images/mandaue-seal.png'),
+                                child: CircleAvatar(
+                                  radius: 39.0,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: AssetImage('assets/images/mandaue-seal.png'),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              back: GestureDetector(
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.white,
+                  ],
+                ),
+                back: Column(
+                  children: [
+                    SizedBox(
+                      height: 16.0,
                     ),
-                  ),
-                  height: 160.0,
-                  width: 160.0,
-                  child: QrImage(
-                    data: widget.vm.id,
-                    version: QrVersions.auto,
-                    size: 160.0,
-                    gapless: false,
-                    embeddedImage: AssetImage('assets/images/guardian.png'),
-                    embeddedImageStyle: QrEmbeddedImageStyle(
-                      size: Size(48.0, 48.0),
+                    GestureDetector(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 2.0,
+                          ),
+                        ),
+                        height: 360.0,
+                        width: 360.0,
+                        child: QrImage(
+                          data: widget.vm.id,
+                          version: QrVersions.auto,
+                          size: 360.0,
+                          gapless: false,
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    Container(
+                      height: 8.0,
+                      width: double.infinity,
+                      color: Colors.grey.shade300,
+                    ),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    Text(
+                      '${widget.userProfileVM.user.lname}, ${widget.userProfileVM.user.name}',
+                      style: TextStyle(
+                        fontSize: 36.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    Container(
+                      height: 1.0,
+                      width: double.infinity,
+                      color: Colors.grey.shade500,
+                    ),
+                    SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      'Complete Name',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4.0,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      color: Colors.green,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 24.0,
+                          ),
+                          child: Text(
+                            'Authorized Person Outside Residence',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        color: Color(0xffafbfc6),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${widget.userProfileVM.location}',
+                                style: TextStyle(
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8.0,
+                              ),
+                              Text(
+                                '${widget.userProfileVM.homeAddress}',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

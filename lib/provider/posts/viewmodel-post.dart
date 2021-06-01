@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'dart:math';
 
 import '../../data/posts/data-post.dart';
 import '../../data/posts/data-comment.dart';
@@ -47,7 +46,7 @@ class PostViewModel {
   }
 
   String get articleImage {
-    return '$secretHollowsEndPoint/img/${this.post.articleImage}'; //sampleImages[Random().nextInt(120) % 6]
+    return '$secretHollowsEndPoint/post/${this.post.articleImage}'; //sampleImages[Random().nextInt(120) % 6]
   }
 
   List<LikeData> get likes {

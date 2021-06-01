@@ -4,128 +4,155 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:transparent_image/transparent_image.dart';
-import 'package:provider/provider.dart';
 
-import '../../utils/constants/utils.dart';
-import '../../utils/helpers/navigation-helper.dart';
-import '../../provider/user/viewmodel-user.dart';
-import '../../provider/user/viewmodel-user-profile.dart';
-import '../../provider/posts/viewmodel-posts-list.dart';
-import '../../provider/posts/viewmodel-post.dart';
-import '../../widgets/ExpandableText.dart';
-import '../../data/posts/data-like.dart';
-import 'like-button.dart';
-import 'expandable-form-create-post.dart';
+import '../../../utils/constants/utils.dart';
+import '../../../utils/helpers/navigation-helper.dart';
+import '../../../provider/user/viewmodel-user.dart';
+import '../../../provider/user/viewmodel-user-profile.dart';
+import '../../../provider/posts/viewmodel-post.dart';
+import '../../../widgets/ExpandableText.dart';
+import '../../../data/posts/data-post.dart';
+import '../../../data/posts/data-like.dart';
+import '../like-button.dart';
+import 'comments-box.dart';
 
-class Posts extends StatefulWidget {
+class Comments extends StatefulWidget {
   final String token;
   final UserViewModel vm;
-  final UserProfileViewModel userProfileVM;
-  final Function openProfileScreen;
-  final List<UserProfileViewModel> userList;
+  final UserProfileViewModel userVM;
 
-  Posts({
+  final Function refresh;
+  final List<UserProfileViewModel> userList;
+  final PostViewModel post;
+
+  Comments({
     Key key,
-    @required this.openProfileScreen,
     this.token,
     this.vm,
-    this.userProfileVM,
-    this.userList}) : super(key: key);
+    this.userVM,
+    this.userList,
+    this.post,
+    this.refresh,
+  }) : super(key: key);
 
   @override
-  _PostsState createState() => _PostsState();
+  _CommentsState createState() => _CommentsState();
 }
 
-class _PostsState extends State<Posts>
-    with AutomaticKeepAliveClientMixin<Posts> {
+class _CommentsState extends State<Comments> with
+    SingleTickerProviderStateMixin {
+  PostViewModel _cP;
+  AnimationController _controller;
+  Animation _animation;
+  FocusNode _focusNode = FocusNode();
+  var _errorMsg;
 
-  List<PostViewModel> _posts = <PostViewModel>[];
+  final _formPageKey = GlobalKey<FormState>();
 
-  void _fetchPosts() {
-    final vm = Provider.of<PostsListViewModel>(context, listen: false);
-    vm.fetchPosts(widget.token).then((value) {
-      print('post: $value');
-      setState(() {
-        _posts.clear();
-        _posts.addAll(value);
-      });
-    });
-  }
+  String _comment;
+
+  TextEditingController _commentController;
 
   Future<void> _refresh() {
-    print('refresh called');
-    _fetchPosts();
+    _fetchPost().then((value) {
+      print('post after comment: $value');
+      PostViewModel p = PostViewModel(post: value);
+      setState(() {
+        _cP = p;
+        _commentController.clear();
+        _errorMsg = null;
+      });
+      widget.refresh();
+    });
     return Future.value();
   }
 
-  openProfileScreen2(var u) {
-    NavigationHelper.openProfileScreen2(
-        context, widget.vm, u,
-        widget.userProfileVM, widget.token, 'post');
+  @override
+  void initState() {
+    super.initState();
+    _cP = widget.post;
+    _commentController = TextEditingController(text: '');
+    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _animation = Tween(begin: 300.0, end: 50.0).animate(_controller)
+      ..addListener(() {
+        setState(() {});
+      });
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
   }
 
-  Widget _createPostItem(int index) {
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+
+    super.dispose();
+  }
+
+  Widget _createPostItem(BuildContext ctx) {
     // print('${notification.uploads.length} X $index');
     // print('path : ${_post.avatar}');
     return Container(
-      margin: EdgeInsets.only(bottom: 4.0,),
-      // padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      // decoration: BoxDecoration(
-      //   border: Border.all(color: Colors.grey.shade400),
-      //   borderRadius: BorderRadius.circular(4.0),
-      // ),
-      child: _thirdDesign(index),
+      margin: EdgeInsets.only(
+        bottom: 4.0,
+      ),
+      child: _postDesign(ctx),
     );
   }
 
-  Widget _thirdDesign(int index) {
-    var _post = _posts[index];
-    var _postLikes = _post.likes;
+  Widget _postDesign(BuildContext context) {
+    var _profilePic = '';
+    var _fullName = '';
+    var _user;
+    // var _postLikes = _cP.likes;
     var _isLiker = false;
-    for (var like in _post.likes) {
+    for (var like in _cP.likes) {
       if (like.likerId == widget.vm.id) {
         _isLiker = true;
       }
     }
-    var _profilePic = '';
-    var _fullName = '';
-    var _user;
     for (var user in widget.userList) {
-      if (user.user.id == _post.authorId) {
+      if (user.user.id == _cP.authorId) {
         _profilePic = user.profilePic;
         _fullName = '${user.user.name} ${user.user.lname}';
         _user = user;
-      } else if (widget.vm.id == _post.authorId) {
-        _profilePic = (widget.userProfileVM != null)
-            ? (widget.userProfileVM.profilePic != null ||
-            !widget.userProfileVM.profilePic.contains('null'))
-            ? widget.userProfileVM.profilePic
-            : '$secretHollowsEndPoint/img/Spotter.png'
+      } else if (widget.vm.id == _cP.authorId) {
+        _profilePic = (widget.userVM != null)
+            ? (widget.userVM.profilePic != null || !widget.userVM.profilePic.contains('null'))
+                ? widget.userVM.profilePic
+                : '$secretHollowsEndPoint/img/Spotter.png'
             : '$secretHollowsEndPoint/img/Spotter.png';
-        _fullName = (widget.userProfileVM != null)
-            ? (widget.userProfileVM.user.name != null)
-            ? '${widget.userProfileVM.user.name} ${widget.userProfileVM.user.lname}'
-            : '${widget.vm.name}'
+        _fullName = (widget.userVM != null)
+            ? (widget.userVM.user.name != null)
+                ? '${widget.userVM.user.name} ${widget.userVM.user.lname}'
+                : '${widget.vm.name}'
             : '${widget.vm.name}';
-        _user = widget.userProfileVM;
+        _user = widget.userVM;
       }
     }
-    if (widget.vm.id == _post.authorId) {
-      _profilePic = (widget.userProfileVM != null)
-          ? (widget.userProfileVM.profilePic != null ||
-          !widget.userProfileVM.profilePic.contains('null'))
-          ? widget.userProfileVM.profilePic
-          : '$secretHollowsEndPoint/img/Spotter.png'
+    if (widget.vm.id == _cP.authorId) {
+      _profilePic = (widget.userVM != null)
+          ? (widget.userVM.profilePic != null || !widget.userVM.profilePic.contains('null'))
+              ? widget.userVM.profilePic
+              : '$secretHollowsEndPoint/img/Spotter.png'
           : '$secretHollowsEndPoint/img/Spotter.png';
-      _fullName = (widget.userProfileVM != null)
-          ? (widget.userProfileVM.user.name != null)
-          ? '${widget.userProfileVM.user.name} ${widget.userProfileVM.user.lname}'
-          : '${widget.vm.name}'
+      _fullName = (widget.userVM != null)
+          ? (widget.userVM.user.name != null)
+              ? '${widget.userVM.user.name} ${widget.userVM.user.lname}'
+              : '${widget.vm.name}'
           : '${widget.vm.name}';
-      _user = widget.userProfileVM;
+      _user = widget.userVM;
     }
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.0,),
+      margin: EdgeInsets.symmetric(
+        horizontal: 16.0,
+      ),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.grey.shade400,
@@ -134,7 +161,10 @@ class _PostsState extends State<Posts>
         borderRadius: BorderRadius.circular(8.0),
         color: Colors.white,
       ),
-      padding: EdgeInsets.only(top: 16.0, bottom: 8.0,),
+      padding: EdgeInsets.only(
+        top: 16.0,
+        bottom: 8.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -142,7 +172,8 @@ class _PostsState extends State<Posts>
         children: [
           GestureDetector(
             onTap: () {
-              openProfileScreen2(_user);
+              NavigationHelper.openProfileScreen2(
+                  context, widget.vm, _user, widget.userVM, widget.token, 'post');
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -156,7 +187,7 @@ class _PostsState extends State<Posts>
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.shade900,
-                        spreadRadius:1.0,
+                        spreadRadius: 1.0,
                         blurRadius: 4.0,
                       ),
                     ],
@@ -169,7 +200,7 @@ class _PostsState extends State<Posts>
                       backgroundColor: Colors.white,
                       backgroundImage: NetworkImage(_profilePic),
                     ),
-                  ),/*ClipRRect(
+                  ), /*ClipRRect(
                     borderRadius: BorderRadius.circular(24.0),
                     child: FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
@@ -181,23 +212,36 @@ class _PostsState extends State<Posts>
                   ),*/
                 ),
                 SizedBox(width: 16.0),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _fullName,
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: colorPrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      right: 16.0,
                     ),
-                    Text(
-                      _post.date,
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey.shade500),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _fullName,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: colorPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          _cP.date,
+                          style: TextStyle(
+                              fontSize: 12.0, color: Colors.grey.shade500),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ),
+                SizedBox(
+                  width: 16.0,
                 ),
               ],
             ),
@@ -208,14 +252,16 @@ class _PostsState extends State<Posts>
           Container(
             height: 1.0,
             color: Colors.grey.shade400,
-            margin: EdgeInsets.symmetric(horizontal: 1.0,),
+            margin: EdgeInsets.symmetric(
+              horizontal: 1.0,
+            ),
           ),
           SizedBox(
             height: 8.0,
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
-            child: ExpandableText((_post.text == null) ? '' : _post.text),
+            child: ExpandableText((_cP.text == null) ? '' : _cP.text),
           ),
           SizedBox(
             height: 8.0,
@@ -224,7 +270,7 @@ class _PostsState extends State<Posts>
             visible: true,
             child: GestureDetector(
               onTap: () {
-                NavigationHelper.openImageFull(context, _post.articleImage);
+                NavigationHelper.openImageFull(context, _cP.articleImage);
               },
               child: Container(
                 height: 220.0,
@@ -232,11 +278,12 @@ class _PostsState extends State<Posts>
                 padding: EdgeInsets.all(4.0),
                 child: FadeInImage.memoryNetwork(
                   placeholder: kTransparentImage,
-                  image: (_post.articleImage == '')
+                  image: (_cP.articleImage == '')
                       ? 'https://vignette.wikia.nocookie.net/codegeass/images/7/7'
-                      'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
-                      'cb=20140311192830'
-                      : _post.articleImage, //notification.uploads[0].fileFullPath,
+                          'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
+                          'cb=20140311192830'
+                      : _cP.articleImage,
+                  //notification.uploads[0].fileFullPath,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -247,7 +294,7 @@ class _PostsState extends State<Posts>
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0,),
-            child: (widget.vm.id == _post.authorId) ?
+            child: (widget.vm.id == _cP.authorId) ?
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -256,12 +303,13 @@ class _PostsState extends State<Posts>
                   token: widget.token,
                   isChecked: _isLiker,
                   id: widget.vm.id,
-                  postId: _post.id,
-                  likes: _postLikes,
+                  postId: _cP.id,
+                  likes: _cP.likes,
                   onLikeButtonChanged: (_likes, isChecked) {
+                    widget.refresh();
                     if (isChecked) {
-                      _posts[index].likes.clear();
-                      _posts[index].likes.addAll(_likes);
+                      _cP.likes.clear();
+                      _cP.likes.addAll(_likes);
                     }
                   },
                 ),
@@ -275,20 +323,21 @@ class _PostsState extends State<Posts>
                       onTap: () {
                         // if (_isLiker) {
                         // print('isLiker $_isLiker');
-                        unlikePost(_post.id).then((value) {
+                        unlikePost(_cP.id).then((value) {
                           Iterable body = jsonDecode(value);
                           var newData = body
                               .map((data) => LikeData.fromJsonMap(data))
                               .toList();
                           if (newData.isEmpty) {
-                            _posts[index].likes.clear();
+                            _cP.likes.clear();
                           } else {
-                            _posts[index].likes.clear();
-                            _posts[index].likes.addAll(newData);
+                            _cP.likes.clear();
+                            _cP.likes.addAll(newData);
                           }
                           setState(() {
                             _isLiker = false;
                           });
+                          widget.refresh();
                         });
                         // }
                       },
@@ -347,17 +396,7 @@ class _PostsState extends State<Posts>
                   child: Material(
                     // color: colorPrimary,
                     child: InkWell(
-                      onTap: () {
-                        NavigationHelper.openComments(
-                          context,
-                          widget.token,
-                          widget.vm,
-                          widget.userProfileVM,
-                          widget.userList,
-                          _post,
-                          _refresh,
-                        );
-                      },
+                      onTap: () {},
                       splashColor: Colors.grey.shade700,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -384,13 +423,13 @@ class _PostsState extends State<Posts>
                               ),
                             ),
                             Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
+                              visible: (_cP.comments.length > 0) ? true : false,
                               child: SizedBox(
                                 width: 4.0,
                               ),
                             ),
                             Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
+                              visible: (_cP.comments.length > 0) ? true : false,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(2.0),
                                 child: Container(
@@ -398,7 +437,7 @@ class _PostsState extends State<Posts>
                                     horizontal: 2.0, vertical: 2.0,),
                                   color: colorPrimary,
                                   child: Text(
-                                    '${_post.comments.length}',
+                                    '${_cP.comments.length}',
                                     style: TextStyle(
                                       fontSize: 10.0,
                                       color: Colors.white,
@@ -454,7 +493,7 @@ class _PostsState extends State<Posts>
                 /*(widget.viewModel.id == _post.authorId)
                     ? *//*Expanded(
                   child: */Visibility(
-                  visible: (widget.vm.id == _post.authorId) ? true : false,
+                  visible: (widget.vm.id == _cP.authorId) ? true : false,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4.0),
                     child: Material(
@@ -462,10 +501,11 @@ class _PostsState extends State<Posts>
                       child: InkWell(
                         onTap: () {
                           // TODO: DELETE POST
-                          deletePost(_post.id).then((value) {
+                          deletePost(_cP.id).then((value) {
                             print('DELETE - $value');
                             if (value.contains('removed')) {
                               _refresh();
+                              Navigator.pop(context);
                             }
                           });
                         },
@@ -497,12 +537,13 @@ class _PostsState extends State<Posts>
                   token: widget.token,
                   isChecked: _isLiker,
                   id: widget.vm.id,
-                  postId: _post.id,
-                  likes: _postLikes,
+                  postId: _cP.id,
+                  likes: _cP.likes,
                   onLikeButtonChanged: (_likes, isChecked) {
+                    widget.refresh();
                     if (isChecked) {
-                      _posts[index].likes.clear();
-                      _posts[index].likes.addAll(_likes);
+                      _cP.likes.clear();
+                      _cP.likes.addAll(_likes);
                     }
                   },
                 ),
@@ -516,20 +557,21 @@ class _PostsState extends State<Posts>
                       onTap: () {
                         // if (_isLiker) {
                         // print('isLiker $_isLiker');
-                        unlikePost(_post.id).then((value) {
+                        unlikePost(_cP.id).then((value) {
                           Iterable body = jsonDecode(value);
                           var newData = body
                               .map((data) => LikeData.fromJsonMap(data))
                               .toList();
                           if (newData.isEmpty) {
-                            _posts[index].likes.clear();
+                            _cP.likes.clear();
                           } else {
-                            _posts[index].likes.clear();
-                            _posts[index].likes.addAll(newData);
+                            _cP.likes.clear();
+                            _cP.likes.addAll(newData);
                           }
                           setState(() {
                             _isLiker = false;
                           });
+                          widget.refresh();
                         });
                         // }
                       },
@@ -588,17 +630,7 @@ class _PostsState extends State<Posts>
                   child: Material(
                     // color: colorPrimary,
                     child: InkWell(
-                      onTap: () {
-                        NavigationHelper.openComments(
-                          context,
-                          widget.token,
-                          widget.vm,
-                          widget.userProfileVM,
-                          widget.userList,
-                          _post,
-                          _refresh,
-                        );
-                      },
+                      onTap: () {},
                       splashColor: Colors.grey.shade700,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -625,13 +657,13 @@ class _PostsState extends State<Posts>
                               ),
                             ),
                             Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
+                              visible: (_cP.comments.length > 0) ? true : false,
                               child: SizedBox(
                                 width: 4.0,
                               ),
                             ),
                             Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
+                              visible: (_cP.comments.length > 0) ? true : false,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(2.0),
                                 child: Container(
@@ -639,7 +671,7 @@ class _PostsState extends State<Posts>
                                     horizontal: 2.0, vertical: 2.0,),
                                   color: colorPrimary,
                                   child: Text(
-                                    '${_post.comments.length}',
+                                    '${_cP.comments.length}',
                                     style: TextStyle(
                                       fontSize: 10.0,
                                       color: Colors.white,
@@ -730,64 +762,221 @@ class _PostsState extends State<Posts>
     }
   }
 
-  Widget get _header => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      FaIcon(
-        FontAwesomeIcons.solidUser,
-        color: Colors.grey.shade700,
-        size: 16.0,
-      ),
-      SizedBox(
-        width: 8.0,
-      ),
-      Text(
-        'Welcome to GUARDIAN community',
-        style: TextStyle(
-          fontSize: 16.0,
-          color: Colors.grey.shade900,
-        ),
-      ),
-    ],
-  );
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _fetchPosts();
-  }
-
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    return RefreshIndicator(
-      color: Colors.white,
-      backgroundColor: colorPrimary,
-      onRefresh: _refresh,
-      child: Container(
-        color: Colors.grey.shade100,
-        child: ListView.builder(
-          padding: EdgeInsets.zero,
-          itemBuilder: (context, index) {
-            return (index == 0) ?
+    return Form(
+      key: _formPageKey,
+      child: Material(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 36.0,
+            ),
+            Row(
+              // mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 8.0,
+                ),
+                ClipOval(
+                  child: Material(
+                    color: Colors.transparent, // button color
+                    child: InkWell(
+                      splashColor: Colors.grey, // inkwell color
+                      child: Container(
+                        width: 36.0,
+                        height: 36.0,
+                        alignment: Alignment.center,
+                        child: FaIcon(
+                          FontAwesomeIcons.angleLeft,
+                          color: Colors.black,
+                          size: 24.0,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.0),
+                Expanded(
+                  child: Text(
+                    'Return to Posts',
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      color: colorPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 16.0,
+            ),
+            _createPostItem(context),
             Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
-              child: _header,
-            ) : (index == 1) ?
-            ExpandableCreatePostForm(token: widget.token, refresh: _refresh) :
-            _createPostItem(index - 2);
-          },
-          itemCount: _posts.length + 2,
-          shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+              child: TextFormField(
+                key: Key('comment'),
+                validator: (value) =>
+                value.isEmpty ? 'Please enter your comment' : null,
+                controller: _commentController,
+                autovalidateMode: AutovalidateMode.disabled,
+                focusNode: _focusNode,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+                textAlignVertical: TextAlignVertical.top,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.white,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    borderSide: BorderSide(width: 1, color: Colors.black),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    borderSide:
+                        BorderSide(width: 1, color: Colors.grey.shade400),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    borderSide: BorderSide(width: 1.5, color: Colors.black),
+                  ),
+                  border: /*InputBorder.none,*/ OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                  hintText: 'Leave a comment',
+                  hintStyle: TextStyle(
+                    color: Colors.grey[500],
+                  ),
+                  labelText: '',
+                  labelStyle: TextStyle(
+                    fontSize: 0.0,
+                  ),
+                  errorText: _errorMsg,
+                  errorStyle: TextStyle(
+                    letterSpacing: 1.5,
+                    fontSize: 10.0,
+                  ),
+                  counterText: '',
+                  counterStyle: TextStyle(
+                    fontSize: 0.0,
+                  ),
+                ),
+                keyboardType: TextInputType.text,
+                maxLines: 4,
+                minLines: 4,
+                onSaved: (String val) {
+                  _comment = val;
+                },
+                onChanged: (String val) {
+                  _comment = val;
+                },
+              ),
+            ),
+            SizedBox(
+              height: 4.0,
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0,),
+                child: FlatButton(
+                  color: colorPrimary1,
+                  onPressed: () {
+                    if (_formPageKey.currentState.validate()) {
+                      _submitComment().then((value) {
+                        print('value - $value');
+                        if (!value.contains('error')) {
+                          widget.refresh();
+                        }
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 4.0,
+            ),
+            Flexible(
+              fit: FlexFit.loose,
+              child: CommentsBox(
+                token: widget.token,
+                vm: widget.vm,
+                userVM: widget.userVM,
+                userList: widget.userList,
+                post: _cP,
+                refresh: _refresh,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-}
+  Future<String> _submitComment() async {
+    var url = '$secretHollowsEndPoint/api/posts/comment/${_cP.id}';
+    Map data = {'text': _comment};
+    var reqBody = json.encode(data);
+    var response = await http.post(
+      url,
+      headers: {
+        'Cache-Control' : 'no-cache',
+        // 'Postman-Token' : '<calculated when request is sent>',
+        // 'Content-Length' : '<calculated when request is sent>',
+        // 'Host' : '<calculated when request is sent>',
+        'Accept' : '*/*',
+        'Accept-Encoding' : 'gzip, deflate, br',
+        'Connection' : 'keep-alive',
+        'Content-Type': 'application/json',
+        'x-auth-token': widget.token,
+      },
+      body: reqBody,
+    );
+    print('comment r: $response X ${response.body}');
+    // final body = jsonDecode(response.body);
+    // return body["success"];
+    return response.body;
+  }
 
+  Future<PostData> _fetchPost() async {
+    final url = "$secretHollowsEndPoint/api/posts/${_cP.id}";
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': widget.token,
+        'Accept': '*/*',
+      },
+    );
+    if (response.statusCode == 200) {
+      return PostData.fromJsonMap(jsonDecode(response.body));
+    } else {
+      throw Exception("Failed to fetch post ${_cP.id}!");
+    }
+  }
+}
