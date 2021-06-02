@@ -9,6 +9,9 @@ import 'package:intl/intl.dart';
 import 'package:network_to_file_image/network_to_file_image.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_geocoding/google_geocoding.dart';
 
 import '../../provider/user/viewmodel-user-profile.dart';
 import '../../utils/constants/utils.dart';
@@ -32,36 +35,13 @@ class EditProfile extends StatefulWidget {
   _EditProfileState createState() => _EditProfileState();
 }
 
-class _EditProfileState extends State<EditProfile> {
+class _EditProfileState extends State<EditProfile>
+    with TickerProviderStateMixin<EditProfile>{
+
   final _formPageKey = GlobalKey<FormState>();
 
-  final List<String> _genderOptions = [
-    'Male',
-    'Female',
-    'LGBT',
-  ];
-
-  final List<String> _civilStatusOptions = [
-    'Single',
-    'Married',
-    'Widowed',
-    'Separated',
-  ];
-
-  String _bio;
-  String _gender;
-  String _civilStatus;
-  String _birthDate;
-  String _homeAddress;
-  double _lat = 0.0;
-  double _lng = 0.0;
-
   bool _isLoading = false;
-
-  TextEditingController _schoolController;
-  TextEditingController _degreeController;
-  TextEditingController _fieldController;
-  TextEditingController _descController;
+  bool _isExpandedPInfo = false;
 
   // Future<String> addEducation() async {
   //   print('$_school - $_degree - $_field - $_dateFrom - $_isCurrent - $_dateTo - $_desc');
@@ -97,6 +77,172 @@ class _EditProfileState extends State<EditProfile> {
   //   }
   // }
 
+  final List<String> _genderOptions = [
+    'Male',
+    'Female',
+    'LGBT',
+  ];
+
+  final List<String> _civilStatusOptions = [
+    'Single',
+    'Married',
+    'Widowed',
+    'Separated',
+  ];
+
+  String _bio;
+  String _gender;
+  String _civilStatus;
+  String _birthDate;
+  String _homeAddress;
+  double _lat = 0.0;
+  double _lng = 0.0;
+
+  GoogleMapController _mapController;
+  LatLng _defaultLL = LatLng(0.0, 0.0);
+  LatLng _acquiredLL;
+  LatLng _selectedLL;
+  final Map<String, Marker> _markers = {};
+  String address;
+  double lat, lng;
+  GoogleGeocoding _googleGeocoder;
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    _mapController.setMapStyle('[{"elementType": "geometry",'
+        '"stylers": [{"color": "#1d2c4d"}]},'
+        '{"elementType":"labels.text.fill","stylers": [{"color": "#8ec3b9"}]},'
+        '{"elementType": "labels.text.stroke",'
+        '"stylers": [{"color": "#1a3646"}]},'
+        '{"featureType": "administrative.country",'
+        '"elementType": "geometry.stroke","stylers": [{"color": "#4b6878"}]},'
+        '{"featureType": "administrative.land_parcel",'
+        '"elementType": "labels.text.fill","stylers": [{"color": "#64779e"}]},'
+        '{"featureType": "administrative.province",'
+        '"elementType": "geometry.stroke","stylers": [{"color": "#4b6878"}]},'
+        '{"featureType": "landscape.man_made",'
+        '"elementType": "geometry.stroke","stylers": [{"color": "#334e87"}]},'
+        '{"featureType": "landscape.natural",'
+        '"elementType": "geometry","stylers": [{"color": "#023e58"}]},'
+        '{"featureType":"poi","elementType": "geometry",'
+        '"stylers": [{"color": "#283d6a"}]},{"featureType": "poi",'
+        '"elementType": "labels.text.fill","stylers": [{"color": "#6f9ba5"}]},'
+        '{"featureType": "poi","elementType": "labels.text.stroke",'
+        '"stylers": [{"color": "#1d2c4d"}]},{"featureType": "poi.park",'
+        '"elementType": "geometry.fill","stylers": [{"color": "#023e58"}]},'
+        '{"featureType": "poi.park","elementType": "labels.text.fill",'
+        '"stylers": [{"color": "#3C7680"}]},{"featureType": "road",'
+        '"elementType": "geometry","stylers": [{"color": "#304a7d"}]},'
+        '{"featureType": "road","elementType": "labels.text.fill",'
+        '"stylers": [{"color": "#98a5be"}]},{"featureType": "road",'
+        '"elementType": "labels.text.stroke","stylers": [{"color": "#1d2c4d"}]},'
+        '{"featureType": "road.highway",'
+        '"elementType": "geometry","stylers": [{"color": "#2c6675"}]},'
+        '{"featureType": "road.highway","elementType": "geometry.stroke",'
+        '"stylers": [{"color": "#255763"}]},{"featureType": "road.highway",'
+        '"elementType": "labels.text.fill","stylers": [{"color": "#b0d5ce"}]},'
+        '{"featureType": "road.highway","elementType": "labels.text.stroke",'
+        '"stylers": [{"color": "#023e58"}]},{"featureType": "transit",'
+        '"elementType": "labels.text.fill","stylers": [{"color": "#98a5be"}]},'
+        '{"featureType": "transit","elementType": "labels.text.stroke",'
+        '"stylers": [{"color": "#1d2c4d"}]},{"featureType": "transit.line",'
+        '"elementType": "geometry.fill","stylers": [{"color": "#283d6a"}]},'
+        '{"featureType": "transit.station","elementType": "geometry",'
+        '"stylers": [{"color": "#3a4762"}]},{"featureType": "water",'
+        '"elementType": "geometry","stylers": [{"color": "#0e1626"}]},'
+        '{"featureType": "water","elementType": "labels.text.fill",'
+        '"stylers": [{"color": "#4e6d70"}]}]');
+  }
+
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the `Future` will return an error.
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Location permissions are permantly denied, we '
+          'cannot request permissions.');
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error(
+            'Location permissions are denied (actual value: $permission).');
+      }
+    }
+    return await Geolocator.getCurrentPosition();
+  }
+
+  Future<String> _getAddress(LatLon coor) async {
+    var response = await _googleGeocoder.geocoding.getReverse(coor);
+    var results = response.results;
+    if (response != null && results != null) {
+      // print(results[0].formattedAddress);
+      // var address = '';
+      // var addressComponent = results[1].addressComponents[0];
+      // if (addressComponent.types[0] == 'street_number') {
+      //   address = '${addressComponent.longName},';
+      //   addressComponent = results[1].addressComponents[1];
+      // }
+      // address = '$address ${addressComponent.longName},';
+      // addressComponent = results[2].addressComponents[0];
+      // address = '$address ${addressComponent.longName},';
+      // address = '$address ${results[4].formattedAddress}';
+      return results[0].formattedAddress;//address;
+    } else {
+      return 'Sorry! Address not found!';
+    }
+  }
+
+  Future<void> _addMarker(LatLng latlng) {
+    lat = latlng.latitude;
+    lng = latlng.longitude;
+    _getAddress(LatLon(lat, lng)).then((value) {
+      print('address($lat, $lng)');
+      final MarkerId markerId = MarkerId('selectedLocation');
+      setState(() {
+        // creating a new MARKER
+        final Marker marker = Marker(
+          markerId: markerId,
+          position: latlng,
+          draggable: true,
+          infoWindow: InfoWindow(title: 'Selected Address', snippet: value),
+          onTap: () {
+            // _onMarkerTapped(markerId);
+          },
+          onDragEnd: _addMarker,
+        );
+        _markers.clear();
+        _markers['selectedLocation'] = marker;
+        address = value;
+        try {
+          _mapController.hideMarkerInfoWindow(_markers['selectedLocation'].markerId);
+        } catch (e) {
+          print('No marker displayed currently.');
+        }
+        _mapController.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(target: latlng, zoom: 16.0)));
+        try {
+          _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
+        } catch (e) {
+          print('exception $e X ${_markers.length} x $_markers}');
+        }
+      });
+    });
+    return Future.value();
+  }
+
   Future<File> _file(String filename) async {
     Directory dir = await getExternalStorageDirectory();
     String pathName = p.join(dir.path, filename);
@@ -106,18 +252,21 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    _schoolController = TextEditingController(text: '');
-    _degreeController = TextEditingController(text: '');
-    _fieldController = TextEditingController(text: '');
-    _descController = TextEditingController(text: '');
+    _googleGeocoder = GoogleGeocoding(gMAK);
+    if (widget.userVM == null || widget.userVM.lat == null) {
+      _determinePosition().then((value) {
+        var lat = value.latitude;
+        var lng = value.longitude;
+        _acquiredLL = LatLng(lat, lng);
+        _addMarker(_acquiredLL);
+      });
+    } else {
+      _addMarker(LatLng(widget.userVM.lat, widget.userVM.lng));
+    }
   }
 
   @override
   void dispose() {
-    _schoolController.dispose();
-    _degreeController.dispose();
-    _fieldController.dispose();
-    _descController.dispose();
     super.dispose();
   }
 
@@ -306,6 +455,7 @@ class _EditProfileState extends State<EditProfile> {
                         SizedBox(
                           height: 16.0,
                         ),
+                        _expandablePersonalInfo,
                       ],
                     ),
                   ),
@@ -387,6 +537,94 @@ class _EditProfileState extends State<EditProfile> {
             fontSize: 16.0,
             color: Colors.black,
             fontWeight: FontWeight.w300,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget get _expandablePersonalInfo
+  => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      GestureDetector(
+        onTap: () => setState(() {
+          if (_mapController != null) {
+            if (!_isExpandedPInfo) {
+              if (_selectedLL == null) {
+                if (_acquiredLL != null) {
+                  _mapController.animateCamera(CameraUpdate.newCameraPosition(
+                      CameraPosition(target: _acquiredLL, zoom: 16.0)));
+                }
+              } else {
+                _mapController.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(target: _selectedLL, zoom: 16.0)));
+              }
+            }
+          }
+          _isExpandedPInfo = !_isExpandedPInfo;
+        }),
+        child: Container(
+          color: Colors.transparent,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              FaIcon(
+                FontAwesomeIcons.solidAddressBook,
+                size: 16.0,
+                color: colorPrimary,
+              ),
+              SizedBox(
+                width: 8.0,
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '* Personal Information',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: colorPrimary,
+                    ),
+                  ),
+                ),
+              ),
+              FaIcon(
+                (_isExpandedPInfo)
+                    ? FontAwesomeIcons.angleUp
+                    : FontAwesomeIcons.angleDown,
+                color: colorPrimary,
+                // size: 16.0,
+              ),
+            ],
+          ),
+        ),
+      ),
+      SizedBox(
+        height: 4.0,
+      ),
+      AnimatedSize(
+        vsync: this,
+        duration: Duration(milliseconds: 350),
+        child: ConstrainedBox(
+          constraints: _isExpandedPInfo
+              ? BoxConstraints()
+              : BoxConstraints(maxHeight: 0.0),
+          child: Container(
+            width: double.infinity,
+            height: 256.0,
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              compassEnabled: false,
+              trafficEnabled: true,
+              zoomControlsEnabled: false,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(0.0, 0.0),// TODO: change to initialLL
+              ),
+              markers: Set<Marker>.of(_markers.values),
+            ),
           ),
         ),
       ),
