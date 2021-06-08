@@ -153,7 +153,10 @@ class _ProfileMainState extends State<ProfileMain> {
                       width: 1.0,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    NavigationHelper.openEditProfile(
+                      context, widget.token, widget.refresh, true, widget.userVM,);
+                  },
                   child: Column(
                     children: [
                       FaIcon(
