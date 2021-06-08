@@ -12,7 +12,7 @@ const Color fbBtnColor = Color(0xFF3D5A98);
 final String prodEndPoint = 'https://ccc.guardian4emergency.com';
 final String devEndPoint = 'https://ccc.guardian4emergency.com';
 final String termsEndPoint = 'https://guardian4emergency.com';
-final String secretHollowsEndPoint = 'http://10.128.50.147:3000'; //'https://ce26c1b1-bc28-4a2e-b2cb-c1460f1e904f.mock.pstmn.io' //https://secret-hollows-28950.herokuapp.com
+final String secretHollowsEndPoint = 'http://192.168.0.104:3000'; //'https://ce26c1b1-bc28-4a2e-b2cb-c1460f1e904f.mock.pstmn.io' //https://secret-hollows-28950.herokuapp.com
 
 const String gMAK = 'AIzaSyCoviUZrvv1kcF9gNDhdmuLevZDwSREJE8';
 
@@ -58,6 +58,51 @@ const editInputDecoration = InputDecoration(
   errorStyle: TextStyle(
     letterSpacing: 1.5,
     fontSize: 10.0,
+  ),
+);
+
+const editInputDecoration2 = InputDecoration(
+  contentPadding: EdgeInsets.symmetric(
+    horizontal: 16.0,
+    vertical: 12.0,
+  ),
+  isDense: true,
+  filled: true,
+  fillColor: Colors.white,
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+    borderSide: BorderSide(width: 2, color: Colors.black),
+  ),
+  disabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    borderSide: BorderSide(width: 1.5, color: Colors.grey),
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    borderSide: BorderSide(width: 2, color: Colors.black),
+  ),
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    borderSide: BorderSide(
+      width: 1.5,
+      color: Colors.grey,
+    ),
+  ),
+  hintStyle: TextStyle(
+    color: Colors.grey,
+  ),
+  labelStyle: TextStyle(
+    color: Colors.black,
+    // fontSize: 0.0,
+  ),
+  // errorText: _errorMsg,
+  errorStyle: TextStyle(
+    letterSpacing: 1.5,
+    fontSize: 10.0,
+  ),
+  counterText: '',
+  counterStyle: TextStyle(
+    fontSize: 0.0,
   ),
 );
 

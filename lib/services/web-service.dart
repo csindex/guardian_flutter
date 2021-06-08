@@ -10,7 +10,7 @@ import '../utils/constants/utils.dart';
 class Webservice {
   Future<List<Data>> fetchNotifications(String keyword) async {
     final url =
-        "$prodEndPoint/mobile/notifications?keyword=$keyword&api_token=8t4BzqCn5EHCxTqX82GRLFHYZH802hqWrkjzMVluoGjjF5Okovc9xpKshTeh";
+        Uri.parse('$prodEndPoint/mobile/notifications?keyword=$keyword&api_token=8t4BzqCn5EHCxTqX82GRLFHYZH802hqWrkjzMVluoGjjF5Okovc9xpKshTeh');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
@@ -23,7 +23,7 @@ class Webservice {
 
   Future<List<PostData>> fetchPosts(String token) async {
     // print('token: $token');
-    final url = "$secretHollowsEndPoint/api/posts";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts');
     final response = await http.get(
       url,
       headers: {
@@ -41,7 +41,7 @@ class Webservice {
   }
 
   Future<UserData> fetchUserDetails(String token) async {
-    final url = "$secretHollowsEndPoint/api/auth";
+    final url = Uri.parse('$secretHollowsEndPoint/api/auth');
     final response = await http.get(
       url,
       headers: {
@@ -58,7 +58,7 @@ class Webservice {
   }
 
   Future<Object> fetchUserProfile(String token) async {
-    final url = "$secretHollowsEndPoint/api/profile/me";
+    final url = Uri.parse('$secretHollowsEndPoint/api/profile/me');
     final response = await http.get(
       url,
       headers: {
@@ -77,7 +77,7 @@ class Webservice {
 
   Future<List<UserDetailsData>> fetchUsers() async {
     // print('token: $token');
-    final url = "$secretHollowsEndPoint/api/profile";
+    final url = Uri.parse('$secretHollowsEndPoint/api/profile');
     final response = await http.get(
       url,
       headers: {

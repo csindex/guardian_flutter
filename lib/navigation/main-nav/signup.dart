@@ -1103,7 +1103,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<bool> _createAccountAPI() async {
-    var url = 'https://ccc.guardian4emergency.com/mobile/register';
+    var url = Uri.parse('https://ccc.guardian4emergency.com/mobile/register');
     var response = await http.post(
       url,
       body: {
@@ -1122,7 +1122,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<String> _createAccountAPI2() async {
-    var url = 'https://secret-hollows-28950.herokuapp.com/api/users';
+    var url = Uri.parse('https://secret-hollows-28950.herokuapp.com/api/users');
     Map data = {
       'name': _fullName,
       'email': _email,

@@ -627,7 +627,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   }
 
   Future<String> _forgotPass() async {
-    var url = '$secretHollowsEndPoint/api/auth/forgot';
+    var url = Uri.parse('$secretHollowsEndPoint/api/auth/forgot');
     Map data = {'email': _email};
     var reqBody = json.encode(data);
     var response = await http.post(
@@ -652,7 +652,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
 
   Future<String> _sendOtp() async {
     _pin = '${100000 + Random().nextInt(999999 - 100000)}';
-    var url = '$secretHollowsEndPoint/api/sms/sendOtp';
+    var url = Uri.parse('$secretHollowsEndPoint/api/sms/sendOtp');
     Map data = {'number': _number, 'msg': 'Hi $_name, Proceed with your Change Password for GUARDIAN Account, Your One-Time PIN is $_pin. OTP will expire 15 minutes. If you did not initiate this request, please call your Operation Center Administrator.'};
     var reqBody = json.encode(data);
     var response = await http.post(
@@ -676,7 +676,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   }
 
   Future<String> _changePass() async {
-    var url = '$secretHollowsEndPoint/api/sms/changepassword';
+    var url = Uri.parse('$secretHollowsEndPoint/api/sms/changepassword');
     Map data = {'number': _number, 'password': _newPass};
     var reqBody = json.encode(data);
     var response = await http.post(

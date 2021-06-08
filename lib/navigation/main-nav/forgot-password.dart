@@ -599,7 +599,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   Future<bool> _changePasswordAPI() async {
-    var url = 'https://ccc.guardian4emergency.com/mobile/userUpdate';
+    var url = Uri.parse('https://ccc.guardian4emergency.com/mobile/userUpdate');
     var response = await http.post(
       url,
       body: {

@@ -43,7 +43,7 @@ class _AddEducationState extends State<AddEducation> {
 
   Future<String> addEducation() async {
     print('$_school - $_degree - $_field - $_dateFrom - $_isCurrent - $_dateTo - $_desc');
-    final url = "$secretHollowsEndPoint/api/profile/education";
+    final url = Uri.parse('$secretHollowsEndPoint/api/profile/education');
     Map data = {
       'school' : _school,
       'degree' : _degree,

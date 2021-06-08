@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+// import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../../utils/constants/utils.dart';
 
@@ -22,7 +22,7 @@ class Special extends StatefulWidget {
 }
 
 class _SpecialState extends State<Special> {
-  MapboxMapController mapController;
+  // MapboxMapController mapController;
 
 //  Position _lastKnownLocation;
   Position _currentLocation;
@@ -30,37 +30,37 @@ class _SpecialState extends State<Special> {
 //  CameraPosition _cameraPosition;
 //  bool _isMoving = false;
 
-  void _onMapCreated(MapboxMapController controller) {
-    mapController = controller;
-//    mapController.addListener(_onMapChanged);
-//    _extractMapInfo();
-    double lat = _currentLocation.latitude;
-    double lng = _currentLocation.longitude;
-    setState(() {
-      print('sud ari? $_currentLocation');
-      mapController.addSymbol(
-        SymbolOptions(
-          iconImage: 'assets/images/chibi-lelouch.jpg',
-          iconSize: 0.1,
-          geometry: LatLng(lat, lng),
-        ),
-      );
-      mapController.moveCamera(
-        CameraUpdate.newLatLngZoom(
-          LatLng(lat, lng),
-          11.0,
-        ),
-        /*CameraUpdate.newCameraPosition(
-          CameraPosition(
-            bearing: 270.0,
-            target: LatLng(lat, lng),
-            tilt: 30.0,
-            zoom: 17.0,
-          ),
-        ),*/
-      );
-    });
-  }
+//   void _onMapCreated(MapboxMapController controller) {
+//     mapController = controller;
+// //    mapController.addListener(_onMapChanged);
+// //    _extractMapInfo();
+//     double lat = _currentLocation.latitude;
+//     double lng = _currentLocation.longitude;
+//     setState(() {
+//       print('sud ari? $_currentLocation');
+//       mapController.addSymbol(
+//         SymbolOptions(
+//           iconImage: 'assets/images/chibi-lelouch.jpg',
+//           iconSize: 0.1,
+//           geometry: LatLng(lat, lng),
+//         ),
+//       );
+//       mapController.moveCamera(
+//         CameraUpdate.newLatLngZoom(
+//           LatLng(lat, lng),
+//           11.0,
+//         ),
+//         /*CameraUpdate.newCameraPosition(
+//           CameraPosition(
+//             bearing: 270.0,
+//             target: LatLng(lat, lng),
+//             tilt: 30.0,
+//             zoom: 17.0,
+//           ),
+//         ),*/
+//       );
+//     });
+//   }
 
 //  void _onMapChanged() {
 //    setState(() {

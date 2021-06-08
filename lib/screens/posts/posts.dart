@@ -699,7 +699,7 @@ class _PostsState extends State<Posts>
   }
 
   Future<String> unlikePost(String postId) async {
-    final url = "$secretHollowsEndPoint/api/posts/unlike/$postId";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/unlike/$postId');
     final response = await http.put(
       url,
       headers: {
@@ -715,7 +715,7 @@ class _PostsState extends State<Posts>
   }
 
   Future<String> deletePost(String postId) async {
-    final url = "$secretHollowsEndPoint/api/posts/$postId";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/$postId');
     final response = await http.delete(
       url,
       headers: {

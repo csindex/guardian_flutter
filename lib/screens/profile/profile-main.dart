@@ -713,7 +713,7 @@ class _ProfileMainState extends State<ProfileMain> {
   }
 
   Future<String> deleteTraining(String tId) async {
-    final url = "$secretHollowsEndPoint/api/profile/experience/$tId";
+    final url = Uri.parse('$secretHollowsEndPoint/api/profile/experience/$tId');
     final response = await http.delete(
       url,
       headers: {
@@ -729,7 +729,7 @@ class _ProfileMainState extends State<ProfileMain> {
   }
 
   Future<String> deleteEducation(String eId) async {
-    final url = "$secretHollowsEndPoint/api/profile/education/$eId";
+    final url = Uri.parse('$secretHollowsEndPoint/api/profile/education/$eId');
     final response = await http.delete(
       url,
       headers: {

@@ -731,7 +731,7 @@ class _CommentsState extends State<Comments> with
   }
 
   Future<String> unlikePost(String postId) async {
-    final url = "$secretHollowsEndPoint/api/posts/unlike/$postId";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/unlike/$postId');
     final response = await http.put(
       url,
       headers: {
@@ -747,7 +747,7 @@ class _CommentsState extends State<Comments> with
   }
 
   Future<String> deletePost(String postId) async {
-    final url = "$secretHollowsEndPoint/api/posts/$postId";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/$postId');
     final response = await http.delete(
       url,
       headers: {
@@ -939,7 +939,7 @@ class _CommentsState extends State<Comments> with
   }
 
   Future<String> _submitComment() async {
-    var url = '$secretHollowsEndPoint/api/posts/comment/${_cP.id}';
+    var url = Uri.parse('$secretHollowsEndPoint/api/posts/comment/${_cP.id}');
     Map data = {'text': _comment};
     var reqBody = json.encode(data);
     var response = await http.post(
@@ -964,7 +964,7 @@ class _CommentsState extends State<Comments> with
   }
 
   Future<PostData> _fetchPost() async {
-    final url = "$secretHollowsEndPoint/api/posts/${_cP.id}";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/${_cP.id}');
     final response = await http.get(
       url,
       headers: {

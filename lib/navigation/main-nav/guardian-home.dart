@@ -33,11 +33,11 @@ class _GuardianHomeState extends State<GuardianHome> {
   final _scrollController = ScrollController();
   List _children;
 
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
-  _register() {
-    _firebaseMessaging.getToken().then((token) => print('fcmToken - $token'));
-  }
+  // _register() {
+  //   _firebaseMessaging.getToken().then((token) => print('fcmToken - $token'));
+  // }
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _GuardianHomeState extends State<GuardianHome> {
       Report(),
       Special(androidFusedLocation: true),
     ];
-    getMessage();
+    // getMessage();
 
     _fetchDetails().then((value) {
       setState(() {
@@ -135,16 +135,16 @@ class _GuardianHomeState extends State<GuardianHome> {
     return result;
   }
 
-  void getMessage() {
-    _firebaseMessaging.configure(
-        onMessage: (Map<String, dynamic> message) async {
-      print('on message $message');
-    }, onResume: (Map<String, dynamic> message) async {
-      print('on resume $message');
-    }, onLaunch: (Map<String, dynamic> message) async {
-      print('on launch $message');
-    });
-  }
+  // void getMessage() {
+  //   _firebaseMessaging.configure(
+  //       onMessage: (Map<String, dynamic> message) async {
+  //     print('on message $message');
+  //   }, onResume: (Map<String, dynamic> message) async {
+  //     print('on resume $message');
+  //   }, onLaunch: (Map<String, dynamic> message) async {
+  //     print('on launch $message');
+  //   });
+  // }
 
   // _editProfilePicture() {
   //   setState(() {});
@@ -156,7 +156,7 @@ class _GuardianHomeState extends State<GuardianHome> {
   @override
   Widget build(BuildContext context) {
     print('build guardian-home $userProfileVM');
-    _register();
+    // _register();
     print('authToken - ${widget.token}');
     return DefaultTabController(
       length: (userProfileVM != null && userProfileVM.company != null) ? 4: 3,

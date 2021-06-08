@@ -160,7 +160,7 @@ class _LikeButtonState extends State<LikeButton> {
   }
 
   Future<String> likePost() async {
-    final url = "$secretHollowsEndPoint/api/posts/like/${widget.postId}";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/like/${widget.postId}');
     final response = await http.put(
       url,
       headers: {

@@ -134,7 +134,7 @@ class _UnlikeButtonState extends State<UnlikeButton> {
   }
 
   Future<String> likePost() async {
-    final url = "$secretHollowsEndPoint/api/posts/like/${widget.postId}";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/like/${widget.postId}');
     final response = await http.put(
       url,
       headers: {

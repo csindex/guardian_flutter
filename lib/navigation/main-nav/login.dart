@@ -458,7 +458,7 @@ class _LoginState extends State<Login> {
   }
 
   Future<bool> _loginAPI() async {
-    var url = 'https://ccc.guardian4emergency.com/mobile/login';
+    var url = Uri.parse('https://ccc.guardian4emergency.com/mobile/login');
     var response = await http.post(
       url,
       body: {
@@ -474,7 +474,7 @@ class _LoginState extends State<Login> {
   }
 
   Future<String> _loginAPI2() async {
-    var url = '$secretHollowsEndPoint/api/auth';
+    var url = Uri.parse('$secretHollowsEndPoint/api/auth');
     Map data = {'email': _username, 'password': _password};
     var reqBody = json.encode(data);
     var response = await http.post(

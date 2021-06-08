@@ -43,7 +43,7 @@ class _AddTrainingState extends State<AddTraining> {
 
   Future<String> addTraining() async {
     print('$_title - $_company - $_location - $_dateFrom - $_isCurrent - $_dateTo - $_desc');
-    final url = "$secretHollowsEndPoint/api/profile/experience";
+    final url = Uri.parse('$secretHollowsEndPoint/api/profile/experience');
     Map data = {
       'title' : _title,
       'company' : _company,

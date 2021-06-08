@@ -171,8 +171,8 @@ class _SendOtpState extends State<SendOtpDialog> {
   Future<String> _getRegCode(String mobileNumber, String name) async {
     var url = 'https://ccc.guardian4emergency.com/mobile/getRegCodes';
     var response = name == null
-        ? await http.get('$url?mobile=$mobileNumber')
-        : await http.get('$url?mobile=$mobileNumber&name=$name');
+        ? await http.get(Uri.parse('$url?mobile=$mobileNumber'))
+        : await http.get(Uri.parse('$url?mobile=$mobileNumber&name=$name'));
     return response.body.replaceAll('\"', '');
   }
 }

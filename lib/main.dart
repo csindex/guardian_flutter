@@ -6,9 +6,6 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-
 import './screens/wrapper.dart';
 import './provider/viewmodel-notification-list.dart';
 import './provider/posts/viewmodel-posts-list.dart';

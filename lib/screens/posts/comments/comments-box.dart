@@ -259,7 +259,7 @@ class _CommentsBoxState extends State<CommentsBox>
   }*/
 
   Future<String> deleteComment() async {
-    final url = "$secretHollowsEndPoint/api/posts/comment/${widget.post.id}/$_cId";
+    final url = Uri.parse('$secretHollowsEndPoint/api/posts/comment/${widget.post.id}/$_cId');
     final response = await http.delete(
       url,
       headers: {
