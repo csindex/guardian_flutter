@@ -472,7 +472,9 @@ class _ProfileMainState extends State<ProfileMain> {
               primary: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0,),
             ),
-            onPressed: () {},
+            onPressed: () {
+              // TODO: Delete Account then go back to log in screen
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
