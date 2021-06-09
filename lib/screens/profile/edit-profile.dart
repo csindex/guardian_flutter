@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -106,7 +108,7 @@ class _EditProfileState extends State<EditProfile>
   LatLng _acquiredLL;
   LatLng _selectedLL;
   final Map<String, Marker> _markers = {};
-  String address;
+  // String address;
   double lat, lng;
   GoogleGeocoding _googleGeocoder;
 
@@ -295,19 +297,25 @@ class _EditProfileState extends State<EditProfile>
         );
         _markers.clear();
         _markers['selectedLocation'] = marker;
-        address = value;
+        _homeAddress = value;
+        _homeAddressController.text = _homeAddress;
         try {
-          _mapController.hideMarkerInfoWindow(_markers['selectedLocation'].markerId);
+          print('${markerId.value} x ${_markers['selectedLocation'].markerId.value}');
+          if (_mapController != null) {
+            _mapController.hideMarkerInfoWindow(
+                _markers['selectedLocation'].markerId);
+          }
         } catch (e) {
           print('No marker displayed currently.');
         }
         _mapController.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(target: latlng, zoom: 16.0)));
-        try {
-          _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
-        } catch (e) {
-          print('exception $e X ${_markers.length} x $_markers}');
-        }
+            CameraPosition(target: latlng, zoom: 16.0))).then((_) {
+          try {
+            _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
+          } catch (e) {
+            print('exception $e X ${_markers.length} x $_markers}');
+          }
+        });
       });
     });
     return Future.value();
@@ -333,8 +341,8 @@ class _EditProfileState extends State<EditProfile>
     } else {
       _addMarker(LatLng(widget.userVM.lat, widget.userVM.lng));
     }
-    _homeAddressController = TextEditingController(text: '');
-    _bioController = TextEditingController(text: '');
+    _homeAddressController = TextEditingController(text: widget.userVM.homeAddress ?? '');
+    _bioController = TextEditingController(text: widget.userVM.bio ?? '');
 
     _organizationController = TextEditingController(text: '');
     _websiteController = TextEditingController(text: '');
@@ -351,6 +359,12 @@ class _EditProfileState extends State<EditProfile>
     _ytUrlController = TextEditingController(text: '');
     _inUrlController = TextEditingController(text: '');
     _igUrlController = TextEditingController(text: '');
+
+    _gender = widget.userVM.gender;
+    _civilStatus = widget.userVM.civilStatus;
+    _birthDate = widget.userVM.birthDate;
+    _bio = widget.userVM.bio;
+    _homeAddress = widget.userVM.homeAddress;
   }
 
   @override
@@ -814,12 +828,28 @@ class _EditProfileState extends State<EditProfile>
             if (!_isExpandedPInfo) {
               if (_selectedLL == null) {
                 if (_acquiredLL != null) {
-                  _mapController.animateCamera(CameraUpdate.newCameraPosition(
-                      CameraPosition(target: _acquiredLL, zoom: 16.0)));
+                  if (_mapController != null) {
+                    _mapController.animateCamera(CameraUpdate.newCameraPosition(
+                        CameraPosition(target: _acquiredLL, zoom: 16.0))).then((_) {
+                      try {
+                        _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
+                      } catch (e) {
+                        print('exception $e X ${_markers.length} x $_markers}');
+                      }
+                    });
+                  }
                 }
               } else {
-                _mapController.animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(target: _selectedLL, zoom: 16.0)));
+                if (_mapController != null) {
+                  _mapController.animateCamera(CameraUpdate.newCameraPosition(
+                      CameraPosition(target: _selectedLL, zoom: 16.0))).then((_) {
+                    try {
+                      _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
+                    } catch (e) {
+                      print('exception $e X ${_markers.length} x $_markers}');
+                    }
+                  });
+                }
               }
             }
           }
@@ -875,18 +905,26 @@ class _EditProfileState extends State<EditProfile>
             children: [
               Container(
                 width: double.infinity,
-                height: 200.0,
+                height: 228.0,
                 child: GoogleMap(
                   onMapCreated: _onMapCreated,
                   myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
+                  myLocationButtonEnabled: true,
                   compassEnabled: false,
                   trafficEnabled: true,
-                  zoomControlsEnabled: false,
                   initialCameraPosition: CameraPosition(
                     target: LatLng(0.0, 0.0),// TODO: change to initialLL
                   ),
                   markers: Set<Marker>.of(_markers.values),
+                  onLongPress: (latlng) {
+                    print('on Long Press: $latlng');
+                    _addMarker(latlng);
+                  },
+                  gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                    new Factory<OneSequenceGestureRecognizer>(
+                          () => new EagerGestureRecognizer(),
+                    ),
+                  ].toSet(),
                 ),
               ),
               SizedBox(
