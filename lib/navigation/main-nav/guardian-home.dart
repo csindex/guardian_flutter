@@ -13,6 +13,7 @@ import '../../provider/user/viewmodel-user-profile.dart';
 import '../../screens/profile/profile-main.dart';
 import '../../screens/responders/responders.dart';
 import '../../screens/posts/posts.dart';
+import '../../screens/incident/incident-main.dart';
 import '../../screens/id/id.dart';
 import '../../services/web-service.dart';
 
@@ -159,8 +160,8 @@ class _GuardianHomeState extends State<GuardianHome> {
     // _register();
     print('authToken - ${widget.token}');
     return DefaultTabController(
-      length: (userProfileVM != null && userProfileVM.company != null) ? 4: 3,
-      initialIndex: (userProfileVM != null && userProfileVM.company != null) ? 2 : 1,
+      length: (userProfileVM != null && userProfileVM.company != null) ? 5: 4,
+      initialIndex: (userProfileVM != null && userProfileVM.company != null) ? 3 : 2,
       child: Scaffold(
         body: NestedScrollView(
           controller: _scrollController,
@@ -219,6 +220,13 @@ class _GuardianHomeState extends State<GuardianHome> {
                   tabs: [
                     Tab(
                       icon: ImageIcon(
+                        AssetImage('assets/inc_ti.png'),
+                        size: 128,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Tab(
+                      icon: ImageIcon(
                         AssetImage('assets/id_ti.png'),
                         size: 128,
                         color: Colors.white,
@@ -258,6 +266,13 @@ class _GuardianHomeState extends State<GuardianHome> {
                   tabs: [
                     Tab(
                       icon: ImageIcon(
+                        AssetImage('assets/inc_ti.png'),
+                        size: 128,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Tab(
+                      icon: ImageIcon(
                         AssetImage('assets/ambu_ti.png'),
                         size: 128,
                         color: Colors.white,
@@ -285,6 +300,10 @@ class _GuardianHomeState extends State<GuardianHome> {
           body: (userProfileVM != null && userProfileVM.company != null)
               ? TabBarView(
                       children: [
+                        IncidentMain(
+                          userVM: userProfileVM,
+                          token: widget.token,
+                        ),
                         ID(
                           vm: vm,
                           userProfileVM: userProfileVM,
@@ -316,6 +335,10 @@ class _GuardianHomeState extends State<GuardianHome> {
                     )
               : TabBarView(
                   children: [
+                    IncidentMain(
+                      userVM: userProfileVM,
+                      token: widget.token,
+                    ),
                     Responders(
                       vm: vm,
                       userVM: userProfileVM,
