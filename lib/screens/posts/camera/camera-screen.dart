@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
-import '../preview-screen.dart';
-
 
 class CameraScreen extends StatefulWidget {
   final String token;
@@ -147,7 +145,7 @@ class _CameraScreenState extends State<CameraScreen> {
     return Expanded(
       child: Align(
         alignment: Alignment.centerLeft,
-        child: FlatButton.icon(
+        child: TextButton.icon(
             onPressed: () {
               onSwitchCamera();
             },
@@ -166,27 +164,11 @@ class _CameraScreenState extends State<CameraScreen> {
 
   onCapture(context) async {
     try {
-      // final p = await getExternalStorageDirectory();
-      // final name = DateTime.now();
-      // final path = '${p.path}/$name.png';
       await _controller.takePicture().then((value) {
         final tempPath = value.path;
         print('old path: $tempPath');
-        // File file = File(tempPath);
-        // file.copy(path);
-        // print('new path: $path');
         widget.handleImage(tempPath);
         Navigator.pop(context);
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => PreviewScreen(
-        //       imgPath: tempPath,
-        //       fileName: tempPath.split('/').last,
-        //       token: widget.token,
-        //     ),
-        //   ),
-        // );
       });
     } catch (e) {
       print(e);

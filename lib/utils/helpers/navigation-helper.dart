@@ -21,6 +21,7 @@ import '../../screens/profile/select-address.dart';
 import '../../screens/posts/camera/camera-screen.dart' as cPost;
 import '../../screens/posts/gallery/gallery-screen.dart' as gPost;
 import '../../screens/posts/comments/comments.dart';
+import '../../screens/profile/camera/camera-screen.dart' as cProfile;
 
 class NavigationHelper {
   static createAccount(context) => Navigator.push(
@@ -228,6 +229,16 @@ class NavigationHelper {
         userVM: userVM,
         refresh: r,
         isUpdate: isUpdate,
+      ),
+    ),
+  );
+
+  static openCameraProfile(context, token, f) => Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => cProfile.CameraScreen(
+        token: token,
+        handleImage: f,
       ),
     ),
   );

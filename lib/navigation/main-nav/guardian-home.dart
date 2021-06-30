@@ -14,6 +14,7 @@ import '../../screens/profile/profile-main.dart';
 import '../../screens/responders/responders.dart';
 import '../../screens/posts/posts.dart';
 import '../../screens/incident/incident-main.dart';
+import '../../screens/report-buttons.dart';
 import '../../screens/id/id.dart';
 import '../../services/web-service.dart';
 
@@ -160,8 +161,8 @@ class _GuardianHomeState extends State<GuardianHome> {
     // _register();
     print('authToken - ${widget.token}');
     return DefaultTabController(
-      length: (userProfileVM != null && userProfileVM.company != null) ? 5: 4,
-      initialIndex: (userProfileVM != null && userProfileVM.company != null) ? 3 : 2,
+      length: (userProfileVM != null && userProfileVM.company != null) ? 4: 3,
+      initialIndex: (userProfileVM != null && userProfileVM.company != null) ? 2 : 1,
       child: Scaffold(
         body: NestedScrollView(
           controller: _scrollController,
@@ -232,13 +233,13 @@ class _GuardianHomeState extends State<GuardianHome> {
                         color: Colors.white,
                       ),
                     ),
-                    Tab(
+                    /*Tab(
                       icon: ImageIcon(
                         AssetImage('assets/ambu_ti.png'),
                         size: 128,
                         color: Colors.white,
                       ),
-                    ),
+                    ),*/
                     Tab(
                       icon: ImageIcon(
                         AssetImage('assets/post_ti.png'),
@@ -271,13 +272,13 @@ class _GuardianHomeState extends State<GuardianHome> {
                         color: Colors.white,
                       ),
                     ),
-                    Tab(
+                    /*Tab(
                       icon: ImageIcon(
                         AssetImage('assets/ambu_ti.png'),
                         size: 128,
                         color: Colors.white,
                       ),
-                    ),
+                    ),*/
                     Tab(
                       icon: ImageIcon(
                         AssetImage('assets/post_ti.png'),
@@ -297,72 +298,74 @@ class _GuardianHomeState extends State<GuardianHome> {
               ),
             ];
           },
-          body: (userProfileVM != null && userProfileVM.company != null)
-              ? TabBarView(
-                      children: [
-                        IncidentMain(
-                          userVM: userProfileVM,
-                          token: widget.token,
-                        ),
-                        ID(
-                          vm: vm,
-                          userProfileVM: userProfileVM,
-                          userOriginalVM: userProfileVM,
-                        ),
-                        Responders(
-                          vm: vm,
-                          userVM: userProfileVM,
-                          token: widget.token,
-                          origin: 'posts',
-                          responderList: userList,
-                        ),
-                        Posts(
-                          token: widget.token,
-                          vm: vm,
-                          userProfileVM: userProfileVM,
-                          openProfileScreen: openProfileScreen,
-                          userList: userList,
-                        ),
-                        ProfileMain(
-                          vm: vm,
-                          userVM: userProfileVM,
-                          token: widget.token,
-                          origin: 'posts',
-                          userOVM: userProfileVM,
-                          refresh: _refreshUser,
-                        ),
-                      ],
-                    )
-              : TabBarView(
-                  children: [
-                    IncidentMain(
-                      userVM: userProfileVM,
-                      token: widget.token,
-                    ),
-                    Responders(
-                      vm: vm,
-                      userVM: userProfileVM,
-                      token: widget.token,
-                      origin: 'posts',
-                      responderList: userList,
-                    ),
-                    Posts(
-                      token: widget.token,
-                      vm: vm,
-                      userProfileVM: userProfileVM,
-                      openProfileScreen: openProfileScreen,
-                      userList: userList,
-                    ),
-                    ProfileMain(
-                      vm: vm,
-                      userVM: userProfileVM,
-                      token: widget.token,
-                      origin: 'posts',
-                      userOVM: userProfileVM,
-                      refresh: _refreshUser,
-                    ),
-                  ],
+          body: (userProfileVM != null && userProfileVM.company != null) ?
+          TabBarView(
+            children: [
+                IncidentMain(
+                  userVM: userProfileVM,
+                  token: widget.token,
+                  uVM: vm,
                 ),
+                ID(
+                  vm: vm,
+                  userProfileVM: userProfileVM,
+                  userOriginalVM: userProfileVM,
+                ),
+                /*Responders(
+                  vm: vm,
+                  userVM: userProfileVM,
+                  token: widget.token,
+                  origin: 'posts',
+                  responderList: userList,
+                ),*/
+                Posts(
+                  token: widget.token,
+                  vm: vm,
+                  userProfileVM: userProfileVM,
+                  openProfileScreen: openProfileScreen,
+                  userList: userList,
+                ),
+                ProfileMain(
+                  vm: vm,
+                  userVM: userProfileVM,
+                  token: widget.token,
+                  origin: 'posts',
+                  userOVM: userProfileVM,
+                  refresh: _refreshUser,
+                ),
+              ],
+            ) :
+          TabBarView(
+            children: [
+              IncidentMain(
+                userVM: userProfileVM,
+                token: widget.token,
+                uVM: vm,
+              ),
+              /*Responders(
+                vm: vm,
+                userVM: userProfileVM,
+                token: widget.token,
+                origin: 'posts',
+                responderList: userList,
+              ),*/
+              Posts(
+                token: widget.token,
+                vm: vm,
+                userProfileVM: userProfileVM,
+                openProfileScreen: openProfileScreen,
+                userList: userList,
+              ),
+              ProfileMain(
+                vm: vm,
+                userVM: userProfileVM,
+                token: widget.token,
+                origin: 'posts',
+                userOVM: userProfileVM,
+                refresh: _refreshUser,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -58,9 +58,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: FlatButton(
-              color: Colors.transparent.withAlpha(25),
-              splashColor: Colors.grey,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                primary: Colors.transparent.withAlpha(25),
+                padding: EdgeInsets.symmetric(vertical: 16.0,),
+              ),
+              // color: Colors.transparent.withAlpha(25),
+              // splashColor: Colors.grey,
               child: Container(
                 width: double.infinity,
                 height: 60,

@@ -5,6 +5,8 @@ import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:google_geocoding/google_geocoding.dart';
 
 import 'utils.dart';
 import '../../services/web-service.dart';
@@ -89,4 +91,62 @@ Future<List<UserProfileViewModel>> fetchUsers() async {
   var result = await Webservice().fetchUsers();
   var userList = result.map((item) => UserProfileViewModel(userDetails: item)).toList();
   return userList;
+}
+
+/// Determine the current position of the device.
+///
+/// When the location services are not enabled or permissions
+/// are denied the `Future` will return an error.
+Future<Position> determinePosition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.deniedForever) {
+    return Future.error('Location permissions are permantly denied, we '
+        'cannot request permissions.');
+  }
+
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
+      return Future.error(
+          'Location permissions are denied (actual value: $permission).');
+    }
+  }
+  return await Geolocator.getCurrentPosition();
+}
+
+Future<List<GeocodingResult>> getAddress(LatLon coor) async {
+  var _googleGeocoder = GoogleGeocoding(gMAK);
+  var response = await _googleGeocoder.geocoding.getReverse(coor);
+  return response.results;
+  // if (response != null && results != null) {
+  //   // print(results[0].addressComponents);
+  //   // for (var r in results) {`
+  //   //   print('r: ${r.types}');
+  //   //   for (var c in r.addressComponents) {
+  //   //     print('${c.longName} x ${c.types} x ${c.shortName}');
+  //   //   }
+  //   // }
+  //   // var address = '';
+  //   // var addressComponent = results[1].addressComponents[0];
+  //   // if (addressComponent.types[0] == 'street_number') {
+  //   //   address = '${addressComponent.longName},';
+  //   //   addressComponent = results[1].addressComponents[1];
+  //   // }
+  //   // address = '$address ${addressComponent.longName},';
+  //   // addressComponent = results[2].addressComponents[0];
+  //   // address = '$address ${addressComponent.longName},';
+  //   // address = '$address ${results[4].formattedAddress}';
+  //   return results[0].formattedAddress;//address;
+  // } else {
+  //   return 'Sorry! Address not found!';
+  // }
 }

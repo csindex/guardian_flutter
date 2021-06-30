@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:network_to_file_image/network_to_file_image.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,6 +19,7 @@ import 'package:google_geocoding/google_geocoding.dart';
 import '../../provider/user/viewmodel-user-profile.dart';
 import '../../utils/constants/utils.dart';
 import '../../utils/loading.dart';
+import '../../utils/helpers/navigation-helper.dart';
 
 class EditProfile extends StatefulWidget {
   final String token;
@@ -38,7 +40,7 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile>
-    with TickerProviderStateMixin<EditProfile>{
+    with TickerProviderStateMixin<EditProfile> {
 
   final _formPageKey = GlobalKey<FormState>();
 
@@ -47,6 +49,10 @@ class _EditProfileState extends State<EditProfile>
   bool _isExpandedOInfo = false;
   bool _isExpandedEInfo = false;
   bool _isExpandedSNInfo = false;
+
+  final picker = ImagePicker();
+  File _imageFile;
+  String _imagePath;
 
   // Future<String> addEducation() async {
   //   print('$_school - $_degree - $_field - $_dateFrom - $_isCurrent - $_dateTo - $_desc');
@@ -103,12 +109,24 @@ class _EditProfileState extends State<EditProfile>
   double _lat = 0.0;
   double _lng = 0.0;
 
+  String _nHomeAddress = '';
+  String _nGender = '';
+  String _nCivilStatus = '';
+  String _nBirthDate = '';
+  double _nLat = 0.0;
+  double _nLng = 0.0;
+  String _nCity = '';
+  String _nState = '';
+  String _nArea = '';
+
+  bool _errPInfo = false;
+  String _errHomeAdd;
+
   GoogleMapController _mapController;
   LatLng _defaultLL = LatLng(0.0, 0.0);
   LatLng _acquiredLL;
   LatLng _selectedLL;
   final Map<String, Marker> _markers = {};
-  // String address;
   double lat, lng;
   GoogleGeocoding _googleGeocoder;
 
@@ -327,6 +345,27 @@ class _EditProfileState extends State<EditProfile>
     return File(pathName);
   }
 
+  handleImagePath(String value) {
+    print('CAMERA - $value');
+    setState(() {
+      _imagePath = value;
+      _imageFile = File(_imagePath);
+    });
+  }
+
+  Future _getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        var _image = pickedFile;
+        _imagePath = _image.path;
+        _imageFile = File(_imagePath);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -341,8 +380,12 @@ class _EditProfileState extends State<EditProfile>
     } else {
       _addMarker(LatLng(widget.userVM.lat, widget.userVM.lng));
     }
-    _homeAddressController = TextEditingController(text: widget.userVM.homeAddress ?? '');
-    _bioController = TextEditingController(text: widget.userVM.bio ?? '');
+    _homeAddressController = TextEditingController(text:
+    (widget.userVM == null || widget.userVM.homeAddress == null)
+        ? '' : widget.userVM.homeAddress);
+    _bioController = TextEditingController(text:
+    (widget.userVM == null || widget.userVM.bio == null)
+        ? '' : widget.userVM.bio);
 
     _organizationController = TextEditingController(text: '');
     _websiteController = TextEditingController(text: '');
@@ -360,11 +403,13 @@ class _EditProfileState extends State<EditProfile>
     _inUrlController = TextEditingController(text: '');
     _igUrlController = TextEditingController(text: '');
 
-    _gender = widget.userVM.gender;
-    _civilStatus = widget.userVM.civilStatus;
-    _birthDate = widget.userVM.birthDate;
-    _bio = widget.userVM.bio;
-    _homeAddress = widget.userVM.homeAddress;
+    if (widget.userVM != null) {
+      _gender = widget.userVM.gender;
+      _civilStatus = widget.userVM.civilStatus;
+      _birthDate = widget.userVM.birthDate;
+      _bio = widget.userVM.bio ?? '';
+      _homeAddress = widget.userVM.homeAddress;
+    }
   }
 
   @override
@@ -411,6 +456,9 @@ class _EditProfileState extends State<EditProfile>
                     padding: EdgeInsets.symmetric(vertical: 16.0,),
                   ),
                   onPressed: () {
+                    Navigator.pop(context);
+                    NavigationHelper.openCameraProfile(
+                      context, widget.token, handleImagePath);
                     // if (userProfileVM == null || userProfileVM.gender == null) {
                     //   print('No Profile');
                     // } else {
@@ -427,9 +475,7 @@ class _EditProfileState extends State<EditProfile>
                         size: 16.0,
                         color: Colors.grey,
                       ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
+                      hSpacer(w: 8.0,),
                       Text(
                         'Take a Photo',
                         style: TextStyle(
@@ -447,13 +493,8 @@ class _EditProfileState extends State<EditProfile>
                     padding: EdgeInsets.symmetric(vertical: 16.0,),
                   ),
                   onPressed: () {
-                    // if (userProfileVM == null || userProfileVM.gender == null) {
-                    //   print('No Profile');
-                    // } else {
-                    //   print('unsa d i sulod? $userProfileVM X ${userProfileVM.gender}');
-                    //   Navigator.pop(context);
-                    //   NavigationHelper.openCameraScreen(context, token, userProfileVM);
-                    // }
+                    Navigator.pop(context);
+                    _getImage();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -463,9 +504,7 @@ class _EditProfileState extends State<EditProfile>
                         size: 16.0,
                         color: Colors.grey,
                       ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
+                      hSpacer(w: 8.0,),
                       Text(
                         'Select a Photo',
                         style: TextStyle(
@@ -492,6 +531,7 @@ class _EditProfileState extends State<EditProfile>
         Widget w;
         if (snapshot.hasData) {
           print('Ikaw pala ${snapshot.data}');
+          _imageFile = snapshot.data;
           w = Scaffold(
             backgroundColor: Colors.grey.shade300,
             body: SafeArea(
@@ -514,13 +554,9 @@ class _EditProfileState extends State<EditProfile>
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
+                        vSpacer(h: 16.0,),
                         _header,
-                        SizedBox(
-                          height: 16.0,
-                        ),
+                        vSpacer(h: 16.0,),
                         Text(
                           '* = required field',
                           style: TextStyle(
@@ -528,9 +564,7 @@ class _EditProfileState extends State<EditProfile>
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
+                        vSpacer(h: 16.0,),
                         Align(
                           alignment: Alignment.center,
                           child: Stack(
@@ -543,9 +577,11 @@ class _EditProfileState extends State<EditProfile>
                                   child: CircleAvatar(
                                     radius: 79.0,
                                     backgroundColor: Colors.white,
-                                    backgroundImage: NetworkToFileImage(
+                                    backgroundImage: _imagePath != null ?
+                                    FileImage(_imageFile) :
+                                    NetworkToFileImage(
                                       url: '$secretHollowsEndPoint/img/Spotter.png',
-                                      file: snapshot.data,
+                                      file: _imageFile,
                                       debug: true,
                                     ),
                                   ),
@@ -575,16 +611,12 @@ class _EditProfileState extends State<EditProfile>
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
+                        vSpacer(h: 16.0,),
                         _expandablePersonalInfo,
                         _expandableOrganizationInfo,
                         _expandableEmergencyInfo,
                         _expandableSocialNetworkLinks,
-                        SizedBox(
-                          height: 8.0,
-                        ),
+                        vSpacer(h: 8.0,),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -609,9 +641,7 @@ class _EditProfileState extends State<EditProfile>
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              width: 2.0,
-                            ),
+                            hSpacer(w: 2.0,),
                             TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -668,13 +698,9 @@ class _EditProfileState extends State<EditProfile>
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 16.0,
-                  ),
+                  vSpacer(h: 16.0,),
                   _header,
-                  SizedBox(
-                    height: 16.0,
-                  ),
+                  vSpacer(h: 16.0,),
                   Text(
                     '* = required field',
                     style: TextStyle(
@@ -682,9 +708,7 @@ class _EditProfileState extends State<EditProfile>
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  SizedBox(
-                    height: 16.0,
-                  ),
+                  vSpacer(h: 16.0,),
                   Align(
                     alignment: Alignment.center,
                     child: Stack(
@@ -697,9 +721,9 @@ class _EditProfileState extends State<EditProfile>
                             child: CircleAvatar(
                               radius: 79.0,
                               backgroundColor: Colors.white,
-                              backgroundImage: NetworkImage(
-                                widget.userVM.profilePic,
-                              ),
+                              backgroundImage: _imageFile != null ?
+                              FileImage(_imageFile) :
+                              NetworkImage(widget.userVM.profilePic,),
                             ),
                           ),
                         ),
@@ -727,16 +751,12 @@ class _EditProfileState extends State<EditProfile>
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 16.0,
-                  ),
+                  vSpacer(h: 16.0,),
                   _expandablePersonalInfo,
                   _expandableOrganizationInfo,
                   _expandableEmergencyInfo,
                   _expandableSocialNetworkLinks,
-                  SizedBox(
-                    height: 8.0,
-                  ),
+                  vSpacer(h: 8.0,),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -750,6 +770,10 @@ class _EditProfileState extends State<EditProfile>
                         onPressed: () {
                           if (_formPageKey.currentState.validate()) {
                             // TODO: submit button
+                            final snackBar = SnackBar(
+                              content: Text('Yay! A SnackBar!'),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           }
                         },
                         child: Text(
@@ -761,9 +785,7 @@ class _EditProfileState extends State<EditProfile>
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 2.0,
-                      ),
+                      hSpacer(w: 2.0,),
                       TextButton(
                         style: TextButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -801,9 +823,7 @@ class _EditProfileState extends State<EditProfile>
         size: 16.0,
         color: Colors.black,
       ),
-      SizedBox(
-        width: 8.0,
-      ),
+      hSpacer(w: 8.0,),
       Flexible(
         child: Text(
           '${(widget.isUpdate ? 'Update' : 'Let\'s get some')} '
@@ -855,45 +875,9 @@ class _EditProfileState extends State<EditProfile>
           }
           _isExpandedPInfo = !_isExpandedPInfo;
         }),
-        child: Container(
-          color: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FaIcon(
-                FontAwesomeIcons.solidAddressBook,
-                size: 16.0,
-                color: colorPrimary,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '* Personal Information',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: colorPrimary,
-                    ),
-                  ),
-                ),
-              ),
-              FaIcon(
-                (_isExpandedPInfo)
-                    ? FontAwesomeIcons.angleUp
-                    : FontAwesomeIcons.angleDown,
-                color: colorPrimary,
-                // size: 16.0,
-              ),
-            ],
-          ),
-        ),
+        child: _buildFormLabel('* Personal Information', _isExpandedPInfo, FontAwesomeIcons.solidAddressBook,),
       ),
-      SizedBox(
-        height: 4.0,
-      ),
+      vSpacer(h: 4.0,),
       AnimatedSize(
         vsync: this,
         duration: Duration(milliseconds: 350),
@@ -927,241 +911,27 @@ class _EditProfileState extends State<EditProfile>
                   ].toSet(),
                 ),
               ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('homeAddress'),
-                validator: (value) =>
-                value.isEmpty ? '* Home Address' : null,
-                controller: _homeAddressController,
-                autovalidateMode: AutovalidateMode.disabled,
-                enabled: false,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Home Address',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _homeAddress = val;
-                },
-                onChanged: (String val) {
-                  _homeAddress = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              // Align(
-              //   alignment: Alignment.centerLeft,
-              //   child: Text(
-              //     '* Home Address',
-              //     // style: TextStyle(
-              //     //   fontSize: 12.0,
-              //     // ),
-              //   ),
-              // ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Home Address',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              DropdownButtonFormField(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                value: _gender,
-                decoration: editInputDecoration2.copyWith(
-                  hintText: '* Gender',
-                ),
-                items: _genderOptions.map((c) {
-                  return DropdownMenuItem(
-                    value: c,
-                    child: Text('$c'),
-                  );
-                }).toList(),
-                onChanged: (val) => _gender = val,
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Gender',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              DropdownButtonFormField(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                value: _civilStatus,
-                decoration: editInputDecoration2.copyWith(
-                  hintText: '* Civil Status',
-                ),
-                items: _civilStatusOptions.map((c) {
-                  return DropdownMenuItem(
-                    value: c,
-                    child: Text('$c'),
-                  );
-                }).toList(),
-                onChanged: (val) => _civilStatus = val,
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Civil Status',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  primary: _birthDate == null ? Colors.grey : Colors.black,
-                  padding: EdgeInsets.symmetric(horizontal: 16.0,),
-                  side: BorderSide(
-                    color: Colors.black,
-                    width: 2.0,
-                  ),
-                ),
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
-                  DateTime _currentBirthDate;
-                  try {
-                    _currentBirthDate = DateTime.parse(DateFormat('yyyyMMdd')
-                        .format(DateFormat('MM/dd/yyyy').parse(_birthDate)));
-                  } catch (e) {
-                    print(e);
-                    _currentBirthDate = DateTime.now();
-                  }
-                  DatePicker.showDatePicker(
-                    context,
-                    showTitleActions: true,
-                    minTime: DateTime(1900, 1, 1),
-                    maxTime: DateTime.now(),
-                    onChanged: (date) {
-                      print('change $date');
-                    },
-                    onConfirm: (date) {
-                      print('confirm: $date');
-                      setState(() {
-                        _birthDate = DateFormat('MM/dd/yyyy').format(date);
-                        print('_bdate - $_birthDate');
-                      });
-                    },
-                    currentTime: DateTime(
-                      _currentBirthDate.year,
-                      _currentBirthDate.month,
-                      _currentBirthDate.day,
-                    ),
-                    locale: LocaleType.en,
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 48.0,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _birthDate ?? '* Select Birth date (mm/dd/yyyy)',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Birthdate',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('bio'),
-                // validator: (value) =>
-                // value.isEmpty ? 'Please enter your Job Description' : null,
-                controller: _bioController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  hintText: 'Bio',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 4,
-                minLines: 4,
-                onSaved: (String val) {
-                  _bio = val;
-                },
-                onChanged: (String val) {
-                  _bio = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Please tell us a little about yourself',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
+              vSpacer(h: 8.0,),
+              _buildHomeAddress,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Home Address'),
+              vSpacer(h: 8.0,),
+              _buildGender,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Gender'),
+              vSpacer(h: 8.0,),
+              _buildCivilStatus,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Civil Status'),
+              vSpacer(h: 8.0,),
+              _buildBirthDate,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Birth Date'),
+              vSpacer(h: 8.0,),
+              _buildBio,
+              vSpacer(h: 4.0,),
+              _buildLabel('Please tell us a little about yourself'),
+              vSpacer(h: 8.0,),
             ],
           ),
         ),
@@ -1177,45 +947,9 @@ class _EditProfileState extends State<EditProfile>
         onTap: () => setState(() {
           _isExpandedOInfo = !_isExpandedOInfo;
         }),
-        child: Container(
-          color: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FaIcon(
-                FontAwesomeIcons.solidBuilding,
-                size: 16.0,
-                color: colorPrimary,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Organization/Company',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: colorPrimary,
-                    ),
-                  ),
-                ),
-              ),
-              FaIcon(
-                (_isExpandedOInfo)
-                    ? FontAwesomeIcons.angleUp
-                    : FontAwesomeIcons.angleDown,
-                color: colorPrimary,
-                // size: 16.0,
-              ),
-            ],
-          ),
-        ),
+        child: _buildFormLabel('Organization/Company', _isExpandedOInfo, FontAwesomeIcons.solidBuilding,),
       ),
-      SizedBox(
-        height: 4.0,
-      ),
+      vSpacer(h: 4.0,),
       AnimatedSize(
         vsync: this,
         duration: Duration(milliseconds: 350),
@@ -1225,214 +959,26 @@ class _EditProfileState extends State<EditProfile>
               : BoxConstraints(maxHeight: 0.0),
           child: Column(
             children: [
-              DropdownButtonFormField(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                value: _responderStatus,
-                decoration: editInputDecoration2.copyWith(
-                  hintText: '* Responder Status',
-                ),
-                items: _respStatusOptions.map((c) {
-                  return DropdownMenuItem(
-                    value: c,
-                    child: Text('$c'),
-                  );
-                }).toList(),
-                onChanged: (val) => _responderStatus = val,
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Give us an idea of where you are at in your emergency response career',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('organization'),
-                validator: (value) =>
-                value.isEmpty ? '* Organization Name' : null,
-                controller: _organizationController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Organization Name',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _org = val;
-                },
-                onChanged: (String val) {
-                  _org = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Organization you are affiliated/member',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('website'),
-                validator: (value) =>
-                value.isEmpty ? 'Website' : null,
-                controller: _websiteController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: 'Organization Website',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _website = val;
-                },
-                onChanged: (String val) {
-                  _website = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Organization Website',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('orgAddress'),
-                validator: (value) =>
-                value.isEmpty ? '* Organization Address' : null,
-                controller: _orgAddressController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Organization Address',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _orgAddress = val;
-                },
-                onChanged: (String val) {
-                  _orgAddress = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* City or Municipality where organization is located',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('skills'),
-                validator: (value) =>
-                value.isEmpty ? '* Skills' : null,
-                controller: _skillsController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Skills',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _skills = val;
-                },
-                onChanged: (String val) {
-                  _skills = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Please use comma separated values (eg. Patient Care, EMS, EMT, CPR, Hazardous Materials, Trauma)',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
+              _buildResponderStatus,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Give us an idea of where you are at in your emergency response career'),
+              vSpacer(h: 8.0,),
+              _buildOrganizationName,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Organization you are affiliated/member'),
+              vSpacer(h: 8.0,),
+              _buildOrgWebsite,
+              vSpacer(h: 4.0,),
+              _buildLabel('Organization Website'),
+              vSpacer(h: 8.0,),
+              _buildOrgAddress,
+              vSpacer(h: 4.0,),
+              _buildLabel('* City or Municipality where organization is located'),
+              vSpacer(h: 8.0,),
+              _buildSkills,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Please use comma separated values (eg. Patient Care, EMS, EMT, CPR, Hazardous Materials, Trauma)'),
+              vSpacer(h: 8.0,),
             ],
           ),
         ),
@@ -1448,45 +994,9 @@ class _EditProfileState extends State<EditProfile>
         onTap: () => setState(() {
           _isExpandedEInfo = !_isExpandedEInfo;
         }),
-        child: Container(
-          color: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FaIcon(
-                FontAwesomeIcons.solidBuilding,
-                size: 16.0,
-                color: colorPrimary,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Emergency Information',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: colorPrimary,
-                    ),
-                  ),
-                ),
-              ),
-              FaIcon(
-                (_isExpandedEInfo)
-                    ? FontAwesomeIcons.angleUp
-                    : FontAwesomeIcons.angleDown,
-                color: colorPrimary,
-                // size: 16.0,
-              ),
-            ],
-          ),
-        ),
+        child: _buildFormLabel('Emergency Information', _isExpandedEInfo, FontAwesomeIcons.solidBuilding,),
       ),
-      SizedBox(
-        height: 4.0,
-      ),
+      vSpacer(h: 4.0,),
       AnimatedSize(
         vsync: this,
         duration: Duration(milliseconds: 350),
@@ -1496,246 +1006,30 @@ class _EditProfileState extends State<EditProfile>
               : BoxConstraints(maxHeight: 0.0),
           child: Column(
             children: [
-              TextFormField(
-                key: Key('contactPerson'),
-                validator: (value) =>
-                value.isEmpty ? '* Contact Person' : null,
-                controller: _contactPersonController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Contact Person',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _contactPerson = val;
-                },
-                onChanged: (String val) {
-                  _contactPerson = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Name of person you wish to contact in case of emergency',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('relationship'),
-                validator: (value) =>
-                value.isEmpty ? '* Relationship' : null,
-                controller: _relationshipController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Relationship',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _relationship = val;
-                },
-                onChanged: (String val) {
-                  _relationship = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Relationship to contact person',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('contactNumber'),
-                validator: (value) =>
-                value.isEmpty ? '* Contact Number' : null,
-                controller: _contactNumberController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Contact Number',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _contactNumber = val;
-                },
-                onChanged: (String val) {
-                  _contactNumber = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Contact Number of your contact person',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextFormField(
-                key: Key('contactAddress'),
-                validator: (value) =>
-                value.isEmpty ? '* Contact Address' : null,
-                controller: _contactAddressController,
-                autovalidateMode: AutovalidateMode.disabled,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: editInputDecoration2.copyWith(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16.0,
-                    horizontal: 16.0,
-                  ),
-                  hintText: '* Contact Address',
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 1,
-                minLines: 1,
-                onSaved: (String val) {
-                  _contactAddress = val;
-                },
-                onChanged: (String val) {
-                  _contactAddress = val;
-                },
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '* Address of your contact person',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              DropdownButtonFormField(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                value: _bloodType,
-                decoration: editInputDecoration2.copyWith(
-                  hintText: 'Blood Type',
-                ),
-                items: _bloodTypeOptions.map((c) {
-                  return DropdownMenuItem(
-                    value: c,
-                    child: Text('$c'),
-                  );
-                }).toList(),
-                onChanged: (val) => _bloodType = val,
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Blood Type',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              DropdownButtonFormField(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                value: _isInsured,
-                decoration: editInputDecoration2.copyWith(
-                  hintText: 'Insured?',
-                ),
-                items: _insuranceOptions.map((c) {
-                  return DropdownMenuItem(
-                    value: c,
-                    child: Text('$c'),
-                  );
-                }).toList(),
-                onChanged: (val) => _isInsured = val,
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Do you have an insurance policy?',
-                  style: TextStyle(
-                    // fontSize: 12.0,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
+              _buildContactPerson,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Name of person you wish to contact in case of emergency'),
+              vSpacer(h: 8.0,),
+              _buildRelationship,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Relationship to contact person'),
+              vSpacer(h: 8.0,),
+              _buildContactNumber,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Contact Number of your contact person'),
+              vSpacer(h: 8.0,),
+              _buildContactAddress,
+              vSpacer(h: 4.0,),
+              _buildLabel('* Address of your contact person'),
+              vSpacer(h: 8.0,),
+              _buildBloodType,
+              vSpacer(h: 4.0,),
+              _buildLabel('Blood Type'),
+              vSpacer(h: 8.0,),
+              _buildInsurance,
+              vSpacer(h: 4.0,),
+              _buildLabel('Do you have an insurance policy?'),
+              vSpacer(h: 8.0,),
             ],
           ),
         ),
@@ -1751,45 +1045,9 @@ class _EditProfileState extends State<EditProfile>
         onTap: () => setState(() {
           _isExpandedSNInfo = !_isExpandedSNInfo;
         }),
-        child: Container(
-          color: Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FaIcon(
-                FontAwesomeIcons.desktop,
-                size: 16.0,
-                color: colorPrimary,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Social Network Links',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: colorPrimary,
-                    ),
-                  ),
-                ),
-              ),
-              FaIcon(
-                (_isExpandedSNInfo)
-                    ? FontAwesomeIcons.angleUp
-                    : FontAwesomeIcons.angleDown,
-                color: colorPrimary,
-                // size: 16.0,
-              ),
-            ],
-          ),
-        ),
+        child: _buildFormLabel('Social Network Links', _isExpandedSNInfo, FontAwesomeIcons.desktop,),
       ),
-      SizedBox(
-        height: 4.0,
-      ),
+      vSpacer(h: 4.0,),
       AnimatedSize(
         vsync: this,
         duration: Duration(milliseconds: 350),
@@ -1799,248 +1057,725 @@ class _EditProfileState extends State<EditProfile>
               : BoxConstraints(maxHeight: 0.0),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.twitter,
-                    size: 24.0,
-                    color: Color(0xff38a1f3),
-                  ),
-                  SizedBox(
-                    width: 11.5,
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextFormField(
-                        key: Key('twUrl'),
-                        validator: (value) =>
-                        value.isEmpty ? 'Twitter URL' : null,
-                        controller: _twUrlController,
-                        autovalidateMode: AutovalidateMode.disabled,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: editInputDecoration2.copyWith(
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 16.0,
-                          ),
-                          hintText: 'Twitter URL',
-                        ),
-                        keyboardType: TextInputType.text,
-                        maxLines: 1,
-                        minLines: 1,
-                        onSaved: (String val) {
-                          _twUrl = val;
-                        },
-                        onChanged: (String val) {
-                          _twUrl = val;
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.facebook,
-                    size: 24.0,
-                    color: Color(0xff3b5998),
-                  ),
-                  SizedBox(
-                    width: 11.5,
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextFormField(
-                        key: Key('fbUrl'),
-                        validator: (value) =>
-                        value.isEmpty ? 'Facebook URL' : null,
-                        controller: _fbUrlController,
-                        autovalidateMode: AutovalidateMode.disabled,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: editInputDecoration2.copyWith(
-                          hintText: 'Facebook URL',
-                        ),
-                        keyboardType: TextInputType.text,
-                        maxLines: 1,
-                        minLines: 1,
-                        onSaved: (String val) {
-                          _fbUrl = val;
-                        },
-                        onChanged: (String val) {
-                          _fbUrl = val;
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.youtube,
-                    size: 24.0,
-                    color: Color(0xffc4302b),
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextFormField(
-                        key: Key('ytUrl'),
-                        validator: (value) =>
-                        value.isEmpty ? 'Youtube URL' : null,
-                        controller: _ytUrlController,
-                        autovalidateMode: AutovalidateMode.disabled,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: editInputDecoration2.copyWith(
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 16.0,
-                          ),
-                          hintText: 'Youtube URL',
-                        ),
-                        keyboardType: TextInputType.text,
-                        maxLines: 1,
-                        minLines: 1,
-                        onSaved: (String val) {
-                          _ytUrl = val;
-                        },
-                        onChanged: (String val) {
-                          _ytUrl = val;
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.linkedin,
-                    size: 24.0,
-                    color: Color(0xff0077b5),
-                  ),
-                  SizedBox(
-                    width: 14.0,
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextFormField(
-                        key: Key('inUrl'),
-                        validator: (value) =>
-                        value.isEmpty ? 'LinkedIn URL' : null,
-                        controller: _inUrlController,
-                        autovalidateMode: AutovalidateMode.disabled,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: editInputDecoration2.copyWith(
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 16.0,
-                          ),
-                          hintText: 'LinkedIn URL',
-                        ),
-                        keyboardType: TextInputType.text,
-                        maxLines: 1,
-                        minLines: 1,
-                        onSaved: (String val) {
-                          _inUrl = val;
-                        },
-                        onChanged: (String val) {
-                          _inUrl = val;
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.instagram,
-                    size: 24.0,
-                    color: Color(0xff3f729b),
-                  ),
-                  SizedBox(
-                    width: 13.5,
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextFormField(
-                        key: Key('igUrl'),
-                        validator: (value) =>
-                        value.isEmpty ? 'Instagram URL' : null,
-                        controller: _igUrlController,
-                        autovalidateMode: AutovalidateMode.disabled,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: editInputDecoration2.copyWith(
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 16.0,
-                          ),
-                          hintText: 'Instagram URL',
-                        ),
-                        keyboardType: TextInputType.text,
-                        maxLines: 1,
-                        minLines: 1,
-                        onSaved: (String val) {
-                          _igUrl = val;
-                        },
-                        onChanged: (String val) {
-                          _igUrl = val;
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
+              _buildTwitter,
+              vSpacer(h: 8.0,),
+              _buildFacebook,
+              vSpacer(h: 8.0,),
+              _buildYoutube,
+              vSpacer(h: 8.0,),
+              _buildLinkedIn,
+              vSpacer(h: 8.0,),
+              _buildInstagram,
+              vSpacer(h: 8.0,),
             ],
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget _buildFormLabel(String label, bool flag, IconData ic) => Container(
+    color: Colors.transparent,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        FaIcon(
+          ic,
+          size: 16.0,
+          color: colorPrimary,
+        ),
+        hSpacer(w: 8.0,),
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16.0,
+                color: colorPrimary,
+              ),
+            ),
+          ),
+        ),
+        FaIcon((flag)
+            ? FontAwesomeIcons.angleUp
+            : FontAwesomeIcons.angleDown,
+          color: colorPrimary,
+          // size: 16.0,
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildLabel(String label) => Align(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      label,
+      style: TextStyle(
+        // fontSize: 12.0,
+        color: Colors.grey.shade800,
+      ),
+    ),
+  );
+
+  Widget get _buildHomeAddress => TextFormField(
+    // key: Key('homeAddress'),
+    validator: (value) =>
+    value.isEmpty ? '* Home Address' : null,
+    controller: _homeAddressController,
+    autovalidateMode: AutovalidateMode.disabled,
+    enabled: false,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Home Address',
+      errorStyle: TextStyle(
+        fontSize: 0.0,
+      ),
+      errorText: _errHomeAdd,
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    // onSaved: (String val) {
+    //   _homeAddress = val;
+    // },
+    onChanged: (String val) {
+      _nHomeAddress = val;
+    },
+  );
+
+  Widget get _buildGender => DropdownButtonFormField(
+    onTap: () {
+      FocusScope.of(context).unfocus();
+    },
+    value: _gender,
+    decoration: editInputDecoration2.copyWith(
+      hintText: '* Gender',
+      errorStyle: TextStyle(
+        fontSize: 0.0,
+      ),
+    ),
+    items: _genderOptions.map((c) {
+      return DropdownMenuItem(
+        value: c,
+        child: Text('$c'),
+      );
+    }).toList(),
+    onChanged: (val) => _gender = val,
+    validator: (val) => val == null || val.isEmpty? '' : null,
+  );
+
+  Widget get _buildCivilStatus => DropdownButtonFormField(
+    onTap: () {
+      FocusScope.of(context).unfocus();
+    },
+    value: _civilStatus,
+    decoration: editInputDecoration2.copyWith(
+      hintText: '* Civil Status',
+      errorStyle: TextStyle(
+        fontSize: 0.0,
+      ),
+    ),
+    items: _civilStatusOptions.map((c) {
+      return DropdownMenuItem(
+        value: c,
+        child: Text('$c'),
+      );
+    }).toList(),
+    onChanged: (val) => _civilStatus = val,
+    validator: (val) => val == null || val.isEmpty? '' : null
+  );
+
+  Widget get _buildBirthDate => TextButton(
+    style: TextButton.styleFrom(
+      backgroundColor: Colors.white,
+      primary: _birthDate == null ? Colors.grey : Colors.black,
+      padding: EdgeInsets.symmetric(horizontal: 16.0,),
+      side: BorderSide(
+        color: Colors.black,
+        width: 2.0,
+      ),
+    ),
+    onPressed: () {
+      FocusScope.of(context).unfocus();
+      DateTime _currentBirthDate;
+      try {
+        _currentBirthDate = DateTime.parse(DateFormat('yyyyMMdd')
+            .format(DateFormat('MM/dd/yyyy').parse(_birthDate)));
+      } catch (e) {
+        print(e);
+        _currentBirthDate = DateTime.now();
+      }
+      DatePicker.showDatePicker(
+        context,
+        showTitleActions: true,
+        minTime: DateTime(1900, 1, 1),
+        maxTime: DateTime.now(),
+        onChanged: (date) {
+          print('change $date');
+        },
+        onConfirm: (date) {
+          print('confirm: $date');
+          setState(() {
+            _birthDate = DateFormat('MM/dd/yyyy').format(date);
+            print('_bdate - $_birthDate');
+          });
+        },
+        currentTime: DateTime(
+          _currentBirthDate.year,
+          _currentBirthDate.month,
+          _currentBirthDate.day,
+        ),
+        locale: LocaleType.en,
+      );
+    },
+    child: Container(
+      width: double.infinity,
+      height: 48.0,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          _birthDate ?? '* Select Birth date (mm/dd/yyyy)',
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget get _buildBio => TextFormField(
+    // key: Key('bio'),
+    // validator: (value) =>
+    // value.isEmpty ? 'Please enter your Job Description' : null,
+    controller: _bioController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      hintText: 'Bio',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 4,
+    minLines: 4,
+    onSaved: (String val) {
+      _bio = val;
+    },
+    onChanged: (String val) {
+      _bio = val;
+    },
+  );
+
+  Widget get _buildResponderStatus => DropdownButtonFormField(
+    onTap: () {
+      FocusScope.of(context).unfocus();
+    },
+    value: _responderStatus,
+    decoration: editInputDecoration2.copyWith(
+      hintText: '* Responder Status',
+    ),
+    items: _respStatusOptions.map((c) {
+      return DropdownMenuItem(
+        value: c,
+        child: Text('$c'),
+      );
+    }).toList(),
+    onChanged: (val) => _responderStatus = val,
+  );
+
+  Widget get _buildOrganizationName => TextFormField(
+    key: Key('organization'),
+    validator: (value) =>
+    value.isEmpty ? '* Organization Name' : null,
+    controller: _organizationController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Organization Name',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _org = val;
+    },
+    onChanged: (String val) {
+      _org = val;
+    },
+  );
+
+  Widget get _buildOrgWebsite => TextFormField(
+    key: Key('website'),
+    validator: (value) =>
+    value.isEmpty ? 'Website' : null,
+    controller: _websiteController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: 'Organization Website',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _website = val;
+    },
+    onChanged: (String val) {
+      _website = val;
+    },
+  );
+
+  Widget get _buildOrgAddress => TextFormField(
+    key: Key('orgAddress'),
+    validator: (value) =>
+    value.isEmpty ? '* Organization Address' : null,
+    controller: _orgAddressController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Organization Address',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _orgAddress = val;
+    },
+    onChanged: (String val) {
+      _orgAddress = val;
+    },
+  );
+
+  Widget get _buildSkills => TextFormField(
+    key: Key('skills'),
+    validator: (value) =>
+    value.isEmpty ? '* Skills' : null,
+    controller: _skillsController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Skills',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _skills = val;
+    },
+    onChanged: (String val) {
+      _skills = val;
+    },
+  );
+
+  Widget get _buildContactPerson => TextFormField(
+    key: Key('contactPerson'),
+    validator: (value) =>
+    value.isEmpty ? '* Contact Person' : null,
+    controller: _contactPersonController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Contact Person',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _contactPerson = val;
+    },
+    onChanged: (String val) {
+      _contactPerson = val;
+    },
+  );
+
+  Widget get _buildRelationship => TextFormField(
+    key: Key('relationship'),
+    validator: (value) =>
+    value.isEmpty ? '* Relationship' : null,
+    controller: _relationshipController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Relationship',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _relationship = val;
+    },
+    onChanged: (String val) {
+      _relationship = val;
+    },
+  );
+
+  Widget get _buildContactNumber => TextFormField(
+    key: Key('contactNumber'),
+    validator: (value) =>
+    value.isEmpty ? '* Contact Number' : null,
+    controller: _contactNumberController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Contact Number',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _contactNumber = val;
+    },
+    onChanged: (String val) {
+      _contactNumber = val;
+    },
+  );
+
+  Widget get _buildContactAddress => TextFormField(
+    key: Key('contactAddress'),
+    validator: (value) =>
+    value.isEmpty ? '* Contact Address' : null,
+    controller: _contactAddressController,
+    autovalidateMode: AutovalidateMode.disabled,
+    style: TextStyle(
+      fontSize: 16.0,
+      color: Colors.black,
+    ),
+    textAlignVertical: TextAlignVertical.top,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: '* Contact Address',
+    ),
+    keyboardType: TextInputType.text,
+    maxLines: 1,
+    minLines: 1,
+    onSaved: (String val) {
+      _contactAddress = val;
+    },
+    onChanged: (String val) {
+      _contactAddress = val;
+    },
+  );
+
+  Widget get _buildBloodType => DropdownButtonFormField(
+    onTap: () {
+      FocusScope.of(context).unfocus();
+    },
+    value: _bloodType,
+    decoration: editInputDecoration2.copyWith(
+      hintText: 'Blood Type',
+    ),
+    items: _bloodTypeOptions.map((c) {
+      return DropdownMenuItem(
+        value: c,
+        child: Text('$c'),
+      );
+    }).toList(),
+    onChanged: (val) => _bloodType = val,
+  );
+
+  Widget get _buildInsurance => DropdownButtonFormField(
+    onTap: () {
+      FocusScope.of(context).unfocus();
+    },
+    value: _isInsured,
+    decoration: editInputDecoration2.copyWith(
+      hintText: 'Insured?',
+    ),
+    items: _insuranceOptions.map((c) {
+      return DropdownMenuItem(
+        value: c,
+        child: Text('$c'),
+      );
+    }).toList(),
+    onChanged: (val) => _isInsured = val,
+  );
+
+  Widget get _buildTwitter => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      FaIcon(
+        FontAwesomeIcons.twitter,
+        size: 24.0,
+        color: Color(0xff38a1f3),
+      ),
+      hSpacer(w: 11.5,),
+      Expanded(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextFormField(
+            key: Key('twUrl'),
+            validator: (value) =>
+            value.isEmpty ? 'Twitter URL' : null,
+            controller: _twUrlController,
+            autovalidateMode: AutovalidateMode.disabled,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.black,
+            ),
+            textAlignVertical: TextAlignVertical.top,
+            decoration: editInputDecoration2.copyWith(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 16.0,
+                horizontal: 16.0,
+              ),
+              hintText: 'Twitter URL',
+            ),
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            minLines: 1,
+            onSaved: (String val) {
+              _twUrl = val;
+            },
+            onChanged: (String val) {
+              _twUrl = val;
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget get _buildFacebook => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      FaIcon(
+        FontAwesomeIcons.facebook,
+        size: 24.0,
+        color: Color(0xff3b5998),
+      ),
+      hSpacer(w: 11.5,),
+      Expanded(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextFormField(
+            key: Key('fbUrl'),
+            validator: (value) =>
+            value.isEmpty ? 'Facebook URL' : null,
+            controller: _fbUrlController,
+            autovalidateMode: AutovalidateMode.disabled,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.black,
+            ),
+            textAlignVertical: TextAlignVertical.top,
+            decoration: editInputDecoration2.copyWith(
+              hintText: 'Facebook URL',
+            ),
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            minLines: 1,
+            onSaved: (String val) {
+              _fbUrl = val;
+            },
+            onChanged: (String val) {
+              _fbUrl = val;
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget get _buildYoutube => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      FaIcon(
+        FontAwesomeIcons.youtube,
+        size: 24.0,
+        color: Color(0xffc4302b),
+      ),
+      hSpacer(w: 8.0,),
+      Expanded(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextFormField(
+            key: Key('ytUrl'),
+            validator: (value) =>
+            value.isEmpty ? 'Youtube URL' : null,
+            controller: _ytUrlController,
+            autovalidateMode: AutovalidateMode.disabled,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.black,
+            ),
+            textAlignVertical: TextAlignVertical.top,
+            decoration: editInputDecoration2.copyWith(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 16.0,
+                horizontal: 16.0,
+              ),
+              hintText: 'Youtube URL',
+            ),
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            minLines: 1,
+            onSaved: (String val) {
+              _ytUrl = val;
+            },
+            onChanged: (String val) {
+              _ytUrl = val;
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget get _buildLinkedIn => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      FaIcon(
+        FontAwesomeIcons.linkedin,
+        size: 24.0,
+        color: Color(0xff0077b5),
+      ),
+      hSpacer(w: 14.0,),
+      Expanded(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextFormField(
+            key: Key('inUrl'),
+            validator: (value) =>
+            value.isEmpty ? 'LinkedIn URL' : null,
+            controller: _inUrlController,
+            autovalidateMode: AutovalidateMode.disabled,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.black,
+            ),
+            textAlignVertical: TextAlignVertical.top,
+            decoration: editInputDecoration2.copyWith(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 16.0,
+                horizontal: 16.0,
+              ),
+              hintText: 'LinkedIn URL',
+            ),
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            minLines: 1,
+            onSaved: (String val) {
+              _inUrl = val;
+            },
+            onChanged: (String val) {
+              _inUrl = val;
+            },
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget get _buildInstagram => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      FaIcon(
+        FontAwesomeIcons.instagram,
+        size: 24.0,
+        color: Color(0xff3f729b),
+      ),
+      hSpacer(w: 13.5,),
+      Expanded(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextFormField(
+            key: Key('igUrl'),
+            validator: (value) =>
+            value.isEmpty ? 'Instagram URL' : null,
+            controller: _igUrlController,
+            autovalidateMode: AutovalidateMode.disabled,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.black,
+            ),
+            textAlignVertical: TextAlignVertical.top,
+            decoration: editInputDecoration2.copyWith(
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 16.0,
+                horizontal: 16.0,
+              ),
+              hintText: 'Instagram URL',
+            ),
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            minLines: 1,
+            onSaved: (String val) {
+              _igUrl = val;
+            },
+            onChanged: (String val) {
+              _igUrl = val;
+            },
           ),
         ),
       ),
