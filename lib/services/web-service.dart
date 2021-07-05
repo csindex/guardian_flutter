@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../data/user/data-user.dart';
+import '../data/user/data-user2.dart';
 import '../data/user/data-user-details.dart';
 import '../data/data.dart';
 import '../data/posts/data-post.dart';
@@ -40,7 +41,7 @@ class Webservice {
     }
   }
 
-  Future<UserData> fetchUserDetails(String token) async {
+  Future<UserData2> fetchUserDetails(String token) async {
     final url = Uri.parse('$secretHollowsEndPoint/api/auth');
     final response = await http.get(
       url,
@@ -50,7 +51,7 @@ class Webservice {
       },
     );
     if (response.statusCode == 200) {
-      return UserData.fromJsonMap(jsonDecode(response.body));
+      return UserData2.fromJsonMap(jsonDecode(response.body));
     } else {
       // print('${response.body}');
       throw Exception("Failed to fetch user details!");

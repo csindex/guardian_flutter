@@ -1,7 +1,8 @@
-import '../../data/user/data-user.dart';
+import '../../data/user/data-user2.dart';
+import '../../data/user/data-responder.dart';
 
 class UserViewModel {
-  final UserData user;
+  final UserData2 user;
 
   UserViewModel({this.user});
 
@@ -10,7 +11,7 @@ class UserViewModel {
   }
 
   String get name {
-    return '${this.user.name} ${this.user.lname ?? ''}';
+    return '${this.user.name}${this.user.lname == null ? '' : ' '}${this.user.lname ?? ''}';
   }
 
   String get email {
@@ -23,5 +24,9 @@ class UserViewModel {
 
   String get avatar {
     return this.user.avatar.replaceAll("//", "https://");
+  }
+
+  List<ResponderData> get responderData {
+    return this.user.responderData;
   }
 }

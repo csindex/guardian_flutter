@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_geocoding/google_geocoding.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import 'utils.dart';
 import '../../services/web-service.dart';
@@ -149,4 +151,10 @@ Future<List<GeocodingResult>> getAddress(LatLon coor) async {
   // } else {
   //   return 'Sorry! Address not found!';
   // }
+}
+
+Future<File> file(String filename) async {
+  Directory dir = await getExternalStorageDirectory();
+  String pathName = p.join(dir.path, filename);
+  return File(pathName);
 }

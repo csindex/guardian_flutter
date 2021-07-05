@@ -339,7 +339,7 @@ class _EditProfileState extends State<EditProfile>
     return Future.value();
   }
 
-  Future<File> _file(String filename) async {
+  Future<File> file(String filename) async {
     Directory dir = await getExternalStorageDirectory();
     String pathName = p.join(dir.path, filename);
     return File(pathName);
@@ -526,7 +526,7 @@ class _EditProfileState extends State<EditProfile>
     return _isLoading ? Loading() : (widget.userVM == null
         || widget.userVM.profilePic == null
         || widget.userVM.profilePic.contains('null')) ? FutureBuilder<File>(
-      future: _file('defaultProfPic.png'),
+      future: file('defaultProfPic.png'),
       builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
         Widget w;
         if (snapshot.hasData) {

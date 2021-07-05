@@ -15,9 +15,10 @@ class ProfileMain extends StatefulWidget {
   final String origin;
   final UserProfileViewModel userOVM;
   final Function refresh;
+  final Function viewProfile;
 
   ProfileMain({
-    this.vm, this.userVM, this.token, this.origin, this.userOVM, this.refresh});
+    this.vm, this.userVM, this.token, this.origin, this.userOVM, this.refresh, this.viewProfile});
 
   @override
   _ProfileMainState createState() => _ProfileMainState();
@@ -32,7 +33,13 @@ class _ProfileMainState extends State<ProfileMain> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.userVM == null ? _emptyProfile : _mainProfile;
+    return WillPopScope(
+      child: widget.userVM == null ? _emptyProfile : _mainProfile,
+      onWillPop: () {
+        widget.viewProfile();
+        return Future.value(false);
+      },
+    );
   }
 
   Widget get _nameHeader

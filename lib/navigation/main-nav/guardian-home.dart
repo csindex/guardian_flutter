@@ -11,6 +11,7 @@ import '../../utils/helpers/navigation-helper.dart';
 import '../../provider/user/viewmodel-user.dart';
 import '../../provider/user/viewmodel-user-profile.dart';
 import '../../screens/profile/profile-main.dart';
+import '../../screens/menu/profile-menu.dart';
 import '../../screens/responders/responders.dart';
 import '../../screens/posts/posts.dart';
 import '../../screens/incident/incident-main.dart';
@@ -34,6 +35,14 @@ class _GuardianHomeState extends State<GuardianHome> {
 
   final _scrollController = ScrollController();
   List _children;
+
+  bool _selectVol = true;
+
+  void _selectVolunteer() {
+    setState(() {
+      _selectVol = !_selectVol;
+    });
+  }
 
   // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -161,8 +170,8 @@ class _GuardianHomeState extends State<GuardianHome> {
     // _register();
     print('authToken - ${widget.token}');
     return DefaultTabController(
-      length: (userProfileVM != null && userProfileVM.company != null) ? 4: 3,
-      initialIndex: (userProfileVM != null && userProfileVM.company != null) ? 2 : 1,
+      length: (userProfileVM == null || userProfileVM.company == null) ? 3 : 4,
+      initialIndex: (userProfileVM == null || userProfileVM.company == null) ? 2 : 1,
       child: Scaffold(
         body: NestedScrollView(
           controller: _scrollController,
@@ -209,8 +218,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                 //<-- floating to true
                 forceElevated: innerBoxIsScrolled,
                 //<-- forceElevated to innerBoxIsScrolled
-                bottom: (userProfileVM != null && userProfileVM.company != null) ?
-                TabBar(
+                bottom: TabBar(
                   labelStyle: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -219,20 +227,23 @@ class _GuardianHomeState extends State<GuardianHome> {
                   ),
                   indicatorColor: Colors.white,
                   tabs: [
-                    Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/inc_ti.png'),
-                        size: 128,
-                        color: Colors.white,
+                    if (_selectVol) ... [
+                      Tab(
+                        icon: ImageIcon(
+                          AssetImage('assets/inc_ti.png'),
+                          size: 128,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/id_ti.png'),
-                        size: 128,
-                        color: Colors.white,
-                      ),
-                    ),
+                      if (userProfileVM != null && userProfileVM.company != null)
+                        Tab(
+                          icon: ImageIcon(
+                            AssetImage('assets/id_ti.png'),
+                            size: 128,
+                            color: Colors.white,
+                          ),
+                        ),
+                    ] else Container(),
                     /*Tab(
                       icon: ImageIcon(
                         AssetImage('assets/ambu_ti.png'),
@@ -255,7 +266,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                       ),
                     ),
                   ],
-                ) :
+                )/* :
                 TabBar(
                   labelStyle: TextStyle(
                     fontSize: 16.0,
@@ -272,13 +283,13 @@ class _GuardianHomeState extends State<GuardianHome> {
                         color: Colors.white,
                       ),
                     ),
-                    /*Tab(
+                    *//*Tab(
                       icon: ImageIcon(
                         AssetImage('assets/ambu_ti.png'),
                         size: 128,
                         color: Colors.white,
                       ),
-                    ),*/
+                    ),*//*
                     Tab(
                       icon: ImageIcon(
                         AssetImage('assets/post_ti.png'),
@@ -294,18 +305,18 @@ class _GuardianHomeState extends State<GuardianHome> {
                       ),
                     ),
                   ],
-                ),
+                )*/,
               ),
             ];
           },
-          body: (userProfileVM != null && userProfileVM.company != null) ?
-          TabBarView(
+          body: TabBarView(
             children: [
-                IncidentMain(
-                  userVM: userProfileVM,
-                  token: widget.token,
-                  uVM: vm,
-                ),
+              IncidentMain(
+                userVM: userProfileVM,
+                token: widget.token,
+                uVM: vm,
+              ),
+              if (userProfileVM != null && userProfileVM.company != null)
                 ID(
                   vm: vm,
                   userProfileVM: userProfileVM,
@@ -318,37 +329,6 @@ class _GuardianHomeState extends State<GuardianHome> {
                   origin: 'posts',
                   responderList: userList,
                 ),*/
-                Posts(
-                  token: widget.token,
-                  vm: vm,
-                  userProfileVM: userProfileVM,
-                  openProfileScreen: openProfileScreen,
-                  userList: userList,
-                ),
-                ProfileMain(
-                  vm: vm,
-                  userVM: userProfileVM,
-                  token: widget.token,
-                  origin: 'posts',
-                  userOVM: userProfileVM,
-                  refresh: _refreshUser,
-                ),
-              ],
-            ) :
-          TabBarView(
-            children: [
-              IncidentMain(
-                userVM: userProfileVM,
-                token: widget.token,
-                uVM: vm,
-              ),
-              /*Responders(
-                vm: vm,
-                userVM: userProfileVM,
-                token: widget.token,
-                origin: 'posts',
-                responderList: userList,
-              ),*/
               Posts(
                 token: widget.token,
                 vm: vm,
@@ -356,7 +336,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                 openProfileScreen: openProfileScreen,
                 userList: userList,
               ),
-              ProfileMain(
+              ProfileMenu(
                 vm: vm,
                 userVM: userProfileVM,
                 token: widget.token,
@@ -365,7 +345,38 @@ class _GuardianHomeState extends State<GuardianHome> {
                 refresh: _refreshUser,
               ),
             ],
-          ),
+          )/* :
+          TabBarView(
+            children: [
+              IncidentMain(
+                userVM: userProfileVM,
+                token: widget.token,
+                uVM: vm,
+              ),
+              *//*Responders(
+                vm: vm,
+                userVM: userProfileVM,
+                token: widget.token,
+                origin: 'posts',
+                responderList: userList,
+              ),*//*
+              Posts(
+                token: widget.token,
+                vm: vm,
+                userProfileVM: userProfileVM,
+                openProfileScreen: openProfileScreen,
+                userList: userList,
+              ),
+              ProfileMenu(
+                vm: vm,
+                userVM: userProfileVM,
+                token: widget.token,
+                origin: 'posts',
+                userOVM: userProfileVM,
+                refresh: _refreshUser,
+              ),
+            ],
+          )*/,
         ),
       ),
     );

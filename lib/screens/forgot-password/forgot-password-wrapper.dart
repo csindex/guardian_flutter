@@ -10,9 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:email_validator/email_validator.dart';
 
 import '../../utils/constants/utils.dart';
-import '../../utils/constants/common-methods.dart';
-import '../../utils/helpers/navigation-helper.dart';
-import '../../utils/dialogs/dialog-send-otp.dart';
 import '../../utils/loading.dart';
 import '../../widgets/header.dart';
 import '../../widgets/forgot-password/footer.dart';
@@ -33,7 +30,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   String _number;
   int _time = 300;
   Timer _timer;
-  String _errorText = null;
+  String _errorText;
   String _pin;
 
   TextEditingController _emailController = TextEditingController(text: '');
