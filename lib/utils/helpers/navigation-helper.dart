@@ -8,7 +8,7 @@ import '../../reporting/report-call-screen.dart';
 import '../../navigation/main-nav/screen-profile.dart';
 import '../../screens/responders/responders.dart';
 import '../../screens/posts/post-image-full.dart';
-import '../../screens/forgot-password/forgot-password-wrapper.dart';
+import '../../screens/authenticate/forgot-password-wrapper.dart';
 import '../../widgets/profile/profile-picture-full.dart';
 import '../../widgets/profile/qr-code-full.dart';
 import '../../widgets/profile/edit-profile-picture/camera/camera-screen.dart';
@@ -22,18 +22,20 @@ import '../../screens/posts/camera/camera-screen.dart' as cPost;
 import '../../screens/posts/gallery/gallery-screen.dart' as gPost;
 import '../../screens/posts/comments/comments.dart';
 import '../../screens/profile/camera/camera-screen.dart' as cProfile;
+import '../../screens/authenticate/signup.dart' as nSignUp;
+import '../../screens/authenticate/login.dart' as nLogin;
 
 class NavigationHelper {
   static createAccount(context) => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SignUp(),
+          builder: (context) => nSignUp.SignUp(),
         ),
       );
 
   static login(context) => Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => Login(),
+          builder: (context) => nLogin.Login(),
         ),
       );
 

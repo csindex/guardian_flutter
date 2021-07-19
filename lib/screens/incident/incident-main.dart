@@ -102,7 +102,9 @@ class _IncidentMainState extends State<IncidentMain>
   @override
   void dispose() {
     super.dispose();
-    _mapController.dispose();
+    if (_mapController != null) {
+      _mapController.dispose();
+    }
     _reportAddressController.dispose();
   }
 
@@ -205,8 +207,8 @@ class _IncidentMainState extends State<IncidentMain>
         } catch (e) {
           print('No marker displayed currently.');
         }
-        _mapController.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(target: latlng, zoom: 16.0))).then((_) {
+        _mapController?.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(target: latlng, zoom: 16.0)))?.then((_) {
           try {
             _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
           } catch (e) {

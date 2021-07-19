@@ -14,12 +14,12 @@ import '../../utils/loading.dart';
 import '../../widgets/header.dart';
 import '../../widgets/forgot-password/footer.dart';
 
-class ForgotPasswordWrapper extends StatefulWidget {
+class ForgotPasswordWrapper2 extends StatefulWidget {
   @override
-  _ForgotPasswordState createState() => _ForgotPasswordState();
+  _ForgotPasswordState2 createState() => _ForgotPasswordState2();
 }
 
-class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
+class _ForgotPasswordState2 extends State<ForgotPasswordWrapper2> {
   bool _isLoading = false;
   String _view = 'email';
   String _email = '';

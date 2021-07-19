@@ -5,7 +5,7 @@ import '../../services/web-service.dart';
 import 'viewmodel-post.dart';
 
 class PostsListViewModel extends ChangeNotifier {
-  List<PostViewModel> posts = List<PostViewModel>();
+  List<PostViewModel> posts = <PostViewModel>[];
 
   Future<List<PostViewModel>> fetchPosts(String token) async {
     final results = await Webservice().fetchPosts(token);

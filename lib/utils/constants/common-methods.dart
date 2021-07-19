@@ -65,6 +65,34 @@ void showError(BuildContext context, String message) {
   );
 }
 
+void showMessageDialog(BuildContext c, String title, String msg) {
+  Widget okayBtn = TextButton(
+    onPressed: () {
+      Navigator.pop(c);
+    },
+    child: Text(
+      'Okay',
+    ),
+  );
+  AlertDialog d = AlertDialog(
+    title: Text(
+      title,
+    ),
+    content: Text(
+      msg,
+    ),
+    actions: [
+      okayBtn,
+    ],
+  );// show the dialog
+  showDialog(
+    context: c,
+    builder: (BuildContext context) {
+      return d;
+    },
+  );
+}
+
 Future<http.StreamedResponse> _editProfile(
     String token, Map<String, String> params, String path) async {
   // print('path: ${_image.path} x ${File(_image.path).path.split('/').last}');
@@ -157,4 +185,18 @@ Future<File> file(String filename) async {
   Directory dir = await getExternalStorageDirectory();
   String pathName = p.join(dir.path, filename);
   return File(pathName);
+}
+
+Future<bool> checkInternetConnection() async {
+  try {
+    final response = await InternetAddress.lookup('www.google.com');
+    if (response.isNotEmpty) {
+      print('IInterneetL: $response - ${response.first}');
+      return true;
+    }
+  } on SocketException catch (err) {
+    print('Internet: $err');
+    return false;
+  }
+  return false;
 }

@@ -45,10 +45,12 @@ class _PostsState extends State<Posts>
     final vm = Provider.of<PostsListViewModel>(context, listen: false);
     vm.fetchPosts(widget.token).then((value) {
       print('post: $value');
-      setState(() {
-        _posts.clear();
-        _posts.addAll(value);
-      });
+      if (mounted) {
+        setState(() {
+          _posts.clear();
+          _posts.addAll(value);
+        });
+      }
     });
   }
 

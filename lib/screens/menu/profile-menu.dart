@@ -79,68 +79,85 @@ class _ProfileMenuState extends State<ProfileMenu> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 79.0,
-                        backgroundColor: Colors.white,
-                        backgroundImage: NetworkToFileImage(
-                          url: '$secretHollowsEndPoint/img/Spotter.png',
-                          file: data,
-                          debug: true,
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0,),
+                    ),
+                    onPressed: _viewProfile,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          radius: 24.0,
+                          backgroundColor: Colors.white,
+                          backgroundImage: NetworkToFileImage(
+                            url: '$secretHollowsEndPoint/img/Spotter.png',
+                            file: data,
+                            debug: true,
+                          ),
                         ),
-                      ),
-                      hSpacer(w: 16.0,),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              widget.vm.name,
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
+                        hSpacer(w: 16.0,),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                widget.vm == null ?
+                                'Juan dela Cross' : widget.vm.name,
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                            vSpacer(h: 4.0,),
-                            Text(
-                              'View your profile',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.grey.shade300,
+                              vSpacer(h: 4.0,),
+                              Text(
+                                'View your profile',
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                  color: Colors.grey.shade300,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  vSpacer(h: 8.0,),
+                  vSpacer(h: 24.0,),
                   Text(
                     'Logged in as: ',
                     style: TextStyle(
                       fontSize: 16.0,
-                      color: Colors.grey.shade300,
+                      color: Colors.grey,
                     ),
                   ),
                   vSpacer(h: 8.0,),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: colorPrimary,
-                      primary: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 16.0,),
-                    ),
-                    onPressed: () {}, // TODO: Do nothing
-                    child: Text(
-                      'Volunteer',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        letterSpacing: 0.5,
-                        fontWeight: FontWeight.w400,
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(horizontal: 36.0,),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: _isVolSelected ? colorPrimary : Colors.white,
+                        primary: _isVolSelected ? Colors.white : colorPrimary,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                      ),
+                      onPressed: () {
+                        if (!_isVolSelected) {
+                          _selectVolunteer();
+                        }
+                      },
+                      child: Text(
+                        'Volunteer',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          letterSpacing: 0.5,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ),
+                  vSpacer(h: 16.0,),
                   TextButton(
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -148,7 +165,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                       padding: EdgeInsets.symmetric(horizontal: 16.0,),
                     ),
                     onPressed: () {
-                      // TODO: Logout
+                      NavigationHelper.login(context);
                     },
                     child: Row(
                       children: [

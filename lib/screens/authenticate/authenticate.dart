@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../navigation/main-nav/login.dart';
+import '../../screens/authenticate/login.dart';
 import '../../navigation/main-nav/signup.dart';
 import '../../navigation/main-nav/forgot-password.dart';
 

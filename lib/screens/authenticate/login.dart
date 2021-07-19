@@ -1,19 +1,16 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
-import 'package:device_info/device_info.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import '../../utils/constants/utils.dart';
 import '../../utils/constants/common-methods.dart';
 import '../../utils/helpers/navigation-helper.dart';
-import '../../utils/helpers/dialog-helper.dart';
-import '../../widgets/header.dart';
-import '../../widgets/login/footer.dart';
+import '../../utils/loading.dart';
 
 class Login extends StatefulWidget {
 
@@ -23,18 +20,15 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  TextEditingController _usernameController;
-  TextEditingController _passwordController;
+  TextEditingController _usernameController, _passwordController;
 
   final _formPageKey = GlobalKey<FormState>();
 
-  bool _isLoading = false;
-  bool _obscureText = true;
+  bool _isLoading = false, _obscureText = true;
 
-  String _username;
-  String _password;
+  String _username = '', _password = '', _emailErrorMsg, _pwordErrorMsg;
 
-  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  /*static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   String _deviceID = 'Unknown';
 
   // Future<void> _mockCheckForSession() async {
@@ -65,14 +59,21 @@ class _LoginState extends State<Login> {
 
   String _readIOSDeviceID(IosDeviceInfo data) {
     return data.identifierForVendor;
-  }
+  }*/
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    // initPlatformState();
     _usernameController = TextEditingController(text: '');
     _passwordController = TextEditingController(text: '');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
   }
 
   void _togglePassword() {
@@ -81,30 +82,272 @@ class _LoginState extends State<Login> {
     });
   }
 
+  bool _validateForm() {
+    bool flag = true;
+    String errorMsg = '';
+    if (_username.isEmpty) {
+      errorMsg = '- email address is empty.\n';
+      _emailErrorMsg = 'error';
+      flag = false;
+    } else if (!_username.contains('@') || !_username.contains('.') || _username.contains('@.')) {
+      errorMsg = '- invalid email address.\n';
+      _emailErrorMsg = 'error';
+      flag = false;
+    } else {
+      _emailErrorMsg = null;
+    }
+    if (_password.isEmpty) {
+      _pwordErrorMsg = 'error';
+      errorMsg += '- password is empty.';
+      flag = false;
+    } else if (_password.length < 8) {
+      _pwordErrorMsg = 'error';
+      errorMsg += '- password must not be less than 8 characters.';
+      flag = false;
+    } else {
+      _pwordErrorMsg = null;
+    }
+    if(!flag) {
+      showMessageDialog(context, 'Sign in failed', errorMsg);
+    }
+    return flag;
+  }
+
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    Orientation mQOrientation = MediaQuery.of(context).orientation;
-    print('Width: $width');
-    print('Height: $height');
-    print('Orientation: $mQOrientation');
-    print('DeviceID: $_deviceID');
-    return Scaffold(
-      body: Form(
-        key: _formPageKey,
-        child: OrientationBuilder(
-          builder: (context, orientation) {
-            return mQOrientation == Orientation.portrait
-                ? _buildVerticalLayout(width, height)
-                : _buildHorizontalLayout(width, height);
-          },
+    var mq = MediaQuery.of(context);
+    var size = mq.size;
+    var o = mq.orientation;
+    var h = size.height;
+    var w = size.width;
+    return _isLoading ? Loading() : Scaffold(
+      backgroundColor: Colors.grey.shade300,
+      body: SafeArea(
+        child: Form(
+          key: _formPageKey,
+          child: Container(
+            alignment: Alignment.center,
+            child: SingleChildScrollView(
+              child: OrientationBuilder(
+                builder: (c, or) {
+                  return o == Orientation.portrait ?
+                      _buildForm(h) : _buildForm(w);
+                }
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildVerticalLayout(double w, double h) => SingleChildScrollView(
+  Widget get _labelSignIn => Row(
+    // mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      FaIcon(
+        FontAwesomeIcons.userAlt,
+        size: 16.0,
+      ),
+      hSpacer(w: 8.0,),
+      Text(
+        'Sign into your Account',
+        style: TextStyle(
+          fontSize: 16.0,
+        ),
+      ),
+    ],
+  );
+
+  Widget get _userNameField => TextFormField(
+    controller: _usernameController,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: 'Email Address',
+      errorStyle: TextStyle(
+        fontSize: 0.0,
+      ),
+      errorText: _emailErrorMsg,
+    ),
+    keyboardType: TextInputType.emailAddress,
+    maxLines: 1,
+    minLines: 1,
+    onChanged: (val) => _username = val,
+  );
+
+  Widget get _pwordField => TextFormField(
+    controller: _passwordController,
+    obscureText: _obscureText,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: 'Password',
+      errorStyle: TextStyle(
+        fontSize: 0.0,
+      ),
+      errorText: _pwordErrorMsg,
+      suffixIcon: InkWell(
+        onTap: _togglePassword,
+        child: Icon(
+          _obscureText ? Icons.visibility : Icons.visibility_off,
+          color: Colors.grey.shade900,
+        ),
+      ),
+    ),
+    keyboardType: TextInputType.visiblePassword,
+    maxLines: 1,
+    minLines: 1,
+    onChanged: (val) => _password = val,
+  );
+
+  Widget get _loginBtn => TextButton(
+    style: TextButton.styleFrom(
+      primary: Colors.white,
+      padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0,),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      backgroundColor: colorPrimary1,
+    ),
+    onPressed: () {
+      FocusScope.of(context).unfocus();
+      // WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+      // SystemChannels.textInput.invokeMethod('TextInput.hide');
+      if (_validateForm()) {
+        setState(() => _isLoading = true);
+        checkInternetConnection().then((value) {
+          if (value) {
+            _login();
+          } else {
+            setState(() => _isLoading = false);
+            showMessageDialog(context, 'Sign in failed', '- please check your internet connection.');
+          }
+        });
+        // _mockCheckForSession().then((value) {
+        //   setState(() => _isLoading = false);
+        //   NavigationHelper.navigateToHome(context);
+        // });
+        // }
+      }
+    },
+    child: Text(
+      'Sign in',
+      style: TextStyle(
+        fontSize: 24.0,
+        letterSpacing: 0.5,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
+  );
+
+  Widget get _footerSignUp => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        'Don\'t have an account?',
+        style: TextStyle(
+          fontSize: 20.0,
+        ),
+      ),
+      hSpacer(w: 4.0,),
+      GestureDetector(
+        onTap: () {
+          NavigationHelper.createAccount(context);
+        },
+        child: Text(
+          'Sign Up',
+          style: TextStyle(
+            fontSize: 20.0,
+            color: colorPrimary1,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget get _footerForgotPass => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        'Forgot password?',
+        style: TextStyle(
+          fontSize: 20.0,
+        ),
+      ),
+      hSpacer(w: 4.0,),
+      GestureDetector(
+        onTap: () {
+          NavigationHelper.forgotPassword(context);
+        },
+        child: Text(
+          'Forgot',
+          style: TextStyle(
+            fontSize: 20.0,
+            color: colorPrimary1,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget _buildForm(double w) => Container(
+    width: w / 2,
+    margin: EdgeInsets.symmetric(horizontal: 16.0,),
+    padding: EdgeInsets.all(16.0,),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8.0),
+      border: Border.all(
+        width: 1.0,
+        color: Colors.white,
+      ),
+      color: Colors.white,
+    ),
+    child: Column(
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Sign In',
+            style: TextStyle(
+              fontSize: 36.0,
+              color: colorPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        vSpacer(h: 16.0,),
+        _labelSignIn,
+        vSpacer(h: 16.0,),
+        _userNameField,
+        vSpacer(h: 4.0,),
+        _pwordField,
+        vSpacer(h: 8.0,),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: _loginBtn,
+        ),
+        vSpacer(h: 16.0,),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: _footerSignUp,
+        ),
+        vSpacer(h: 12.0,),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: _footerForgotPass,
+        ),
+      ],
+    ),
+  );
+
+  /*Widget _buildVerticalLayout(double w, double h) => SingleChildScrollView(
     child: Container(
       height: h,
       color: colorPrimary,
@@ -414,55 +657,31 @@ class _LoginState extends State<Login> {
             _passwordField(),
           ],
         ),
-      );
+      );*/
 
   void _login() {
     try {
-      // TODO: Login
-      _loginAPI2().then((value) {
-        setState(() {
-          _isLoading = false;
-          var result = jsonDecode(value);
-          String token = result['token'];
-          if (token != null) {
-            NavigationHelper.navigateToHome(context, token);
-          } else {
-            var errorMsgs = jsonDecode(value)['errors'] as List;
-            String errorMsg = errorMsgs
-                .map((errorMsg) => Error.fromJson(errorMsg))
-                .toList()[0]
-                .errorMsg;
-            // _pageKey.currentState
-            //     .showSnackBar(SnackBar(content: Text(errorMsg)));
-            DialogHelper.login(context);
+      _loginApi().then((value) {
+        var result = jsonDecode(value);
+        String token = result['token'];
+        if (token != null) {
+          NavigationHelper.navigateToHome(context, token);
+        }
+        else {
+          setState(() => _isLoading = false);
+          print('result: $result');
+          if (result.toString().toLowerCase().contains('invalid credential')) {
+            showMessageDialog(context, 'Sign in failed', '- invalid credentials.');
           }
-        });
+        }
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      showError(context, e.message);
-      // _pageKey.currentState
-      //     .showSnackBar(SnackBar(content: Text('Failed to Log-in')));
+      // showError(context, e.message);
     }
   }
 
-  Future<bool> _loginAPI() async {
-    var url = Uri.parse('https://ccc.guardian4emergency.com/mobile/login');
-    var response = await http.post(
-      url,
-      body: {
-        'username': _username,
-        'password': _password,
-        'imei': _deviceID,
-        'fcm_token': '$_deviceID$_deviceID',
-      },
-    );
-    print('response: $response');
-    final body = jsonDecode(response.body);
-    return body["success"];
-  }
-
-  Future<String> _loginAPI2() async {
+  Future<String> _loginApi() async {
     var url = Uri.parse('$secretHollowsEndPoint/api/auth');
     Map data = {'email': _username, 'password': _password};
     var reqBody = json.encode(data);
@@ -478,27 +697,16 @@ class _LoginState extends State<Login> {
         // 'Connection' : 'keep-alive',
         'Content-Type': 'application/json',
       },
-      body:
-          reqBody /*{
-        'email': _username,
-        'password': _password,
-        // 'imei': _deviceID,
-        // 'fcm_token': '$_deviceID$_deviceID',
-      }*/
-      ,
-    );
-    print('response: $response X ${response.body}');
-    // final body = jsonDecode(response.body);
-    // return body["success"];
+      body: reqBody,
+    ).onError((error, stackTrace) {
+      setState(() {
+        _isLoading = false;
+      });
+      showMessageDialog(context, 'Sign in failed',
+          '- can\'t connect to server.');
+      return error;
+    });
+    print('loginRes: $response X ${response.body}');
     return response.body;
   }
-}
-
-class Error {
-  String errorMsg;
-
-  Error(this.errorMsg);
-
-  factory Error.fromJson(dynamic json) => Error(json['msg'] as String);
-
 }

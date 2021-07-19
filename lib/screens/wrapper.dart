@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../navigation/main-nav/splash-screen.dart';
-import '../navigation/main-nav/login.dart';
+import '../screens/authenticate/login.dart';
 
 class Wrapper extends StatefulWidget {
 
