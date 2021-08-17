@@ -46,7 +46,7 @@ class PostViewModel {
   }
 
   String get articleImage {
-    return '$secretHollowsEndPoint/post/${this.post.articleImage}'; //sampleImages[Random().nextInt(120) % 6]
+    return '$secretHollowsEndPoint5/${this.post.articleImage}'; //sampleImages[Random().nextInt(120) % 6]
   }
 
   List<LikeData> get likes {

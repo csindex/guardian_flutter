@@ -19,18 +19,18 @@ class ProfileMenu extends StatefulWidget {
   final String token;
   final String origin;
   final UserProfileViewModel userOVM;
-  final Function refresh;
+  final Function updateProfile;
 
   ProfileMenu({
-    this.vm, this.userVM, this.token, this.origin, this.userOVM, this.refresh,});
+    this.vm, this.userVM, this.token, this.origin, this.userOVM, this.updateProfile,});
 
   @override
   _ProfileMenuState createState() => _ProfileMenuState();
 }
 
 class _ProfileMenuState extends State<ProfileMenu> {
-  bool _isViewProfile = false;
   bool _isVolSelected = true;
+  bool _isViewProfile = false;
 
   void _viewProfile() => setState(() => _isViewProfile = !_isViewProfile);
 
@@ -43,6 +43,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
 
   @override
   Widget build(BuildContext context) {
+    print('profile-menu - ${widget.vm}');
     // return (widget.userVM == null || widget.userVM?.company == null) ? _emptyProfile : _mainProfile;
     return _isViewProfile ? ProfileMain(
       vm: widget.vm,
@@ -50,7 +51,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
       token: widget.token,
       origin: 'posts',
       userOVM: widget.userOVM,
-      refresh: widget.refresh,
+      refresh: widget.updateProfile,
       viewProfile: _viewProfile,
     ) : (widget.userVM == null
         || widget.userVM.profilePic == null
@@ -100,6 +101,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                         hSpacer(w: 16.0,),
                         Expanded(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 widget.vm == null ?
@@ -115,7 +117,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                                 'View your profile',
                                 style: TextStyle(
                                   fontSize: 12.0,
-                                  color: Colors.grey.shade300,
+                                  color: Colors.grey.shade500,
                                 ),
                               ),
                             ],
@@ -244,11 +246,14 @@ class _ProfileMenuState extends State<ProfileMenu> {
                           ),
                         ),
                         vSpacer(h: 4.0,),
-                        Text(
-                          'View your profile',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.grey,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'View your profile',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.grey.shade500,
+                            ),
                           ),
                         ),
                       ],
@@ -321,7 +326,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Colors.white,
-                primary: Colors.grey.shade700,
+                primary: Colors.grey.shade500,
                 padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
               ),
               onPressed: () {

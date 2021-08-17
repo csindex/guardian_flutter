@@ -110,7 +110,7 @@ dependencies:
   flutter_datetime_picker: 1.5.1
 
   # -2.0.1
-  google_maps_flutter: 2.0.6
+  google_maps_flutter: ^2.0.6
 
   google_geocoding: 0.2.0
 
@@ -126,9 +126,15 @@ dependencies:
 
   popup_menu: ^1.0.5
 
-  flutter_google_places: ^0.3.0
+  flutter_google_places: 0.3.0
+
+  google_maps_webservice: 0.0.20-nullsafety.3
 
   threading: ^0.0.10
+
+  video_player: ^2.1.12
+
+  address_search_field: ^4.0.1
 
 dev_dependencies:
   flutter_test:

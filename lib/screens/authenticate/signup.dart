@@ -1,24 +1,17 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
-import 'package:device_info/device_info.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_mac/get_mac.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 import '../../utils/constants/utils.dart';
 import '../../utils/loading.dart';
 import '../../utils/constants/common-methods.dart';
 import '../../utils/helpers/navigation-helper.dart';
-import '../../utils/helpers/fb-authentication-helper.dart';
-import '../../utils/dialogs/dialog-send-otp.dart';
-import '../../widgets/header.dart';
-import '../../widgets/create-account/footer.dart';
 
 /*GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: <String>[
@@ -33,30 +26,150 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  // static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-  // String _deviceID = 'Unknown';
-  // String _macAddress = 'Unknown';
-
-  // GoogleSignInAccount _currentUser;
-  // String _contactText;
-
-  TextEditingController _firstNameController;
-  TextEditingController _lastNameController;
-  TextEditingController _mobileController;
-  TextEditingController _emailController;
-  TextEditingController _passwordController;
-  TextEditingController _cpwordController;
-  TextEditingController _otpController;
+  TextEditingController _firstNameController, _lastNameController,
+      _mobileController, _emailController, _passwordController,
+      _cpwordController, _otpController;
 
   final _formPageKey = GlobalKey<FormState>();
   final _pageKey = GlobalKey<ScaffoldState>();
 
   bool _isLoading = false;
   bool _obscureText = true;
-  bool _isRegCodeSent = false;
 
-  String _firstName, _lastName, _email, _mobile, _pword, _cpword;
-  String _regCode = '';
+  int _time = 300;
+  Timer _timer;
+
+  String _firstName = '', _lastName = '', _email = '', _mobile = '',
+      _pword = '', _cpword = '', _otpInput = '', _otp = '',
+      _errFirstName, _errLastName, _errEmail, _errMobile, _errPWord,
+      _errCPWord, _errOtp, _view = 'signup';
+
+  void _startTimer() {
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec, (Timer t) {
+      if(_time == 0) {
+        setState(() {
+          _timer.cancel();
+        });
+      } else {
+        setState(() {
+          _time--;
+        });
+      }
+    },
+    );
+  }
+
+  _toggleView(String v) {
+    _mockCheckForSession().then((_) {
+      setState(() {
+        _isLoading = false;
+        _view = v;
+      });
+    });
+  }
+
+  Future<void> _mockCheckForSession() async {
+    await Future.delayed(Duration(seconds: 3), () {});
+  }
+
+  void _togglePassword() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  bool _validateSignUpForm() {
+    bool flag = true;
+    String errorMsg = '';
+    if (_firstName.isEmpty) {
+      errorMsg += '- first name is empty.\n';
+      _errFirstName = 'error';
+      flag = false;
+    }
+    if (_lastName.isEmpty) {
+      errorMsg += '- last name is empty.\n';
+      _errLastName = 'error';
+      flag = false;
+    }
+    if (_mobile.isEmpty) {
+      errorMsg += '- mobile number is empty.\n';
+      _errMobile = 'error';
+      flag = false;
+    } else if (!_mobile.startsWith('09') || _mobile.length < 11) {
+      errorMsg += '- mobile number is invalid.\n';
+      _errMobile = 'error';
+      flag = false;
+    } else {
+      _errMobile = null;
+    }
+    if (_email.isEmpty) {
+      errorMsg += '- email address is empty.\n';
+      _errEmail = 'error';
+      flag = false;
+    } else if (!_email.contains('@') || !_email.contains('.') || _email.contains('@.')) {
+      errorMsg += '- email address is invalid.\n';
+      _errEmail = 'error';
+      flag = false;
+    } else {
+      _errEmail = null;
+    }
+    if (_pword.isEmpty) {
+      _errPWord = 'error';
+      errorMsg += '- password is empty.\n';
+      flag = false;
+    } else if (_pword.length < 8) {
+      _errPWord = 'error';
+      errorMsg += '- password must not be less than 8 characters.\n';
+      flag = false;
+    } else if (_pword != _cpword) {
+      errorMsg += '- passwords do not match.\n';
+      _errPWord = 'error';
+      flag = false;
+    } else {
+      _errPWord = null;
+    }
+    if (_cpword.isEmpty) {
+      errorMsg += '- confirm password is empty.';
+      _errCPWord = 'error';
+      flag = false;
+    } else if (_cpword.length < 8) {
+      errorMsg += '- confirm password must not be less than 8 characters.';
+      _errCPWord = 'error';
+      flag = false;
+    } else {
+      _errCPWord = null;
+    }
+    if(!flag) {
+      showMessageDialog(context, 'Sign up failed', errorMsg);
+    }
+    return flag;
+  }
+
+  bool _validateOTPForm() {
+    bool flag = true;
+    String errorMsg = '';
+    if (_otpInput.isEmpty) {
+      errorMsg = '- OTP is empty.';
+      _errOtp = 'error';
+      flag = false;
+    } else if (_otpInput.length < 6) {
+      errorMsg = '- OTP must be 6 digits.';
+      _errOtp = 'error';
+      flag = false;
+    } else if (_otp != _otpInput) {
+      errorMsg = '- invalid OTP.';
+      _errOtp = 'error';
+      flag = false;
+    } else {
+      _errOtp = null;
+    }
+    if(!flag) {
+      showMessageDialog(context, 'Forgot password failed', errorMsg);
+    }
+    return flag;
+  }
 
   @override
   void initState() {
@@ -90,6 +203,9 @@ class _SignUpState extends State<SignUp> {
     _passwordController.dispose();
     _cpwordController.dispose();
     _otpController.dispose();
+    if (_timer != null) {
+      _timer.cancel();
+    }
   }
 
   /*Future<void> _handleGetContact() async {
@@ -181,24 +297,6 @@ class _SignUpState extends State<SignUp> {
     return data.identifierForVendor;
   }*/
 
-  void _togglePassword() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
-  void _handleLoadingChanged(String code) {
-    print('$code X ${code.length}');
-    if (code.length == 4) {
-      setState(() {
-        _regCode = code;
-        _isLoading = false;
-        print('setState man $_isLoading');
-        _isRegCodeSent = true;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var mq = MediaQuery.of(context);
@@ -234,8 +332,16 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _buildForm(double w) => Container(
-    width: w / 2,
+  Widget _buildForm(double w) {
+    double newW = w / 2;
+    if (_view == 'otp') {
+      return _buildFormOTP(newW);
+    } else {
+      return _buildFormSignUp(newW);
+    }
+  }
+
+  Widget _buildFormSignUp(double w) => Container(
     margin: EdgeInsets.symmetric(horizontal: 16.0,),
     padding: EdgeInsets.all(16.0,),
     decoration: BoxDecoration(
@@ -326,11 +432,12 @@ class _SignUpState extends State<SignUp> {
       errorStyle: TextStyle(
         fontSize: 0.0,
       ),
-      // errorText: _errHomeAdd,
+      errorText: _errFirstName,
     ),
     keyboardType: TextInputType.name,
     maxLines: 1,
     minLines: 1,
+    onChanged: (val) => _firstName = val,
   );
 
   Widget get _lastNameField => TextFormField(
@@ -344,11 +451,12 @@ class _SignUpState extends State<SignUp> {
       errorStyle: TextStyle(
         fontSize: 0.0,
       ),
-      // errorText: _errHomeAdd,
+      errorText: _errLastName,
     ),
     keyboardType: TextInputType.name,
     maxLines: 1,
     minLines: 1,
+    onChanged: (val) => _lastName = val,
   );
 
   Widget get _mobileNumberField => TextFormField(
@@ -362,11 +470,13 @@ class _SignUpState extends State<SignUp> {
       errorStyle: TextStyle(
         fontSize: 0.0,
       ),
-      // errorText: _errHomeAdd,
+      errorText: _errMobile,
     ),
     keyboardType: TextInputType.phone,
     maxLines: 1,
     minLines: 1,
+    maxLength: 11,
+    onChanged: (val) => _mobile = val,
   );
 
   Widget get _emailAddressField => TextFormField(
@@ -380,11 +490,12 @@ class _SignUpState extends State<SignUp> {
       errorStyle: TextStyle(
         fontSize: 0.0,
       ),
-      // errorText: _errHomeAdd,
+      errorText: _errEmail,
     ),
     keyboardType: TextInputType.emailAddress,
     maxLines: 1,
     minLines: 1,
+    onChanged: (val) => _email = val,
   );
 
   Widget get _passwordField => TextFormField(
@@ -399,7 +510,7 @@ class _SignUpState extends State<SignUp> {
       errorStyle: TextStyle(
         fontSize: 0.0,
       ),
-      // errorText: _errHomeAdd,
+      errorText: _errPWord,
       suffixIcon: InkWell(
         onTap: _togglePassword,
         child: Icon(
@@ -411,6 +522,7 @@ class _SignUpState extends State<SignUp> {
     keyboardType: TextInputType.visiblePassword,
     maxLines: 1,
     minLines: 1,
+    onChanged: (val) => _pword = val,
   );
 
   Widget get _cpwordField => TextFormField(
@@ -425,7 +537,7 @@ class _SignUpState extends State<SignUp> {
       errorStyle: TextStyle(
         fontSize: 0.0,
       ),
-      // errorText: _errHomeAdd,
+      errorText: _errCPWord,
       suffixIcon: InkWell(
         onTap: _togglePassword,
         child: Icon(
@@ -437,6 +549,7 @@ class _SignUpState extends State<SignUp> {
     keyboardType: TextInputType.visiblePassword,
     maxLines: 1,
     minLines: 1,
+    onChanged: (val) => _cpword = val,
   );
 
   Widget get _registerBtn => TextButton(
@@ -450,16 +563,12 @@ class _SignUpState extends State<SignUp> {
     ),
     onPressed: () {
       FocusScope.of(context).unfocus();
-      // WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-      // SystemChannels.textInput.invokeMethod('TextInput.hide');
-      if (_formPageKey.currentState.validate()) {
-        setState(() => _isLoading = true);
-        _formPageKey.currentState.save();
-        // _mockCheckForSession().then((value) {
-        //   setState(() => _isLoading = false);
-        //   NavigationHelper.navigateToHome(context);
-        // });
-        // }
+      if (_validateSignUpForm()) {
+        setState(() {
+          _isLoading = true;
+          _otpController.clear();
+        });
+        _sendOtp();
       }
     },
     child: Text(
@@ -497,6 +606,295 @@ class _SignUpState extends State<SignUp> {
       ),
     ],
   );
+
+  Widget _buildFormOTP(double w) => Container(
+    width: w,
+    margin: EdgeInsets.symmetric(horizontal: 16.0,),
+    padding: EdgeInsets.all(16.0,),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8.0),
+      border: Border.all(
+        width: 1.0,
+        color: Colors.white,
+      ),
+      color: Colors.white,
+    ),
+    child: Column(
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Forgot Password',
+            style: TextStyle(
+              fontSize: 36.0,
+              color: colorPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        vSpacer(h: 16.0,),
+        _labelEnterOTP,
+        vSpacer(h: 16.0,),
+        _otpField,
+        vSpacer(h: 8.0,),
+        Text(
+          'Did you receive an OTP?',
+          style: TextStyle(
+            fontSize: 10.0,
+          ),
+        ),
+        vSpacer(h: 4.0,),
+        _time == 0 ?
+        TextButton(
+          style: TextButton.styleFrom(
+            primary: Colors.black,
+            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0,),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            backgroundColor: Colors.grey.shade300,
+          ),
+          onPressed: () {
+            setState(() {
+              _isLoading = true;
+            });
+            _sendOtp();
+          },
+          child: Text(
+            'Resend OTP',
+            style: TextStyle(
+              fontSize: 16.0,
+              letterSpacing: 0.5,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ) :
+        Text(
+          'Resend OTP after $_time seconds',
+          style: TextStyle(
+            fontSize: 10.0,
+          ),
+        ),
+        vSpacer(h: 8.0,),
+        Text(
+          'If you need to change your mobile number, you may do so through Update Profile, or by reaching out to your Operation Center Administrator at admin@guardian.ph',
+          style: TextStyle(
+            fontSize: 10.0,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        vSpacer(h: 8.0,),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: _proceedBtn,
+        ),
+      ],
+    ),
+  );
+
+  Widget get _labelEnterOTP => Row(
+    // mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      FaIcon(
+        FontAwesomeIcons.key,
+        size: 16.0,
+      ),
+      hSpacer(w: 8.0,),
+      Flexible(
+        child: Text(
+          'You will receive a One-Time Password (OTP) on your registered mobile number.',
+          style: TextStyle(
+            fontSize: 16.0,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget get _otpField => TextFormField(
+    controller: _otpController,
+    textAlign: TextAlign.center,
+    decoration: editInputDecoration2.copyWith(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      hintText: 'XXXXXX',
+      hintStyle: TextStyle(
+        letterSpacing: 8.0,
+      ),
+      errorStyle: TextStyle(
+        fontSize: 0.0,
+      ),
+      errorText: _errOtp,
+    ),
+    style: TextStyle(
+      letterSpacing: 8.0,
+    ),
+    obscureText: true,
+    keyboardType: TextInputType.numberWithOptions(),
+    maxLines: 1,
+    minLines: 1,
+    maxLength: 6,
+    onChanged: (val) => _otpInput = val,
+  );
+
+  Widget get _proceedBtn => TextButton(
+    style: TextButton.styleFrom(
+      primary: Colors.white,
+      padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0,),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      backgroundColor: colorPrimary1,
+    ),
+    onPressed: () {
+      FocusScope.of(context).unfocus();
+      if (_validateOTPForm()) {
+        setState(() => _isLoading = true);
+        _createAccount();
+      }
+    },
+    child: Text(
+      'Proceed',
+      style: TextStyle(
+        fontSize: 24.0,
+        letterSpacing: 0.5,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
+  );
+
+  void _sendOtp() {
+    try {
+      _sendOtpApi().then((value) {
+        // if (value != 'server error') {
+          setState(() {
+            _isLoading = false;
+            _view = 'otp';
+            // _otp = value;
+            _timer?.cancel();
+            _timer = null;
+            _time = 300;
+            _startTimer();
+          });
+        /*} else {
+          setState(() {
+            _isLoading = false;
+          });
+          showMessageDialog(context, 'Sign up failed', '- cannot connect to GSM server.');
+        }*/
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<String> _sendOtpApi() async {
+    _otp = '${100000 + Random().nextInt(999999 - 100000)}';
+    var url = Uri.parse('$secretHollowsEndPoint/api/sms/sendOtp');
+    Map data = {
+      'number': _mobile,
+      'msg': 'Hi $_firstName, Proceed with your Registration for GUARDIAN Account, Your One-Time PIN is $_otp. OTP will expire 15 minutes. If you did not initiate this request, please call your Operation Center Administrator.',
+      'name': '$_firstName $_lastName',
+      'user': 'register',
+      'otp': _otp,};
+    var reqBody = json.encode(data);
+    var response = await http.post(
+      url,
+      headers: {
+        // 'Cache-Control' : 'no-cache',
+        // 'Postman-Token' : '<calculated when request is sent>',
+        // 'Content-Length' : '<calculated when request is sent>',
+        // 'Host' : '<calculated when request is sent>',
+        // 'Accept' : '*/*',
+        // 'Accept-Encoding' : 'gzip, deflate, br',
+        // 'Connection' : 'keep-alive',
+        'Content-Type': 'application/json',
+      },
+      body: reqBody,
+    );
+    print('sendOtp r: $response X ${response.body} X $_otp');
+    if (response.body.contains('Server Error')) {
+      showMessageDialog(context, 'Sending OTP failed', '- cannot connect to OTP server.');
+      return 'server error';
+    }
+    return _otp;
+  }
+
+  void _createAccount() {
+    try {
+      _createAccountApi().then((value) {
+        if (value.contains('error')) {
+          if (value.contains('exist')) {
+            _toggleView('signup');
+            final _snackBar = SnackBar(
+              duration: Duration(seconds: 7),
+              backgroundColor: Colors.redAccent,
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              content: Text(
+                'User already exists',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white,
+                ),
+              ),
+            );
+            // Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+          }
+        } else {
+          final _snackBar = SnackBar(
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.green,
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            content: Text(
+              'Sign up successful',
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.white,
+              ),
+            ),
+          );
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+        }
+      });
+    } catch (e) {
+      print('regErr - $e');
+    }
+  }
+
+  Future<String> _createAccountApi() async {
+    var url = Uri.parse('$secretHollowsEndPoint/api/users');
+    Map data = {
+      'name': _firstName,
+      'lname': _lastName,
+      'email': _email,
+      'number': _mobile,
+      'password': _pword
+    };
+    var reqBody = json.encode(data);
+    var response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: reqBody,
+    ).onError((error, stackTrace) {
+      setState(() {
+        _isLoading = false;
+      });
+      showMessageDialog(context, 'Sign up failed',
+          '- can\'t connect to server.');
+      return error;
+    });
+    print('regRes: $response X ${response.body}');
+    return response.body;
+  }
 
   /*Widget _buildVerticalLayout(double w, double h) => SingleChildScrollView(
         child: Container(

@@ -350,7 +350,7 @@ class _IDState extends State<ID> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '${widget.userProfileVM.location}',
+                                '${widget.userProfileVM.area}, ${widget.userProfileVM.state}',
                                 style: TextStyle(
                                   fontSize: 24.0,
                                   fontWeight: FontWeight.bold,
@@ -681,7 +681,7 @@ class _IDState extends State<ID> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${widget.userProfileVM.location}',
+                          '${widget.userProfileVM.area}, ${widget.userProfileVM.state}',
                           style: TextStyle(
                             fontSize: 24.0,
                             fontWeight: FontWeight.bold,

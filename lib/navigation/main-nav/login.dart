@@ -401,7 +401,7 @@ class _LoginState extends State<Login> {
         ),
         onSaved: (String val) {
           _password = val;
-          _login();
+          // _login();
         },
       );
 
@@ -419,7 +419,7 @@ class _LoginState extends State<Login> {
         ),
       );
 
-  void _login() {
+  /*void _login() {
     try {
       // TODO: Login
       _loginAPI2().then((value) {
@@ -455,7 +455,7 @@ class _LoginState extends State<Login> {
       _pageKey.currentState
           .showSnackBar(SnackBar(content: Text('Failed to Log-in')));
     }
-  }
+  }*/
 
   Future<bool> _loginAPI() async {
     var url = Uri.parse('https://ccc.guardian4emergency.com/mobile/login');

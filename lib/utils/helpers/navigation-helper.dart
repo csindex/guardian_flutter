@@ -56,11 +56,14 @@ class NavigationHelper {
         ),
       );
 
-  static navigateToHome(context, token) =>
+  static navigateToHome(context, token, vm, userVM, userList) =>
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => GuardianHome(
             token: token,
+            vm: vm,
+            userProfileVM: userVM,
+            userList: userList,
           ),
         ),
       );

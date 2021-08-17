@@ -16,6 +16,9 @@ class UserDetailsData {
   String civilStatus;
   String birthDate;
   String homeAddress;
+  String city;
+  String area;
+  String state;
   double homeLat;
   double homeLng;
   List<ExperienceData> experience;
@@ -36,6 +39,34 @@ class UserDetailsData {
         civilStatus = map["civilstatus"],
         birthDate = map["birthday"],
         homeAddress = map["completeaddress"],
+        city = map["city"],
+        area = map["area"],
+        state = map["state"],
+        homeLat = map["lat"],
+        homeLng = map["lng"],
+        msg = map["msg"],
+        experience = List<ExperienceData>.from(
+            map["experience"].map((it) => ExperienceData.fromJsonMap(it))),
+        education = List<EducationData>.from(
+            map["education"].map((it) => EducationData.fromJsonMap(it)));
+
+  UserDetailsData.fromJsonMap2(Map<String, dynamic> map, UserData u):
+        skills = List<String>.from(map["skills"]).toList(),
+        id = map["_id"],
+        user = u,
+        profilePic = map["profilepic"],
+        positionStatus = map["status"],
+        company = map["organization"],
+        website = map["website"],
+        location = map["location"],
+        bio = map["bio"],
+        gender = map["gender"],
+        civilStatus = map["civilstatus"],
+        birthDate = map["birthday"],
+        homeAddress = map["completeaddress"],
+        city = map["city"],
+        area = map["area"],
+        state = map["state"],
         homeLat = map["lat"],
         homeLng = map["lng"],
         msg = map["msg"],
@@ -59,6 +90,9 @@ class UserDetailsData {
     data['civilstatus'] = civilStatus;
     data['birthday'] = birthDate;
     data['completeaddress'] = homeAddress;
+    data['city'] = city;
+    data['area'] = area;
+    data['state'] = state;
     data['lat'] = homeLat;
     data['lng'] = homeLng;
     data['msg'] = msg;

@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:transparent_image/transparent_image.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../utils/constants/utils.dart';
 import '../../utils/helpers/navigation-helper.dart';
@@ -40,12 +41,20 @@ class _PostsState extends State<Posts>
     with AutomaticKeepAliveClientMixin<Posts> {
 
   List<PostViewModel> _posts = <PostViewModel>[];
+  List<VideoPlayerController> _videoCntrllrs = <VideoPlayerController>[];
 
   void _fetchPosts() {
     final vm = Provider.of<PostsListViewModel>(context, listen: false);
     vm.fetchPosts(widget.token).then((value) {
       print('post: $value');
       if (mounted) {
+        for (var v in value) {
+          if (v.articleImage.contains('mp4')) {
+            _videoCntrllrs.add(new VideoPlayerController.network(v.articleImage)..initialize().then((_) {
+              setState(() {});
+            }));
+          }
+        }
         setState(() {
           _posts.clear();
           _posts.addAll(value);
@@ -759,7 +768,6 @@ class _PostsState extends State<Posts>
   @override
   void initState() {
     super.initState();
-
     _fetchPosts();
   }
 

@@ -68,6 +68,7 @@ class Webservice {
       },
     );
     if (response.statusCode == 200) {
+      print('/profile/me - ${response.body}');
       return UserDetailsData.fromJsonMap(jsonDecode(response.body));
     } else if (response.statusCode == 400) {
       return jsonDecode(response.body)['msg'];

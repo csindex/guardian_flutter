@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:guardian_flutter/utils/small-loading.dart';
 import 'package:http/http.dart' as http;
 import 'package:transparent_image/transparent_image.dart';
 
 import '../../../utils/constants/utils.dart';
+import '../../../utils/constants/common-methods.dart';
 import '../../../utils/helpers/navigation-helper.dart';
 import '../../../provider/user/viewmodel-user.dart';
 import '../../../provider/user/viewmodel-user-profile.dart';
@@ -43,13 +45,13 @@ class _CommentsState extends State<Comments> with
     SingleTickerProviderStateMixin {
   PostViewModel _cP;
   AnimationController _controller;
-  Animation _animation;
+  // Animation _animation;
   FocusNode _focusNode = FocusNode();
-  var _errorMsg;
+  var _errorComment;
 
   final _formPageKey = GlobalKey<FormState>();
 
-  String _comment;
+  String _comment = '';
 
   TextEditingController _commentController;
 
@@ -60,11 +62,27 @@ class _CommentsState extends State<Comments> with
       setState(() {
         _cP = p;
         _commentController.clear();
-        _errorMsg = null;
+        _errorComment = null;
       });
       widget.refresh();
     });
     return Future.value();
+  }
+
+  bool _validateCommentForm() {
+    bool flag = true;
+    String errorMsg = '';
+    if (_comment.isEmpty) {
+      errorMsg = '- comment is empty.';
+      _errorComment = 'error';
+      flag = false;
+    } else {
+      _errorComment = null;
+    }
+    if(!flag) {
+      showMessageDialog(context, 'Comment', errorMsg);
+    }
+    return flag;
   }
 
   @override
@@ -73,10 +91,10 @@ class _CommentsState extends State<Comments> with
     _cP = widget.post;
     _commentController = TextEditingController(text: '');
     _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    _animation = Tween(begin: 300.0, end: 50.0).animate(_controller)
-      ..addListener(() {
-        setState(() {});
-      });
+    // _animation = Tween(begin: 300.0, end: 50.0).animate(_controller)
+    //   ..addListener(() {
+    //     setState(() {});
+    //   });
 
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -764,181 +782,263 @@ class _CommentsState extends State<Comments> with
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formPageKey,
-      child: Material(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 36.0,
-            ),
-            Row(
-              // mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+    return Scaffold(
+      body: SafeArea(
+        child: Form(
+          key: _formPageKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  width: 8.0,
+                  height: 16.0,
                 ),
-                ClipOval(
-                  child: Material(
-                    color: Colors.transparent, // button color
-                    child: InkWell(
-                      splashColor: Colors.grey, // inkwell color
-                      child: Container(
-                        width: 36.0,
-                        height: 36.0,
-                        alignment: Alignment.center,
-                        child: FaIcon(
-                          FontAwesomeIcons.angleLeft,
-                          color: Colors.black,
-                          size: 24.0,
+                Row(
+                  // mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    ClipOval(
+                      child: Material(
+                        color: Colors.transparent, // button color
+                        child: InkWell(
+                          splashColor: Colors.grey, // inkwell color
+                          child: Container(
+                            width: 36.0,
+                            height: 36.0,
+                            alignment: Alignment.center,
+                            child: FaIcon(
+                              FontAwesomeIcons.angleLeft,
+                              color: Colors.black,
+                              size: 24.0,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
                         ),
                       ),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
                     ),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: Text(
+                        'Return to Posts',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          color: colorPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                _createPostItem(context),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                  child: TextFormField(
+                    autofocus: true,
+                    key: Key('comment'),
+                    validator: (value) =>
+                    value.isEmpty ? 'Please enter your comment' : null,
+                    controller: _commentController,
+                    autovalidateMode: AutovalidateMode.disabled,
+                    focusNode: _focusNode,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black,
+                    ),
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 4.0,
+                      ),
+                      isDense: true,
+                      filled: true,
+                      fillColor: Colors.white,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        borderSide: BorderSide(width: 1, color: Colors.black),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        borderSide:
+                            BorderSide(width: 1, color: Colors.grey.shade400),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                        borderSide: BorderSide(width: 1.5, color: Colors.black),
+                      ),
+                      border: /*InputBorder.none,*/ OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                      hintText: 'Leave a comment',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                      ),
+                      labelText: '',
+                      labelStyle: TextStyle(
+                        fontSize: 0.0,
+                      ),
+                      errorText: _errorComment,
+                      errorStyle: TextStyle(
+                        letterSpacing: 1.5,
+                        fontSize: 0.0,
+                      ),
+                      counterText: '',
+                      counterStyle: TextStyle(
+                        fontSize: 0.0,
+                      ),
+                    ),
+                    keyboardType: TextInputType.text,
+                    maxLines: 4,
+                    minLines: 4,
+                    onSaved: (String val) {
+                      _comment = val;
+                    },
+                    onChanged: (String val) {
+                      _comment = val;
+                    },
                   ),
                 ),
-                SizedBox(width: 8.0),
-                Expanded(
-                  child: Text(
-                    'Return to Posts',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      color: colorPrimary,
-                    ),
+                SizedBox(
+                  height: 4.0,
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 16.0,),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0,),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        backgroundColor: colorPrimary1,
+                      ),
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        if (_validateCommentForm()) {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: ((BuildContext context) {
+                              return Dialog(
+                                backgroundColor: colorPrimary1,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Adding Comment',
+                                        style: TextStyle(
+                                          fontSize: 36.0,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      vSpacer(h: 16.0,),
+                                      CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                          );
+                          _submitComment();
+                        }
+                      },
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          letterSpacing: 0.5,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),/*FlatButton(
+                      color: colorPrimary1,
+                      onPressed: () {
+                        if (_formPageKey.currentState.validate()) {
+                          _submitComment().then((value) {
+                            print('value - $value');
+                            if (!value.contains('error')) {
+                              widget.refresh();
+                            }
+                          });
+                        }
+                      },
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),*/
+                  ),
+                ),
+                SizedBox(
+                  height: 4.0,
+                ),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: CommentsBox(
+                    token: widget.token,
+                    vm: widget.vm,
+                    userVM: widget.userVM,
+                    userList: widget.userList,
+                    post: _cP,
+                    refresh: _refresh,
                   ),
                 ),
               ],
             ),
-            SizedBox(
-              height: 16.0,
-            ),
-            _createPostItem(context),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-              child: TextFormField(
-                key: Key('comment'),
-                validator: (value) =>
-                value.isEmpty ? 'Please enter your comment' : null,
-                controller: _commentController,
-                autovalidateMode: AutovalidateMode.disabled,
-                focusNode: _focusNode,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 4.0,
-                  ),
-                  isDense: true,
-                  filled: true,
-                  fillColor: Colors.white,
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    borderSide: BorderSide(width: 1, color: Colors.black),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    borderSide:
-                        BorderSide(width: 1, color: Colors.grey.shade400),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                    borderSide: BorderSide(width: 1.5, color: Colors.black),
-                  ),
-                  border: /*InputBorder.none,*/ OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-                  hintText: 'Leave a comment',
-                  hintStyle: TextStyle(
-                    color: Colors.grey[500],
-                  ),
-                  labelText: '',
-                  labelStyle: TextStyle(
-                    fontSize: 0.0,
-                  ),
-                  errorText: _errorMsg,
-                  errorStyle: TextStyle(
-                    letterSpacing: 1.5,
-                    fontSize: 10.0,
-                  ),
-                  counterText: '',
-                  counterStyle: TextStyle(
-                    fontSize: 0.0,
-                  ),
-                ),
-                keyboardType: TextInputType.text,
-                maxLines: 4,
-                minLines: 4,
-                onSaved: (String val) {
-                  _comment = val;
-                },
-                onChanged: (String val) {
-                  _comment = val;
-                },
-              ),
-            ),
-            SizedBox(
-              height: 4.0,
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16.0,),
-                child: FlatButton(
-                  color: colorPrimary1,
-                  onPressed: () {
-                    if (_formPageKey.currentState.validate()) {
-                      _submitComment().then((value) {
-                        print('value - $value');
-                        if (!value.contains('error')) {
-                          widget.refresh();
-                        }
-                      });
-                    }
-                  },
-                  child: Text(
-                    'Submit',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 4.0,
-            ),
-            Flexible(
-              fit: FlexFit.loose,
-              child: CommentsBox(
-                token: widget.token,
-                vm: widget.vm,
-                userVM: widget.userVM,
-                userList: widget.userList,
-                post: _cP,
-                refresh: _refresh,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Future<String> _submitComment() async {
+  void _submitComment() {
+    try {
+      _submitCommentApi().then((value) {
+        if (!value.contains('error')) {
+          final _snackBar = SnackBar(
+            duration: Duration(seconds: 5),
+            backgroundColor: Colors.green,
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            content: Text(
+              'Comment Added.',
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.white,
+              ),
+            ),
+          );
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+          _refresh();
+        }
+      });
+    } catch (e) {
+      print('submit comm: $e');
+    }
+  }
+
+  Future<String> _submitCommentApi() async {
     var url = Uri.parse('$secretHollowsEndPoint/api/posts/comment/${_cP.id}');
     Map data = {'text': _comment};
     var reqBody = json.encode(data);

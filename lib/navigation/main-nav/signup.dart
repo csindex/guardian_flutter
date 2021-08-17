@@ -129,7 +129,7 @@ class _SignUpState extends State<SignUp> {
       print('resp: $response');
       print('body: ${response.displayName}');
       if (response.displayName != '' || response.displayName != null) {
-        NavigationHelper.navigateToHome(context, '');
+        // NavigationHelper.navigateToHome(context, '');
       }
     } catch (error) {
       print(error);
@@ -672,7 +672,7 @@ class _SignUpState extends State<SignUp> {
           onPressed: () {
             FBAuthenticationHelper auth = FBAuthenticationHelper();
             auth.signInFB().then((value) {
-              NavigationHelper.navigateToHome(ctx, '');
+              // NavigationHelper.navigateToHome(ctx, '');
             });
           },
         ),

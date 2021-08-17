@@ -574,7 +574,7 @@ class _AddEducationState extends State<AddEducation> {
                                 addEducation().then((value) {
                                   print('addEducation value is $value');
                                   if (!value.contains('error')) {
-                                    widget.refresh();
+                                    widget.refresh(null);
                                     Navigator.pop(context);
                                   } else {
                                     setState(() {

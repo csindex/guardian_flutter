@@ -144,7 +144,7 @@ class _SendOtpState2 extends State<SendOtpDialog2> {
                           color: dialogBtnColor,
                           splashColor: Colors.grey.shade500,
                           onPressed: () {
-                            NavigationHelper.navigateToHome(context, '');
+                            // NavigationHelper.navigateToHome(context, '');
                           },
                         ),
                       ),

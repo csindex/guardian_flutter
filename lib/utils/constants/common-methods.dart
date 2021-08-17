@@ -93,29 +93,28 @@ void showMessageDialog(BuildContext c, String title, String msg) {
   );
 }
 
-Future<http.StreamedResponse> _editProfile(
-    String token, Map<String, String> params, String path) async {
-  // print('path: ${_image.path} x ${File(_image.path).path.split('/').last}');
-  Map<String, String> header = {
-    'Content-Type': 'multipart/form-data;',
-    'Connection': 'keep-alive',
-    'Accept': '*/*',
-    'x-auth-token': token,
-  };
-  var request = http.MultipartRequest(
-      'POST', Uri.parse('$secretHollowsEndPoint/api/profile'));
-  request.headers.addAll(header);
-  if (path != 'nopic') {
-    request.files.add(await http.MultipartFile.fromPath('profilepic', path));
-  }
-  request.fields.addAll(params);
-  var res = await request.send();
-  return res;
-  // http.Response.fromStream(res).then((response) {
-  //   print('result? $response x ${response.statusCode} x ${response.body}');
-  //   return response;
-  // });
-}
+// Future<http.StreamedResponse> _editProfile(String token, Map<String, String> params, String path) async {
+//   // print('path: ${_image.path} x ${File(_image.path).path.split('/').last}');
+//   Map<String, String> header = {
+//     'Content-Type': 'multipart/form-data;',
+//     'Connection': 'keep-alive',
+//     'Accept': '*/*',
+//     'x-auth-token': token,
+//   };
+//   var request = http.MultipartRequest(
+//       'POST', Uri.parse('$secretHollowsEndPoint/api/profile'));
+//   request.headers.addAll(header);
+//   if (path != 'nopic') {
+//     request.files.add(await http.MultipartFile.fromPath('profilepic', path));
+//   }
+//   request.fields.addAll(params);
+//   var res = await request.send();
+//   return res;
+//   // http.Response.fromStream(res).then((response) {
+//   //   print('result? $response x ${response.statusCode} x ${response.body}');
+//   //   return response;
+//   // });
+// }
 
 Future<List<UserProfileViewModel>> fetchUsers() async {
   var result = await Webservice().fetchUsers();

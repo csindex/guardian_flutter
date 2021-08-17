@@ -127,386 +127,388 @@ class _ProfileMainState extends State<ProfileMain> {
   Widget get _mainProfile
   => Scaffold(
     backgroundColor: Colors.grey.shade300,
-    body: Container(
-      margin: EdgeInsets.all(16.0,),
-      padding: EdgeInsets.all(16.0,),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          width: 1.0,
+    body: SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.all(16.0,),
+        padding: EdgeInsets.all(16.0,),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          border: Border.all(
+            width: 1.0,
+            color: Colors.white,
+          ),
           color: Colors.white,
         ),
-        color: Colors.white,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _nameHeader,
-          SizedBox(
-            height: 8.0,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: colorPrimary,
-                    primary: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0,),
-                    side: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  ),
-                  onPressed: () {
-                    NavigationHelper.openEditProfile(
-                      context, widget.token, widget.refresh, true, widget.userVM,);
-                  },
-                  child: Column(
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.solidUserCircle,
-                        size: 12.0,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Text(
-                        'Profile',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          letterSpacing: 0.5,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: colorPrimary,
-                    primary: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0,),
-                    side: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  ),
-                  onPressed: () {
-                    NavigationHelper.openAddTraining(
-                      context, widget.token, widget.refresh,
-                    );
-                  },
-                  child: Column(
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.blackTie,
-                        size: 12.0,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Text(
-                        'Trainings/Experiences',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: colorPrimary,
-                    primary: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0,),
-                    side: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  ),
-                  onPressed: () {
-                    NavigationHelper.openAddEducation(
-                      context, widget.token, widget.refresh,
-                    );},
-                  child: Column(
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.graduationCap,
-                        size: 12.0,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                      Text(
-                        'Education',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          letterSpacing: 0.5,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          Text(
-            'Trainings/Experiences',
-            style: TextStyle(
-              fontSize: 24.0,
-              color: Colors.black,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            _nameHeader,
+            SizedBox(
+              height: 8.0,
             ),
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 4,
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Company',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                flex: 2,
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Title',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                flex: 3,
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Years',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Action',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          _trainings,
-          SizedBox(
-            height: 8.0,
-          ),
-          Text(
-            'Education Credentials',
-            style: TextStyle(
-              fontSize: 24.0,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 4,
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'School',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                flex: 2,
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Degree',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                flex: 3,
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Years',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 2.0,
-              ),
-              Expanded(
-                child: Container(
-                  color: colorPrimary,
-                  padding: EdgeInsets.symmetric(vertical: 8.0,),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Action',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          _education,
-          SizedBox(
-            height: 8.0,
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.red,
-              primary: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0,),
-            ),
-            onPressed: () {
-              // TODO: Delete Account then go back to log in screen
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+            Row(
               children: [
-                FaIcon(
-                  FontAwesomeIcons.solidUser,
-                  size: 16.0,
-                  color: Colors.white,
+                Expanded(
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: colorPrimary,
+                      primary: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0,),
+                      side: BorderSide(
+                        color: Colors.black,
+                        width: 1.0,
+                      ),
+                    ),
+                    onPressed: () {
+                      NavigationHelper.openEditProfile(
+                        context, widget.token, widget.refresh, true, widget.userVM,);
+                    },
+                    child: Column(
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.solidUserCircle,
+                          size: 12.0,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        Text(
+                          'Profile',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(
-                  width: 4.0,
+                  width: 2.0,
                 ),
-                Text(
-                  '- Delete My Account',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    letterSpacing: 0.5,
-                    fontWeight: FontWeight.w400,
+                Expanded(
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: colorPrimary,
+                      primary: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0,),
+                      side: BorderSide(
+                        color: Colors.black,
+                        width: 1.0,
+                      ),
+                    ),
+                    onPressed: () {
+                      NavigationHelper.openAddTraining(
+                        context, widget.token, widget.refresh,
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.blackTie,
+                          size: 12.0,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        Text(
+                          'Trainings/Experiences',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 2.0,
+                ),
+                Expanded(
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: colorPrimary,
+                      primary: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0,),
+                      side: BorderSide(
+                        color: Colors.black,
+                        width: 1.0,
+                      ),
+                    ),
+                    onPressed: () {
+                      NavigationHelper.openAddEducation(
+                        context, widget.token, widget.refresh,
+                      );},
+                    child: Column(
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.graduationCap,
+                          size: 12.0,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 4.0,
+                        ),
+                        Text(
+                          'Education',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            SizedBox(
+              height: 8.0,
+            ),
+            Text(
+              'Trainings/Experiences',
+              style: TextStyle(
+                fontSize: 24.0,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Company',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 2.0,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Title',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 2.0,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Years',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 2.0,
+                ),
+                Expanded(
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Action',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            _trainings,
+            SizedBox(
+              height: 8.0,
+            ),
+            Text(
+              'Education Credentials',
+              style: TextStyle(
+                fontSize: 24.0,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'School',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 2.0,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Degree',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 2.0,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Years',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 2.0,
+                ),
+                Expanded(
+                  child: Container(
+                    color: colorPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 8.0,),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Action',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            _education,
+            SizedBox(
+              height: 8.0,
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red,
+                primary: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0,),
+              ),
+              onPressed: () {
+                // TODO: Delete Account then go back to log in screen
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FaIcon(
+                    FontAwesomeIcons.solidUser,
+                    size: 16.0,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 4.0,
+                  ),
+                  Text(
+                    '- Delete My Account',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      letterSpacing: 0.5,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -603,7 +605,20 @@ class _ProfileMainState extends State<ProfileMain> {
               deleteTraining(t.id).then((value) {
                 print('DELETE T- $value');
                 if (!value.contains('error')) {
-                  widget.refresh();
+                  final _snackBar = SnackBar(
+                    duration: Duration(seconds: 3),
+                    backgroundColor: Colors.greenAccent,
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    content: Text(
+                      'Training Deleted.',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                  widget.refresh(null);
                 }
               });
             },
@@ -709,7 +724,20 @@ class _ProfileMainState extends State<ProfileMain> {
               deleteEducation(e.id).then((value) {
                 print('DELETE E- $value');
                 if (!value.contains('error')) {
-                  widget.refresh();
+                  final _snackBar = SnackBar(
+                    duration: Duration(seconds: 3),
+                    backgroundColor: Colors.greenAccent,
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    content: Text(
+                      'Education Deleted.',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                  widget.refresh(null);
                 }
               });
             },

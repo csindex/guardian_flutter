@@ -7,10 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../../provider/user/viewmodel-user.dart';
+import '../../provider/user/viewmodel-user-profile.dart';
 import '../../utils/constants/utils.dart';
 import '../../utils/constants/common-methods.dart';
 import '../../utils/helpers/navigation-helper.dart';
 import '../../utils/loading.dart';
+import '../../services/web-service.dart';
 
 class Login extends StatefulWidget {
 
@@ -141,7 +144,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget get _labelSignIn => Row(
+  Widget get _labelSignIn => Row (
     // mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
@@ -662,16 +665,56 @@ class _LoginState extends State<Login> {
   void _login() {
     try {
       _loginApi().then((value) {
-        var result = jsonDecode(value);
-        String token = result['token'];
-        if (token != null) {
-          NavigationHelper.navigateToHome(context, token);
-        }
-        else {
+        if (value.contains('Error')) {
           setState(() => _isLoading = false);
-          print('result: $result');
-          if (result.toString().toLowerCase().contains('invalid credential')) {
-            showMessageDialog(context, 'Sign in failed', '- invalid credentials.');
+          showMessageDialog(context, 'Sign in failed', '- server error.');
+        } else {
+          var result = jsonDecode(value);
+          String token = result['token'];
+          if (token != null) {
+            final _snackBar = SnackBar(
+              duration: Duration(seconds: 3),
+              backgroundColor: Colors.green,
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              content: Text(
+                'Login successful',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white,
+                ),
+              ),
+            );
+            // Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+            _fetchVMApi(token).then((v) {
+              UserViewModel vm = v;
+              _fetchUserProfileVMApi(token).then((val) {
+                UserProfileViewModel userVM;
+                try {
+                  if ((val as String).contains('no profile')) {
+                    userVM = null;
+                  } else {
+                    userVM = UserProfileViewModel(userDetails: val);
+                  }
+                } catch(e) {
+                  userVM = UserProfileViewModel(userDetails: val);
+                }
+                fetchUsers().then((value) {
+                  List<UserProfileViewModel> userList = value;
+                  NavigationHelper.navigateToHome(
+                      context, token, vm, userVM, userList);
+                });
+              });
+            });
+          }
+          else {
+            setState(() => _isLoading = false);
+            print('result: $result');
+            if (result.toString().toLowerCase().contains(
+                'invalid credential')) {
+              showMessageDialog(
+                  context, 'Sign in failed', '- invalid credentials.');
+            }
           }
         }
       });
@@ -708,5 +751,23 @@ class _LoginState extends State<Login> {
     });
     print('loginRes: $response X ${response.body}');
     return response.body;
+  }
+
+  Future<UserViewModel> _fetchVMApi(String token) async {
+    var result = await Webservice().fetchUserDetails(token);
+    print('User = $result x ${result.name}');
+    return UserViewModel(user: result);
+  }
+
+  Future<Object> _fetchUserProfileVMApi(String token) async {
+    var result = await Webservice().fetchUserProfile(token);
+    print('UserProfile = $result');
+    return result;
+  }
+
+  Future<List<UserProfileViewModel>> fetchUsersApi() async {
+    var result = await Webservice().fetchUsers();
+    var userList = result.map((item) => UserProfileViewModel(userDetails: item)).toList();
+    return userList;
   }
 }

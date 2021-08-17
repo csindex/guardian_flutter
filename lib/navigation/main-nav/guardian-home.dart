@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:hive/hive.dart';
 
 import '../bottom-nav/home.dart';
 import '../bottom-nav/report.dart';
 import '../bottom-nav/special.dart';
 import '../../utils/constants/utils.dart';
-import '../../utils/constants/common-methods.dart';
 import '../../utils/helpers/navigation-helper.dart';
+import '../../services/web-service.dart';
 import '../../provider/user/viewmodel-user.dart';
 import '../../provider/user/viewmodel-user-profile.dart';
 import '../../screens/profile/profile-main.dart';
-import '../../screens/menu/profile-menu.dart';
-import '../../screens/responders/responders.dart';
 import '../../screens/posts/posts.dart';
 import '../../screens/incident/incident-main.dart';
-import '../../screens/report-buttons.dart';
 import '../../screens/id/id.dart';
-import '../../services/web-service.dart';
 
 class GuardianHome extends StatefulWidget {
   final String token;
+  final UserViewModel vm;
+  final UserProfileViewModel userProfileVM;
+  final List<UserProfileViewModel> userList;
 
-  GuardianHome({this.token});
+  GuardianHome({this.token, this.vm, this.userProfileVM, this.userList});
 
   @override
   State<StatefulWidget> createState() => _GuardianHomeState();
@@ -32,17 +29,18 @@ class _GuardianHomeState extends State<GuardianHome> {
   UserViewModel vm;
   UserProfileViewModel userProfileVM;
   List<UserProfileViewModel> userList = [];
+  bool _isViewProfile = false;
 
   final _scrollController = ScrollController();
   List _children;
 
   bool _selectVol = true;
 
-  void _selectVolunteer() {
+  /*void _selectVolunteer() {
     setState(() {
       _selectVol = !_selectVol;
     });
-  }
+  }*/
 
   // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -50,9 +48,14 @@ class _GuardianHomeState extends State<GuardianHome> {
   //   _firebaseMessaging.getToken().then((token) => print('fcmToken - $token'));
   // }
 
+  void _viewProfile() => setState(() => _isViewProfile = !_isViewProfile);
+
   @override
   void initState() {
     super.initState();
+    vm = widget.vm;
+    userProfileVM = widget.userProfileVM;
+    userList = widget.userList;
     _children = [
       Home(
         token: widget.token,
@@ -67,7 +70,7 @@ class _GuardianHomeState extends State<GuardianHome> {
     ];
     // getMessage();
 
-    _fetchDetails().then((value) {
+    /*_fetchDetails().then((value) {
       setState(() {
         _children[0] = Home(
           token: widget.token,
@@ -83,21 +86,9 @@ class _GuardianHomeState extends State<GuardianHome> {
       box.put('name', value.name);
       box.put('token', widget.token);
       box.put('id', value.id);
-    });
+    });*/
 
-    _fetchUserProfile().then((value) => setState(() {
-          _children[0] = Home(
-            token: widget.token,
-            vm: vm,
-            userProfileVM: UserProfileViewModel(userDetails: value),
-            openProfileScreen: openProfileScreen,
-            userList: userList,
-          );
-          // print('UserProfileValue: ${value.profilePic}');
-          userProfileVM = UserProfileViewModel(userDetails: value);
-        }));
-
-    fetchUsers().then((value) {
+    /*fetchUsers().then((value) {
       print('fetchUsers - $value');
       setState(() {
         _children[0] = Home(
@@ -105,45 +96,47 @@ class _GuardianHomeState extends State<GuardianHome> {
           vm: vm,
           userProfileVM: userProfileVM,
           openProfileScreen: openProfileScreen,
-          userList: value,
+          userList: value,f
         );
         userList = value;
       });
-    });
+    });*/
   }
 
-  Future<void> _refreshUser() {
-    _fetchUserProfile().then((value) => setState(() {
-      _children[0] = Home(
-        token: widget.token,
-        vm: vm,
-        userProfileVM: UserProfileViewModel(userDetails: value),
-        openProfileScreen: openProfileScreen,
-        userList: userList,
-      );
-      // print('UserProfileValue: ${value.profilePic}');
-      userProfileVM = UserProfileViewModel(userDetails: value);
-    }));
+  /*void _updateProfile(UserProfileViewModel userVM) {
+    setState(() => userProfileVM = userVM);
+  }*/
+
+  Future<void> _refreshUser(UserProfileViewModel userVM) {
+    if (userVM != null && userVM?.user != null) {
+      setState(() => userProfileVM = userVM);
+    } else {
+      _fetchUserProfileVMApi(widget.token).then((value) =>
+          setState(() {
+            _children[0] = Home(
+              token: widget.token,
+              vm: vm,
+              userProfileVM: UserProfileViewModel(userDetails: value),
+              openProfileScreen: openProfileScreen,
+              userList: userList,
+            );
+            // print('UserProfileValue: ${value.profilePic}');
+            userProfileVM = UserProfileViewModel(userDetails: value);
+          }));
+    }
     return Future.value();
+  }
+
+  Future<Object> _fetchUserProfileVMApi(String token) async {
+    var result = await Webservice().fetchUserProfile(token);
+    print('UserProfile = $result');
+    return result;
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  Future<UserViewModel> _fetchDetails() async {
-    var result = await Webservice().fetchUserDetails(widget.token);
-    print('User = $result');
-    return UserViewModel(user: result);
-  }
-
-  Future<Object> _fetchUserProfile() async {
-    var result = await Webservice().fetchUserProfile(widget.token);
-    print('UserProfile = $result');
-    // return UserProfileViewModel(userDetails: result);
-    return result;
   }
 
   // void getMessage() {
@@ -171,7 +164,7 @@ class _GuardianHomeState extends State<GuardianHome> {
     print('authToken - ${widget.token}');
     return DefaultTabController(
       length: (userProfileVM == null || userProfileVM.company == null) ? 3 : 4,
-      initialIndex: (userProfileVM == null || userProfileVM.company == null) ? 2 : 1,
+      initialIndex: (userProfileVM == null || userProfileVM.company == null) ? 1 : 2,
       child: Scaffold(
         body: NestedScrollView(
           controller: _scrollController,
@@ -189,6 +182,70 @@ class _GuardianHomeState extends State<GuardianHome> {
                     // alignment: FractionalOffset.center,
                   ),
                 ),
+                actions: [
+                  PopupMenuButton(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0, right: 16.0,),
+                      child: CircleAvatar(
+                        radius: 20.0,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          radius: 19.0,
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                          NetworkImage(
+                            userProfileVM != null ?
+                            userProfileVM.profilePic != null ?
+                            userProfileVM.profilePic :
+                            '$secretHollowsEndPoint/img/Spotter.png' :
+                            '$secretHollowsEndPoint/img/Spotter.png',
+                          ),
+                        ),
+                      ),
+                    ),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+                        enabled: false,
+                        child: Text("Log-in as:"),
+                        value: "login",
+                      ),
+                      PopupMenuItem(
+                        child: Text("Volunteer"),
+                        value: "volunteer",
+                      ),
+                      PopupMenuItem(
+                        child: Text("Responder"),
+                        value: "responder",
+                      ),
+                      PopupMenuItem(
+                        enabled: false,
+                        child: Text("------------------"),
+                        value: "-",
+                      ),
+                      PopupMenuItem(
+                        child: Text("Log-out"),
+                        value: "logout",
+                      ),
+                    ],
+                    onSelected: (choice) async {
+                      switch (choice) {
+                        case 'logout': {
+                          NavigationHelper.login(context);
+                          break;
+                        }
+                        case 'volunteer': {
+                          break;
+                        }
+                        case '-':
+                        case 'login':
+                        default: {
+                          break;
+                        }
+                      }
+                    },
+                  ),
+                ],
                 centerTitle: true,
                 title: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -336,13 +393,14 @@ class _GuardianHomeState extends State<GuardianHome> {
                 openProfileScreen: openProfileScreen,
                 userList: userList,
               ),
-              ProfileMenu(
+              ProfileMain(
                 vm: vm,
                 userVM: userProfileVM,
                 token: widget.token,
                 origin: 'posts',
                 userOVM: userProfileVM,
                 refresh: _refreshUser,
+                viewProfile: _viewProfile,
               ),
             ],
           )/* :
@@ -383,8 +441,7 @@ class _GuardianHomeState extends State<GuardianHome> {
   }
 }
 
-/***
- * SafeArea(
+/* SafeArea(
     child: WillPopScope(
     onWillPop: () => Future.value(false),
     child: Scaffold(
@@ -629,81 +686,3 @@ class _GuardianHomeState extends State<GuardianHome> {
     ),
     );
  */
-
-/***
- * DefaultTabController(
-    length: 6,
-    child: Scaffold(
-    appBar: AppBar(
-    centerTitle: true,
-    leading: Icon(Icons.person_outline),
-    title: Text(‘HOME SCREEN',style: TextStyle(fontSize: 16.0),),
-    bottom: PreferredSize(
-    child: TabBar(
-    isScrollable: true,
-    unselectedLabelColor: Colors.white.withOpacity(0.3),
-    indicatorColor: Colors.white,
-    tabs: [
-    Tab(
-    child: Text(‘Kumar'),
-    ),
-    Tab(
-    child: Text(‘Lokesh'),
-    ),
-    Tab(
-    child: Text(‘Rathod'),
-    ),
-    Tab(
-    child: Text(‘Raj'),
-    ),
-    Tab(
-    child: Text(’Madan'),
-    ),
-    Tab(
-    child: Text(‘Manju'),
-    )
-    ]),
-    preferredSize: Size.fromHeight(30.0)),
-    actions: <Widget>[
-    Padding(
-    padding: const EdgeInsets.only(right: 16.0),
-    child: Icon(Icons.add_alert),
-    ),
-    ],
-    ),
-    body: TabBarView(
-    children: <Widget>[
-    Container(
-    child: Center(
-    child: Text('Tab 1'),
-    ),
-    ),
-    Container(
-    child: Center(
-    child: Text('Tab 2'),
-    ),
-    ),
-    Container(
-    child: Center(
-    child: Text('Tab 3'),
-    ),
-    ),
-    Container(
-    child: Center(
-    child: Text('Tab 4'),
-    ),
-    ),
-    Container(
-    child: Center(
-    child: Text('Tab 5'),
-    ),
-    ),
-    Container(
-    child: Center(
-    child: Text('Tab 6'),
-    ),
-    ),
-    ],
-    )),
-    );
- ***/

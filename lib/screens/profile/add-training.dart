@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:guardian_flutter/data/user/data-user-details.dart';
+import 'package:guardian_flutter/provider/user/viewmodel-user-profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
@@ -574,7 +576,7 @@ class _AddTrainingState extends State<AddTraining> {
                                 addTraining().then((value) {
                                   print('addTraining value is $value');
                                   if (!value.contains('error')) {
-                                    widget.refresh();
+                                    widget.refresh(null);
                                     Navigator.pop(context);
                                   } else {
                                     setState(() {

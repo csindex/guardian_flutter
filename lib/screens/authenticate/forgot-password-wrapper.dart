@@ -21,8 +21,8 @@ class ForgotPasswordWrapper extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   bool _isLoading = false, _obscureText = true;
   String _view = 'email', _email = '', _otp = '', _otpInput = '',
-      _newPass = '', _cPass = '', _name = '', _number = '',
-      _errEmail, _errOtp, _errPass, _errCPass;
+      _newPass = '', _cPass = '', _name = '', _lname = '', _number = '',
+      _userId = '', _errEmail, _errOtp, _errPass, _errCPass;
   int _time = 300;
   Timer _timer;
 
@@ -31,10 +31,10 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
 
   final _formPageKey = GlobalKey<FormState>();
 
-  toggleView(String v) {
+  _toggleView(String v) {
     _mockCheckForSession().then((_) {
       setState(() {
-        _isLoading = !_isLoading;
+        _isLoading = false;
         _view = v;
       });
     });
@@ -113,20 +113,22 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
       _errPass = 'error';
       flag = false;
     } else if (_newPass.length < 8) {
-      errorMsg = '- password must be 8 or more characters.\n';
+      errorMsg = '- password must not be less than 8 characters.\n';
       _errPass = 'error';
       flag = false;
     } else if (_newPass != _cPass) {
       errorMsg = '- passwords do not match.\n';
       _errPass = 'error';
       flag = false;
+    } else {
+      _errPass = null;
     }
     if (_cPass.isEmpty) {
       errorMsg += '- confirm password is empty.';
       _errCPass = 'error';
       flag = false;
     } else if (_cPass.length < 8) {
-      errorMsg += '- confirm password must be 8 or more characters.';
+      errorMsg += '- confirm password must not be less than 8 characters.';
       _errCPass = 'error';
       flag = false;
     } else {
@@ -496,7 +498,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
       FocusScope.of(context).unfocus();
       if (_validateOTPForm()) {
         setState(() => _isLoading = true);
-        toggleView('change');
+        _toggleView('change');
       }
     },
     child: Text(
@@ -663,6 +665,8 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
           var result = jsonDecode(value);
           _name = result['name'];
           _number = result['number'];
+          _lname = result['lname'];
+          _userId = result['_id'];
           if (_name == null || _name.isEmpty) {
             setState(() => _isLoading = false);
             showMessageDialog(context, 'Forgot password failed',
@@ -679,23 +683,23 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   void _sendOtp() {
     try {
       _sendOtpApi().then((value) {
-        if (value != 'server error') {
+        // if (value != 'server error') {
           setState(() {
             _isLoading = false;
             _view = 'otp';
-            _otp = value;
+            // _otp = value;
             _timer?.cancel();
             _timer = null;
             _time = 300;
             _startTimer();
           });
-        } else {
+        /*} else {
           setState(() {
             _isLoading = false;
-            _errEmail = 'error';
+            // _errEmail = 'error';
           });
           showMessageDialog(context, 'Forgot Password failed', '- cannot connect to GSM server.');
-        }
+        }*/
       });
     } catch (e) {
       setState(() => _isLoading = false);
@@ -709,9 +713,9 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
         String token = result['token'];
         if (token != null) {
           final _snackBar = SnackBar(
-            duration: Duration(seconds: 10),
-            backgroundColor: colorPrimary1,
-            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.green,
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             content: Text(
               'Password changed successfully.',
               style: TextStyle(
@@ -764,7 +768,16 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
   Future<String> _sendOtpApi() async {
     _otp = '${100000 + Random().nextInt(999999 - 100000)}';
     var url = Uri.parse('$secretHollowsEndPoint/api/sms/sendOtp');
-    Map data = {'number': _number, 'msg': 'Hi $_name, Proceed with your Change Password for GUARDIAN Account, Your One-Time PIN is $_otp. OTP will expire 15 minutes. If you did not initiate this request, please call your Operation Center Administrator.'};
+    Map data = {
+      'number': _number,
+      'msg': 'Hi $_name, Proceed with your Change Password for '
+          'GUARDIAN Account, Your One-Time PIN is $_otp. OTP will '
+          'expire 15 minutes. If you did not initiate this request, '
+          'please call your Operation Center Administrator.',
+      'name': '$_name $_lname',
+      'user': _userId,
+      'otp': _otp,
+    };
     var reqBody = json.encode(data);
     var response = await http.post(
       url,
@@ -779,10 +792,14 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
         'Content-Type': 'application/json',
       },
       body: reqBody,
-    );
+    ).onError((error, stackTrace) {
+      print('errOTP - $error');
+      showMessageDialog(context, 'Sending OTP failed', '- cannot connect to OTP server.');
+      return error;
+    });
     print('sendOtp r: $response X ${response.body} X $_otp');
     if (response.body.contains('Server Error')) {
-      // showMessageDialog(context, 'Sending OTP failed', '- cannot connect to OTP server.');
+      showMessageDialog(context, 'Sending OTP failed', '- cannot connect to OTP server.');
       return 'server error';
     }
     return _otp;
