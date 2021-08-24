@@ -32,13 +32,8 @@ class EditProfile extends StatefulWidget {
   final Function refresh;
   final bool isUpdate;
 
-  EditProfile({
-    Key key,
-    this.token,
-    this.userVM,
-    this.refresh,
-    this.isUpdate
-  }) : super(key: key);
+  EditProfile({Key key, this.token, this.userVM, this.refresh, this.isUpdate})
+      : super(key: key);
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -46,7 +41,6 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile>
     with TickerProviderStateMixin<EditProfile> {
-
   final _formPageKey = GlobalKey<FormState>();
 
   gmws.GoogleMapsPlaces _places = gmws.GoogleMapsPlaces(apiKey: gMAK);
@@ -157,24 +151,33 @@ class _EditProfileState extends State<EditProfile>
   TextEditingController _bioController;
   TextEditingController _searchAddressController;
 
-  final List<String> _respStatusOptions = [
-    'Emergency Dispatch Operator',
-    'Emergency Medical Service',
-    'Firefighter',
-    'Police Officer',
-    'Military',
-    'Quick Response',
-    'Traffic Enforcer',
-    'LGU Frontliner',
-    'Volunteer',
-    'Others',
+  final List<RespStatus> _respStatusOptions = [
+    RespStatus(v: 'Dispatch', txt: 'Emergency Dispatch Operator'),
+    RespStatus(v: 'EMS', txt: 'Emergency Medical Service'),
+    RespStatus(v: 'Fireman', txt: 'Firefighter'),
+    RespStatus(v: 'Policeman', txt: 'Police Officer'),
+    RespStatus(v: 'Military', txt: 'Military'),
+    RespStatus(v: 'QRT', txt: 'Quick Response'),
+    RespStatus(v: 'Traffic Dept.', txt: 'Traffic Enforcer'),
+    RespStatus(v: 'LGU Frontliner', txt: 'LGU Frontliner'),
+    RespStatus(v: 'Volunteer', txt: 'Volunteer'),
+    RespStatus(v: 'Others', txt: 'Others'),
   ];
 
   String _responderStatus;
-  String _org;
-  String _website;
-  String _orgAddress;
-  String _skills;
+  String _org = '';
+  String _website = '';
+  String _orgAddress = '';
+  String _skills = '';
+
+  String _nResponderStatus = '';
+  String _nOrg = '';
+  String _nWebsite = '';
+  String _nOrgAddress = '';
+  String _nSkills = '';
+
+  bool _errOInfo = false;
+  String _errRespStatus, _errOrg, _errWebsite, _errOrgAddress, _errSkills;
 
   TextEditingController _organizationController;
   TextEditingController _websiteController;
@@ -313,7 +316,7 @@ class _EditProfileState extends State<EditProfile>
       // addressComponent = results[2].addressComponents[0];
       // address = '$address ${addressComponent.longName},';
       // address = '$address ${results[4].formattedAddress}';
-      return results[0].formattedAddress;//address;
+      return results[0].formattedAddress; //address;
     } else {
       return 'Sorry! Address not found!';
     }
@@ -333,7 +336,7 @@ class _EditProfileState extends State<EditProfile>
           draggable: true,
           // infoWindow: InfoWindow(title: 'Selected Address', snippet: value),
           // onTap: () {
-            // _onMarkerTapped(markerId);
+          // _onMarkerTapped(markerId);
           // },
           onDragEnd: _addMarker,
         );
@@ -345,20 +348,24 @@ class _EditProfileState extends State<EditProfile>
           _nHomeAddress = '';
         }
         _homeAddressController.text =
-        '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}';
+            '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}';
         try {
-          print('${markerId.value} x ${_markers['selectedLocation'].markerId.value}');
+          print(
+              '${markerId.value} x ${_markers['selectedLocation'].markerId.value}');
           if (_mapController != null) {
-            _mapController.hideMarkerInfoWindow(
-                _markers['selectedLocation'].markerId);
+            _mapController
+                .hideMarkerInfoWindow(_markers['selectedLocation'].markerId);
           }
         } catch (e) {
           print('No marker displayed currently.');
         }
-        _mapController.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(target: latlng, zoom: 16.0))).then((_) {
+        _mapController
+            .animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(target: latlng, zoom: 16.0)))
+            .then((_) {
           try {
-            _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
+            _mapController
+                .showMarkerInfoWindow(_markers['selectedLocation'].markerId);
           } catch (e) {
             print('exception $e X ${_markers.length} x $_markers}');
           }
@@ -456,7 +463,8 @@ class _EditProfileState extends State<EditProfile>
     } else {
       _errGender = null;
     }
-    if ((_civilStatus == null || _civilStatus.isEmpty) && _nCivilStatus.isEmpty) {
+    if ((_civilStatus == null || _civilStatus.isEmpty) &&
+        _nCivilStatus.isEmpty) {
       errorMsg += '- civil status is empty.\n';
       _errCivilStatus = 'error';
       flag = false;
@@ -468,19 +476,24 @@ class _EditProfileState extends State<EditProfile>
       _isBDayError = true;
       flag = false;
     } else if (!_isValidMinAge()) {
-      errorMsg += '- birth date is invalid. You are too young to use this application.\n';
+      errorMsg +=
+          '- birth date is invalid. You are too young to use this application.\n';
       _isBDayError = true;
       flag = false;
     } else if (!_isValidMaxAge()) {
-      errorMsg += '- birth date is invalid. You are too old to use this application.\n';
+      errorMsg +=
+          '- birth date is invalid. You are too old to use this application.\n';
       _isBDayError = true;
       flag = false;
     } else {
       _isBDayError = false;
     }
-    if(!flag) {
+    if (!flag) {
       setState(() {});
-      showMessageDialog(context, '${widget.isUpdate ? 'Editing' : 'Creating'} Profile failed', errorMsg);
+      showMessageDialog(
+          context,
+          '${widget.isUpdate ? 'Editing' : 'Creating'} Profile failed',
+          errorMsg);
     }
     return flag;
   }
@@ -488,7 +501,7 @@ class _EditProfileState extends State<EditProfile>
   Future<Null> displayPrediction(gmws.Prediction p) async {
     if (p != null) {
       gmws.PlacesDetailsResponse detail =
-      await _places.getDetailsByPlaceId(p.placeId);
+          await _places.getDetailsByPlaceId(p.placeId);
 
       var placeId = p.placeId;
       double lat = detail.result.geometry.location.lat;
@@ -523,23 +536,58 @@ class _EditProfileState extends State<EditProfile>
       _civilStatus = widget.userVM.civilStatus;
       _birthDate = widget.userVM.birthDate;
       _bio = widget.userVM.bio ?? '';
+
+      if (widget.userVM.positionStatus != null) {
+        for (int i = 0; i < _respStatusOptions.length; i++) {
+          RespStatus r = _respStatusOptions[i];
+          if (r.v.toLowerCase() == widget.userVM.positionStatus.toLowerCase()) {
+            _responderStatus = r.txt;
+          }
+        }
+      }
+      _org = widget.userVM.company;
+      _orgAddress = widget.userVM.location;
+      _website = widget.userVM.website;
+      _skills = widget.userVM.skills
+          .toString()
+          .replaceAll('[', '')
+          .replaceAll(']', '');
     } else {
       _homeAddress = '';
       _bio = '';
+
+      _org = '';
+      _orgAddress = '';
+      _website = '';
+      _skills = '';
     }
 
-    _homeAddressController = TextEditingController(text:
-    (widget.userVM == null || widget.userVM.homeAddress == null)
-        ? '' : widget.userVM.homeAddress);
-    _bioController = TextEditingController(text:
-    (widget.userVM == null || widget.userVM.bio == null)
-        ? '' : widget.userVM.bio);
+    _homeAddressController = TextEditingController(
+        text: (widget.userVM == null || widget.userVM.homeAddress == null)
+            ? ''
+            : widget.userVM.homeAddress);
+    _bioController = TextEditingController(
+        text: (widget.userVM == null || widget.userVM.bio == null)
+            ? ''
+            : widget.userVM.bio);
     _searchAddressController = TextEditingController(text: '');
 
-    _organizationController = TextEditingController(text: '');
-    _websiteController = TextEditingController(text: '');
-    _orgAddressController = TextEditingController(text: '');
-    _skillsController = TextEditingController(text: '');
+    _organizationController = TextEditingController(
+        text: (widget.userVM == null || widget.userVM.company == null)
+            ? ''
+            : widget.userVM.company);
+    _websiteController = TextEditingController(
+        text: (widget.userVM == null || widget.userVM.website == null)
+            ? ''
+            : widget.userVM.website);
+    _orgAddressController = TextEditingController(
+        text: (widget.userVM == null || widget.userVM.location == null)
+            ? ''
+            : widget.userVM.location);
+    _skillsController = TextEditingController(
+        text: (widget.userVM == null || widget.userVM.skills.length == 0)
+            ? ''
+            : widget.userVM.skills.toString());
 
     _contactPersonController = TextEditingController(text: '');
     _relationshipController = TextEditingController(text: '');
@@ -593,7 +641,9 @@ class _EditProfileState extends State<EditProfile>
               TextButton(
                 style: TextButton.styleFrom(
                   primary: Colors.grey,
-                  padding: EdgeInsets.symmetric(vertical: 16.0,),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                  ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -615,7 +665,9 @@ class _EditProfileState extends State<EditProfile>
                       size: 16.0,
                       color: Colors.grey,
                     ),
-                    hSpacer(w: 8.0,),
+                    hSpacer(
+                      w: 8.0,
+                    ),
                     Text(
                       'Take a Photo',
                       style: TextStyle(
@@ -630,7 +682,9 @@ class _EditProfileState extends State<EditProfile>
               TextButton(
                 style: TextButton.styleFrom(
                   primary: Colors.grey,
-                  padding: EdgeInsets.symmetric(vertical: 16.0,),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                  ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -644,7 +698,9 @@ class _EditProfileState extends State<EditProfile>
                       size: 16.0,
                       color: Colors.grey,
                     ),
-                    hSpacer(w: 8.0,),
+                    hSpacer(
+                      w: 8.0,
+                    ),
                     Text(
                       'Select a Photo',
                       style: TextStyle(
@@ -667,17 +723,71 @@ class _EditProfileState extends State<EditProfile>
   Widget build(BuildContext context) {
     PopupMenu.context = context;
     print('edit-profile build x $_imagePath X $_imageFile');
-    return ((widget.userVM == null
-        || widget.userVM.profilePic == null
-        || widget.userVM.profilePic.contains('null'))
-        && _imagePath == null) ? FutureBuilder<File>(
-      future: file('defaultProfPic.png'),
-      builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-        Widget w;
-        if (snapshot.hasData) {
-          print('Ikaw pala ${snapshot.data}');
-          _imageFile = snapshot.data;
-          w = Scaffold(
+    return ((widget.userVM == null ||
+                widget.userVM.profilePic == null ||
+                widget.userVM.profilePic.contains('null')) &&
+            _imagePath == null)
+        ? FutureBuilder<File>(
+            future: file('defaultProfPic.png'),
+            builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+              Widget w;
+              if (snapshot.hasData) {
+                print('Ikaw pala ${snapshot.data}');
+                _imageFile = snapshot.data;
+                w = Scaffold(
+                  backgroundColor: Colors.grey.shade300,
+                  body: SafeArea(
+                    child: Form(
+                      key: _formPageKey,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _header,
+                              Align(
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  children: [
+                                    _defaultProfPic,
+                                    _cameraIcon,
+                                  ],
+                                ),
+                              ),
+                              vSpacer(
+                                h: 16.0,
+                              ),
+                              _expandablePersonalInfo,
+                              _expandableOrganizationInfo,
+                              _expandableEmergencyInfo,
+                              _expandableSocialNetworkLinks,
+                              vSpacer(
+                                h: 8.0,
+                              ),
+                              _buttons,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                w = Container(
+                  color: Colors.black,
+                );
+              } else {
+                w = Container(
+                  color: Colors.red,
+                );
+              }
+              return w;
+            },
+          )
+        : Scaffold(
             backgroundColor: Colors.grey.shade300,
             body: SafeArea(
               child: Form(
@@ -695,17 +805,21 @@ class _EditProfileState extends State<EditProfile>
                           alignment: Alignment.center,
                           child: Stack(
                             children: [
-                              _defaultProfPic,
+                              _profPic,
                               _cameraIcon,
                             ],
                           ),
                         ),
-                        vSpacer(h: 16.0,),
+                        vSpacer(
+                          h: 16.0,
+                        ),
                         _expandablePersonalInfo,
                         _expandableOrganizationInfo,
                         _expandableEmergencyInfo,
                         _expandableSocialNetworkLinks,
-                        vSpacer(h: 8.0,),
+                        vSpacer(
+                          h: 8.0,
+                        ),
                         _buttons,
                       ],
                     ),
@@ -714,498 +828,485 @@ class _EditProfileState extends State<EditProfile>
               ),
             ),
           );
-        } else if (snapshot.hasError) {
-          w = Container(color: Colors.black,);
-        } else {
-          w = Container(color: Colors.red,);
-        }
-        return w;
-      },
-    ) : Scaffold(
-      backgroundColor: Colors.grey.shade300,
-      body: SafeArea(
-        child: Form(
-          key: _formPageKey,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _header,
-                  Align(
-                    alignment: Alignment.center,
-                    child: Stack(
-                      children: [
-                        _profPic,
-                        _cameraIcon,
-                      ],
-                    ),
-                  ),
-                  vSpacer(h: 16.0,),
-                  _expandablePersonalInfo,
-                  _expandableOrganizationInfo,
-                  _expandableEmergencyInfo,
-                  _expandableSocialNetworkLinks,
-                  vSpacer(h: 8.0,),
-                  _buttons,
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget get _header => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Flexible(
-        child: Text(
-          '${(widget.isUpdate ? 'Update' : 'Create')} Your Profile',
-          style: TextStyle(
-            fontSize: 24.0,
-            color: colorPrimary,
-          ),
-        ),
-      ),
-      vSpacer(h: 16.0,),
-      Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          FaIcon(
-            FontAwesomeIcons.solidUser,
-            size: 16.0,
-            color: Colors.black,
-          ),
-          hSpacer(w: 8.0,),
           Flexible(
             child: Text(
-              '${(widget.isUpdate ? 'Update' : 'Let\'s get some')} '
-                  'information to make your profile stand out.',
+              '${(widget.isUpdate ? 'Update' : 'Create')} Your Profile',
               style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.black,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-          ),
-        ],
-      ),
-      vSpacer(h: 16.0,),
-      Text(
-        '* = required field',
-        style: TextStyle(
-          color: Colors.redAccent,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-      vSpacer(h: 16.0,),
-    ],
-  );
-
-  Widget get _defaultProfPic => GestureDetector(
-    onTap: _displayBottomSheet,
-    child: CircleAvatar(
-      radius: 80.0,
-      backgroundColor: Colors.white,
-      child: CircleAvatar(
-        radius: 79.0,
-        backgroundColor: Colors.white,
-        backgroundImage: _imagePath != null ?
-        FileImage(_imageFile) :
-        NetworkToFileImage(
-          url: '$secretHollowsEndPoint/img/Spotter.png',
-          file: _imageFile,
-          debug: true,
-        ),
-      ),
-    ),
-  );
-
-  Widget get _profPic => GestureDetector(
-    onTap: _displayBottomSheet,
-    child: CircleAvatar(
-      radius: 80.0,
-      backgroundColor: Colors.white,
-      child: CircleAvatar(
-        radius: 79.0,
-        backgroundColor: Colors.white,
-        backgroundImage: _imageFile != null ?
-        FileImage(_imageFile) :
-        NetworkImage(widget.userVM.profilePic,),
-      ),
-    ),
-  );
-
-  Widget get _cameraIcon => Positioned(
-    bottom: 8.0,
-    right: 8.0,
-    child: ClipOval(
-      child: Material(
-        color: Colors.transparent, // button color
-        child: InkWell(
-          splashColor: Colors.grey.shade500, // inkwell color
-          child: SizedBox(
-            width: 36.0,
-            height: 36.0,
-            child: Icon(
-              Icons.camera_alt_rounded,
-              color: colorPrimary,
-            ),
-          ),
-          onTap: _displayBottomSheet,
-        ),
-      ),
-    ),
-  );
-
-  Widget _buildFormLabel(String label, bool flag, IconData ic) => Container(
-    color: Colors.transparent,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        FaIcon(
-          ic,
-          size: 16.0,
-          color: colorPrimary,
-        ),
-        hSpacer(w: 8.0,),
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16.0,
+                fontSize: 24.0,
                 color: colorPrimary,
               ),
             ),
           ),
-        ),
-        FaIcon((flag)
-            ? FontAwesomeIcons.angleUp
-            : FontAwesomeIcons.angleDown,
-          color: colorPrimary,
-          // size: 16.0,
-        ),
-      ],
-    ),
-  );
-
-  Widget _buildLabel(String label) => Align(
-    alignment: Alignment.centerLeft,
-    child: Text(
-      label,
-      style: TextStyle(
-        // fontSize: 12.0,
-        color: Colors.grey.shade800,
-      ),
-    ),
-  );
-
-  Widget get _buildHomeAddress => TextFormField(
-    controller: _homeAddressController,
-    autovalidateMode: AutovalidateMode.disabled,
-    enabled: false,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Home Address',
-      errorStyle: TextStyle(
-        fontSize: 0.0,
-      ),
-      errorText: _errHomeAdd,
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onChanged: (val) {
-      if (val != _homeAddress) {
-        _nHomeAddress = val;
-      } else {
-        _nHomeAddress= '';
-      }
-    },
-  );
-
-  Widget get _buildGender => DropdownButtonFormField(
-    onTap: () {
-      FocusScope.of(context).unfocus();
-    },
-    value: _nGender.isEmpty ? _gender : _nGender,
-    decoration: editInputDecoration2.copyWith(
-      hintText: '* Gender',
-      errorStyle: TextStyle(
-        fontSize: 0.0,
-      ),
-      errorText: _errGender,
-    ),
-    items: _genderOptions.map((c) {
-      return DropdownMenuItem(
-        value: c,
-        child: Text('$c'),
+          vSpacer(
+            h: 16.0,
+          ),
+          Row(
+            children: [
+              FaIcon(
+                FontAwesomeIcons.solidUser,
+                size: 16.0,
+                color: Colors.black,
+              ),
+              hSpacer(
+                w: 8.0,
+              ),
+              Flexible(
+                child: Text(
+                  '${(widget.isUpdate ? 'Update' : 'Let\'s get some')} '
+                  'information to make your profile stand out.',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          vSpacer(
+            h: 16.0,
+          ),
+          Text(
+            '* = required field',
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          vSpacer(
+            h: 16.0,
+          ),
+        ],
       );
-    }).toList(),
-    onChanged: (val) {
-      if (val != _gender) {
-        _nGender = val;
-      } else {
-        _nGender = '';
-      }
-    },
-  );
 
-  Widget get _buildCivilStatus => DropdownButtonFormField(
-    onTap: () {
-      FocusScope.of(context).unfocus();
-    },
-    value: _civilStatus,
-    decoration: editInputDecoration2.copyWith(
-      hintText: '* Civil Status',
-      errorStyle: TextStyle(
-        fontSize: 0.0,
-      ),
-      errorText: _errCivilStatus,
-    ),
-    items: _civilStatusOptions.map((c) {
-      return DropdownMenuItem(
-        value: c,
-        child: Text('$c'),
-      );
-    }).toList(),
-    onChanged: (val) {
-      if (val != _civilStatus) {
-        _nCivilStatus = val;
-      } else {
-        _nCivilStatus = '';
-      }
-    },
-  );
-
-  Widget get _buildBirthDate => TextButton(
-    style: TextButton.styleFrom(
-      backgroundColor: Colors.white,
-      primary: _birthDate == null ? Colors.grey : Colors.black,
-      padding: EdgeInsets.symmetric(horizontal: 16.0,),
-      side: BorderSide(
-        color: _isBDayError ? Colors.red : Colors.black,
-        width: 2.0,
-      ),
-    ),
-    onPressed: () {
-      FocusScope.of(context).unfocus();
-      DateTime _currentDate;
-      try {
-        if (_nBirthDate.isNotEmpty) {
-          _currentDate = DateTime.parse(DateFormat('yyyyMMdd')
-              .format(DateFormat('MM/dd/yyyy').parse(_nBirthDate)));
-        } else {
-          if (_birthDate == null) {
-            _currentDate = DateTime.now();
-          } else {
-            _currentDate = DateTime.parse(DateFormat('yyyyMMdd')
-                .format(DateFormat('MM/dd/yyyy').parse(_birthDate)));
-          }
-        }
-      } catch (e) {
-        print(e);
-        _currentDate = DateTime.now();
-      }
-      DatePicker.showDatePicker(
-        context,
-        showTitleActions: true,
-        minTime: DateTime(1900, 1, 1),
-        maxTime: DateTime.now(),
-        onChanged: (date) {
-          print('change $date');
-        },
-        onConfirm: (date) {
-          print('confirm: $date');
-          String tempBDate = DateFormat('MM/dd/yyyy').format(date);
-          if (tempBDate != _birthDate) {
-            setState(() {
-              _nBirthDate = tempBDate;
-            });
-          } else {
-            setState(() {
-              _nBirthDate = '';
-            });
-          }
-          print('_bdate - $_nBirthDate');
-        },
-        currentTime: DateTime(
-          _currentDate.year,
-          _currentDate.month,
-          _currentDate.day,
-        ),
-        locale: LocaleType.en,
-      );
-    },
-    child: Container(
-      width: double.infinity,
-      height: 48.0,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          '${_nBirthDate.isEmpty ? _birthDate
-              ?? '* Select Birth date (mm/dd/yyyy)' : _nBirthDate}',
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.normal,
+  Widget get _defaultProfPic => GestureDetector(
+        onTap: _displayBottomSheet,
+        child: CircleAvatar(
+          radius: 80.0,
+          backgroundColor: Colors.white,
+          child: CircleAvatar(
+            radius: 79.0,
+            backgroundColor: Colors.white,
+            backgroundImage: _imagePath != null
+                ? FileImage(_imageFile)
+                : NetworkToFileImage(
+                    url: '$secretHollowsEndPoint:5000/Spotter.png',
+                    file: _imageFile,
+                    debug: true,
+                  ),
           ),
         ),
-      ),
-    ),
-  );
+      );
 
-  Widget get _buildBio => TextFormField(
-    controller: _bioController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      hintText: 'Bio',
-      errorStyle: TextStyle(
-        fontSize: 0.0,
-      ),
-      errorText: _errBio,
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 4,
-    minLines: 4,
-    onChanged: (val) {
-      if (val != _bio) {
-        _nBio = val;
-      } else {
-        _nBio = '';
-      }
-    },
-  );
+  Widget get _profPic => GestureDetector(
+        onTap: _displayBottomSheet,
+        child: CircleAvatar(
+          radius: 80.0,
+          backgroundColor: Colors.white,
+          child: CircleAvatar(
+            radius: 79.0,
+            backgroundColor: Colors.white,
+            backgroundImage: _imageFile != null
+                ? FileImage(_imageFile)
+                : NetworkImage(
+                    widget.userVM.profilePic,
+                  ),
+          ),
+        ),
+      );
 
-  Widget get _expandablePersonalInfo
-  => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: () => setState(() {
-          if (_mapController != null) {
-            if (!_isExpandedPInfo) {
-              if (_selectedLL == null) {
-                if (_acquiredLL != null) {
-                  if (_mapController != null) {
-                    _mapController.animateCamera(CameraUpdate.newCameraPosition(
-                        CameraPosition(target: _acquiredLL, zoom: 16.0))).then((_) {
-                      try {
-                        _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
-                      } catch (e) {
-                        print('exception $e X ${_markers.length} x $_markers}');
-                      }
-                    });
-                  }
-                }
+  Widget get _cameraIcon => Positioned(
+        bottom: 8.0,
+        right: 8.0,
+        child: ClipOval(
+          child: Material(
+            color: Colors.transparent, // button color
+            child: InkWell(
+              splashColor: Colors.grey.shade500, // inkwell color
+              child: SizedBox(
+                width: 36.0,
+                height: 36.0,
+                child: Icon(
+                  Icons.camera_alt_rounded,
+                  color: colorPrimary,
+                ),
+              ),
+              onTap: _displayBottomSheet,
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildFormLabel(String label, bool flag, IconData ic) => Container(
+        color: Colors.transparent,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FaIcon(
+              ic,
+              size: 16.0,
+              color: colorPrimary,
+            ),
+            hSpacer(
+              w: 8.0,
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: colorPrimary,
+                  ),
+                ),
+              ),
+            ),
+            FaIcon(
+              (flag) ? FontAwesomeIcons.angleUp : FontAwesomeIcons.angleDown,
+              color: colorPrimary,
+              // size: 16.0,
+            ),
+          ],
+        ),
+      );
+
+  Widget _buildLabel(String label) => Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          label,
+          style: TextStyle(
+            // fontSize: 12.0,
+            color: Colors.grey.shade800,
+          ),
+        ),
+      );
+
+  Widget get _buildHomeAddress => TextFormField(
+        controller: _homeAddressController,
+        autovalidateMode: AutovalidateMode.disabled,
+        enabled: false,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: '* Home Address',
+          errorStyle: TextStyle(
+            fontSize: 0.0,
+          ),
+          errorText: _errHomeAdd,
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 1,
+        minLines: 1,
+        onChanged: (val) {
+          if (val != _homeAddress) {
+            _nHomeAddress = val;
+          } else {
+            _nHomeAddress = '';
+          }
+        },
+      );
+
+  Widget get _buildGender => DropdownButtonFormField(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        value: _nGender.isEmpty ? _gender : _nGender,
+        decoration: editInputDecoration2.copyWith(
+          hintText: '* Gender',
+          errorStyle: TextStyle(
+            fontSize: 0.0,
+          ),
+          errorText: _errGender,
+        ),
+        items: _genderOptions.map((c) {
+          return DropdownMenuItem(
+            value: c,
+            child: Text('$c'),
+          );
+        }).toList(),
+        onChanged: (val) {
+          if (val != _gender) {
+            _nGender = val;
+          } else {
+            _nGender = '';
+          }
+        },
+      );
+
+  Widget get _buildCivilStatus => DropdownButtonFormField(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        value: _civilStatus,
+        decoration: editInputDecoration2.copyWith(
+          hintText: '* Civil Status',
+          errorStyle: TextStyle(
+            fontSize: 0.0,
+          ),
+          errorText: _errCivilStatus,
+        ),
+        items: _civilStatusOptions.map((c) {
+          return DropdownMenuItem(
+            value: c,
+            child: Text('$c'),
+          );
+        }).toList(),
+        onChanged: (val) {
+          if (val != _civilStatus) {
+            _nCivilStatus = val;
+          } else {
+            _nCivilStatus = '';
+          }
+        },
+      );
+
+  Widget get _buildBirthDate => TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          primary: _birthDate == null ? Colors.grey : Colors.black,
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.0,
+          ),
+          side: BorderSide(
+            color: _isBDayError ? Colors.red : Colors.black,
+            width: 2.0,
+          ),
+        ),
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          DateTime _currentDate;
+          try {
+            if (_nBirthDate.isNotEmpty) {
+              _currentDate = DateTime.parse(DateFormat('yyyyMMdd')
+                  .format(DateFormat('MM/dd/yyyy').parse(_nBirthDate)));
+            } else {
+              if (_birthDate == null) {
+                _currentDate = DateTime.now();
               } else {
-                if (_mapController != null) {
-                  _mapController.animateCamera(CameraUpdate.newCameraPosition(
-                      CameraPosition(target: _selectedLL, zoom: 16.0))).then((_) {
-                    try {
-                      _mapController.showMarkerInfoWindow(_markers['selectedLocation'].markerId);
-                    } catch (e) {
-                      print('exception $e X ${_markers.length} x $_markers}');
-                    }
-                  });
-                }
+                _currentDate = DateTime.parse(DateFormat('yyyyMMdd')
+                    .format(DateFormat('MM/dd/yyyy').parse(_birthDate)));
               }
             }
+          } catch (e) {
+            print(e);
+            _currentDate = DateTime.now();
           }
-          _isExpandedPInfo = !_isExpandedPInfo;
-        }),
-        child: _buildFormLabel('* Personal Information', _isExpandedPInfo, FontAwesomeIcons.solidAddressBook,),
-      ),
-      vSpacer(h: 4.0,),
-      AnimatedSize(
-        vsync: this,
-        duration: Duration(milliseconds: 350),
-        child: ConstrainedBox(
-          constraints: _isExpandedPInfo
-              ? BoxConstraints()
-              : BoxConstraints(maxHeight: 0.0),
-          child: Column(
-            children: [
-              Stack(
+          DatePicker.showDatePicker(
+            context,
+            showTitleActions: true,
+            minTime: DateTime(1900, 1, 1),
+            maxTime: DateTime.now(),
+            onChanged: (date) {
+              print('change $date');
+            },
+            onConfirm: (date) {
+              print('confirm: $date');
+              String tempBDate = DateFormat('MM/dd/yyyy').format(date);
+              if (tempBDate != _birthDate) {
+                setState(() {
+                  _nBirthDate = tempBDate;
+                });
+              } else {
+                setState(() {
+                  _nBirthDate = '';
+                });
+              }
+              print('_bdate - $_nBirthDate');
+            },
+            currentTime: DateTime(
+              _currentDate.year,
+              _currentDate.month,
+              _currentDate.day,
+            ),
+            locale: LocaleType.en,
+          );
+        },
+        child: Container(
+          width: double.infinity,
+          height: 48.0,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '${_nBirthDate.isEmpty ? _birthDate ?? '* Select Birth date (mm/dd/yyyy)' : _nBirthDate}',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget get _buildBio => TextFormField(
+        controller: _bioController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          hintText: 'Bio',
+          errorStyle: TextStyle(
+            fontSize: 0.0,
+          ),
+          errorText: _errBio,
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 4,
+        minLines: 4,
+        onChanged: (val) {
+          if (val != _bio) {
+            _nBio = val;
+          } else {
+            _nBio = '';
+          }
+        },
+      );
+
+  Widget get _expandablePersonalInfo => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => setState(() {
+              if (_mapController != null) {
+                if (!_isExpandedPInfo) {
+                  if (_selectedLL == null) {
+                    if (_acquiredLL != null) {
+                      if (_mapController != null) {
+                        _mapController
+                            .animateCamera(CameraUpdate.newCameraPosition(
+                                CameraPosition(
+                                    target: _acquiredLL, zoom: 16.0)))
+                            .then((_) {
+                          try {
+                            _mapController.showMarkerInfoWindow(
+                                _markers['selectedLocation'].markerId);
+                          } catch (e) {
+                            print(
+                                'exception $e X ${_markers.length} x $_markers}');
+                          }
+                        });
+                      }
+                    }
+                  } else {
+                    if (_mapController != null) {
+                      _mapController
+                          .animateCamera(CameraUpdate.newCameraPosition(
+                              CameraPosition(target: _selectedLL, zoom: 16.0)))
+                          .then((_) {
+                        try {
+                          _mapController.showMarkerInfoWindow(
+                              _markers['selectedLocation'].markerId);
+                        } catch (e) {
+                          print(
+                              'exception $e X ${_markers.length} x $_markers}');
+                        }
+                      });
+                    }
+                  }
+                }
+              }
+              _isExpandedPInfo = !_isExpandedPInfo;
+            }),
+            child: _buildFormLabel(
+              '* Personal Information',
+              _isExpandedPInfo,
+              FontAwesomeIcons.solidAddressBook,
+            ),
+          ),
+          vSpacer(
+            h: 4.0,
+          ),
+          AnimatedSize(
+            vsync: this,
+            duration: Duration(milliseconds: 350),
+            child: ConstrainedBox(
+              constraints: _isExpandedPInfo
+                  ? BoxConstraints()
+                  : BoxConstraints(maxHeight: 0.0),
+              child: Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 228.0,
-                    child: GoogleMap(
-                      onMapCreated: _onMapCreated,
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      compassEnabled: false,
-                      trafficEnabled: true,
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(0.0, 0.0),// TODO: change to initialLL
-                      ),
-                      markers: Set<Marker>.of(_markers.values),
-                      onLongPress: (latlng) {
-                        print('on Long Press: $latlng');
-                        _addMarker(latlng);
-                      },
-                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                        new Factory<OneSequenceGestureRecognizer>(
+                  Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 228.0,
+                        child: GoogleMap(
+                          onMapCreated: _onMapCreated,
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: true,
+                          compassEnabled: false,
+                          trafficEnabled: true,
+                          initialCameraPosition: CameraPosition(
+                            target:
+                                LatLng(0.0, 0.0), // TODO: change to initialLL
+                          ),
+                          markers: Set<Marker>.of(_markers.values),
+                          onLongPress: (latlng) {
+                            print('on Long Press: $latlng');
+                            _addMarker(latlng);
+                          },
+                          gestureRecognizers:
+                              <Factory<OneSequenceGestureRecognizer>>[
+                            new Factory<OneSequenceGestureRecognizer>(
                               () => new EagerGestureRecognizer(),
+                            ),
+                          ].toSet(),
                         ),
-                      ].toSet(),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Material(
-                      color: Color(0xB0FFFFFF), // button color
-                      child: InkWell(
-                        splashColor: Colors.grey.shade500, // inkwell color
-                        child: SizedBox(
-                          width: 36.0,
-                          height: 36.0,
-                          child: Icon(
-                            Icons.search,
-                            color: Colors.grey.shade700,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Material(
+                          color: Color(0xB0FFFFFF), // button color
+                          child: InkWell(
+                            splashColor: Colors.grey.shade500, // inkwell color
+                            child: SizedBox(
+                              width: 36.0,
+                              height: 36.0,
+                              child: Icon(
+                                Icons.search,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                            onTap: () async {
+                              // show input autocomplete with selected mode
+                              // then get the Prediction selected
+                              gmws.Prediction p = await PlacesAutocomplete.show(
+                                context: context,
+                                apiKey: gMAK,
+                                radius: 10000.0,
+                                region: 'ph',
+                                language: 'en',
+                                types: [''],
+                                mode: Mode.overlay,
+                                strictbounds: false,
+                                components: [
+                                  new gmws.Component(
+                                      gmws.Component.country, 'ph')
+                                ],
+                              );
+                              displayPrediction(p);
+                            },
                           ),
                         ),
-                        onTap: () async {
-                          // show input autocomplete with selected mode
-                          // then get the Prediction selected
-                          gmws.Prediction p = await PlacesAutocomplete.show(
-                            context: context,
-                            apiKey: gMAK,
-                            radius: 10000.0,
-                            region: 'ph',
-                            language: 'en',
-                            types: [''],
-                            mode: Mode.overlay,
-                            strictbounds: false,
-                            components: [new gmws.Component(gmws.Component.country, 'ph')],
-                          );
-                          displayPrediction(p);
-                        },
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              /*TextField(
+                  /*TextField(
                 decoration: editInputDecoration2,
                 onTap: () async {
                   // show input autocomplete with selected mode
@@ -1224,7 +1325,7 @@ class _EditProfileState extends State<EditProfile>
                   displayPrediction(p);
                 },
               ),*/
-              /*AddressSearchBuilder(
+                  /*AddressSearchBuilder(
                 geoMethods: geoMethods,
                 controller: _searchAddressController,
                 builder: (
@@ -1243,782 +1344,885 @@ class _EditProfileState extends State<EditProfile>
                   );
                 },
               ),*/
-              /*AddressSearchBuilder.deft(
+                  /*AddressSearchBuilder.deft(
                 geoMethods: geoMethods,
                 controller: _searchAddressController,
                 builder: AddressDialogBuilder(),
                 onDone: (Address address) => null,
               ),*/
-              vSpacer(h: 8.0,),
-              _buildHomeAddress,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Home Address'),
-              vSpacer(h: 8.0,),
-              _buildGender,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Gender'),
-              vSpacer(h: 8.0,),
-              _buildCivilStatus,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Civil Status'),
-              vSpacer(h: 8.0,),
-              _buildBirthDate,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Birth Date'),
-              vSpacer(h: 8.0,),
-              _buildBio,
-              vSpacer(h: 4.0,),
-              _buildLabel('Please tell us a little about yourself'),
-              vSpacer(h: 8.0,),
-            ],
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildHomeAddress,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Home Address'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildGender,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Gender'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildCivilStatus,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Civil Status'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildBirthDate,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Birth Date'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildBio,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('Please tell us a little about yourself'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-    ],
-  );
+        ],
+      );
 
   Widget get _buildResponderStatus => DropdownButtonFormField(
-    onTap: () {
-      FocusScope.of(context).unfocus();
-    },
-    value: _responderStatus,
-    decoration: editInputDecoration2.copyWith(
-      hintText: '* Responder Status',
-    ),
-    items: _respStatusOptions.map((c) {
-      return DropdownMenuItem(
-        value: c,
-        child: Text('$c'),
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        value: _responderStatus,
+        decoration: editInputDecoration2.copyWith(
+          hintText: '* Responder Status',
+        ),
+        items: _respStatusOptions.map((c) {
+          return DropdownMenuItem(
+            value: c.v,
+            child: Text('${c.txt}'),
+          );
+        }).toList(),
+        onChanged: (val) {
+          if (val != _responderStatus) {
+            _nResponderStatus = val;
+          } else {
+            _nResponderStatus = '';
+          }
+        },
       );
-    }).toList(),
-    onChanged: (val) => _responderStatus = val,
-  );
 
   Widget get _buildOrganizationName => TextFormField(
-    key: Key('organization'),
-    validator: (value) =>
-    value.isEmpty ? '* Organization Name' : null,
-    controller: _organizationController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Organization Name',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _org = val;
-    },
-    onChanged: (String val) {
-      _org = val;
-    },
-  );
+        controller: _organizationController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: 'Organization Name',
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 2,
+        minLines: 1,
+        onChanged: (val) {
+          if (val != _org) {
+            _nOrg = val;
+          } else {
+            _nOrg = '';
+          }
+        },
+      );
 
   Widget get _buildOrgWebsite => TextFormField(
-    key: Key('website'),
-    validator: (value) =>
-    value.isEmpty ? 'Website' : null,
-    controller: _websiteController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: 'Organization Website',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _website = val;
-    },
-    onChanged: (String val) {
-      _website = val;
-    },
-  );
+        controller: _websiteController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: 'Organization Website',
+        ),
+        keyboardType: TextInputType.url,
+        maxLines: 2,
+        minLines: 1,
+        onChanged: (val) {
+          if (val != _website) {
+            _nWebsite = val;
+          } else {
+            _nWebsite = '';
+          }
+        },
+      );
 
   Widget get _buildOrgAddress => TextFormField(
-    key: Key('orgAddress'),
-    validator: (value) =>
-    value.isEmpty ? '* Organization Address' : null,
-    controller: _orgAddressController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Organization Address',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _orgAddress = val;
-    },
-    onChanged: (String val) {
-      _orgAddress = val;
-    },
-  );
+        controller: _orgAddressController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: '* Organization Address',
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 2,
+        minLines: 1,
+        onChanged: (String val) {
+          if (val != _orgAddress) {
+            _nOrgAddress = val;
+          } else {
+            _nOrgAddress = '';
+          }
+        },
+      );
 
   Widget get _buildSkills => TextFormField(
-    key: Key('skills'),
-    validator: (value) =>
-    value.isEmpty ? '* Skills' : null,
-    controller: _skillsController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Skills',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _skills = val;
-    },
-    onChanged: (String val) {
-      _skills = val;
-    },
-  );
-
-  Widget get _expandableOrganizationInfo
-  => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: () => setState(() {
-          _isExpandedOInfo = !_isExpandedOInfo;
-        }),
-        child: _buildFormLabel('Organization/Company', _isExpandedOInfo, FontAwesomeIcons.solidBuilding,),
-      ),
-      vSpacer(h: 4.0,),
-      AnimatedSize(
-        vsync: this,
-        duration: Duration(milliseconds: 350),
-        child: ConstrainedBox(
-          constraints: _isExpandedOInfo
-              ? BoxConstraints()
-              : BoxConstraints(maxHeight: 0.0),
-          child: Column(
-            children: [
-              _buildResponderStatus,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Give us an idea of where you are at in your emergency response career'),
-              vSpacer(h: 8.0,),
-              _buildOrganizationName,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Organization you are affiliated/member'),
-              vSpacer(h: 8.0,),
-              _buildOrgWebsite,
-              vSpacer(h: 4.0,),
-              _buildLabel('Organization Website'),
-              vSpacer(h: 8.0,),
-              _buildOrgAddress,
-              vSpacer(h: 4.0,),
-              _buildLabel('* City or Municipality where organization is located'),
-              vSpacer(h: 8.0,),
-              _buildSkills,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Please use comma separated values (eg. Patient Care, EMS, EMT, CPR, Hazardous Materials, Trauma)'),
-              vSpacer(h: 8.0,),
-            ],
-          ),
+        controller: _skillsController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
         ),
-      ),
-    ],
-  );
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: '* Skills',
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 4,
+        minLines: 1,
+        onChanged: (String val) {
+          if (val != _skills) {
+            _nSkills = val;
+          } else {
+            _nSkills = '';
+          }
+        },
+      );
+
+  Widget get _expandableOrganizationInfo => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => setState(() {
+              _isExpandedOInfo = !_isExpandedOInfo;
+            }),
+            child: _buildFormLabel(
+              'Organization/Company',
+              _isExpandedOInfo,
+              FontAwesomeIcons.solidBuilding,
+            ),
+          ),
+          vSpacer(
+            h: 4.0,
+          ),
+          AnimatedSize(
+            vsync: this,
+            duration: Duration(milliseconds: 350),
+            child: ConstrainedBox(
+              constraints: _isExpandedOInfo
+                  ? BoxConstraints()
+                  : BoxConstraints(maxHeight: 0.0),
+              child: Column(
+                children: [
+                  _buildResponderStatus,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel(
+                      '* Give us an idea of where you are at in your emergency response career'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildOrganizationName,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Organization you are affiliated/member'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildOrgWebsite,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('Organization Website'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildOrgAddress,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel(
+                      '* City or Municipality where organization is located'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildSkills,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel(
+                      '* Please use comma separated values (eg. Patient Care, EMS, EMT, CPR, Hazardous Materials, Trauma)'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
 
   Widget get _buildContactPerson => TextFormField(
-    key: Key('contactPerson'),
-    validator: (value) =>
-    value.isEmpty ? '* Contact Person' : null,
-    controller: _contactPersonController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Contact Person',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _contactPerson = val;
-    },
-    onChanged: (String val) {
-      _contactPerson = val;
-    },
-  );
+        key: Key('contactPerson'),
+        validator: (value) => value.isEmpty ? '* Contact Person' : null,
+        controller: _contactPersonController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: '* Contact Person',
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 1,
+        minLines: 1,
+        onSaved: (String val) {
+          _contactPerson = val;
+        },
+        onChanged: (String val) {
+          _contactPerson = val;
+        },
+      );
 
   Widget get _buildRelationship => TextFormField(
-    key: Key('relationship'),
-    validator: (value) =>
-    value.isEmpty ? '* Relationship' : null,
-    controller: _relationshipController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Relationship',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _relationship = val;
-    },
-    onChanged: (String val) {
-      _relationship = val;
-    },
-  );
+        key: Key('relationship'),
+        validator: (value) => value.isEmpty ? '* Relationship' : null,
+        controller: _relationshipController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: '* Relationship',
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 1,
+        minLines: 1,
+        onSaved: (String val) {
+          _relationship = val;
+        },
+        onChanged: (String val) {
+          _relationship = val;
+        },
+      );
 
   Widget get _buildContactNumber => TextFormField(
-    key: Key('contactNumber'),
-    validator: (value) =>
-    value.isEmpty ? '* Contact Number' : null,
-    controller: _contactNumberController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Contact Number',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _contactNumber = val;
-    },
-    onChanged: (String val) {
-      _contactNumber = val;
-    },
-  );
+        key: Key('contactNumber'),
+        validator: (value) => value.isEmpty ? '* Contact Number' : null,
+        controller: _contactNumberController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: '* Contact Number',
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 1,
+        minLines: 1,
+        onSaved: (String val) {
+          _contactNumber = val;
+        },
+        onChanged: (String val) {
+          _contactNumber = val;
+        },
+      );
 
   Widget get _buildContactAddress => TextFormField(
-    key: Key('contactAddress'),
-    validator: (value) =>
-    value.isEmpty ? '* Contact Address' : null,
-    controller: _contactAddressController,
-    autovalidateMode: AutovalidateMode.disabled,
-    style: TextStyle(
-      fontSize: 16.0,
-      color: Colors.black,
-    ),
-    textAlignVertical: TextAlignVertical.top,
-    decoration: editInputDecoration2.copyWith(
-      contentPadding: EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-      hintText: '* Contact Address',
-    ),
-    keyboardType: TextInputType.text,
-    maxLines: 1,
-    minLines: 1,
-    onSaved: (String val) {
-      _contactAddress = val;
-    },
-    onChanged: (String val) {
-      _contactAddress = val;
-    },
-  );
+        key: Key('contactAddress'),
+        validator: (value) => value.isEmpty ? '* Contact Address' : null,
+        controller: _contactAddressController,
+        autovalidateMode: AutovalidateMode.disabled,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+        textAlignVertical: TextAlignVertical.top,
+        decoration: editInputDecoration2.copyWith(
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+          hintText: '* Contact Address',
+        ),
+        keyboardType: TextInputType.text,
+        maxLines: 1,
+        minLines: 1,
+        onSaved: (String val) {
+          _contactAddress = val;
+        },
+        onChanged: (String val) {
+          _contactAddress = val;
+        },
+      );
 
   Widget get _buildBloodType => DropdownButtonFormField(
-    onTap: () {
-      FocusScope.of(context).unfocus();
-    },
-    value: _bloodType,
-    decoration: editInputDecoration2.copyWith(
-      hintText: 'Blood Type',
-    ),
-    items: _bloodTypeOptions.map((c) {
-      return DropdownMenuItem(
-        value: c,
-        child: Text('$c'),
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        value: _bloodType,
+        decoration: editInputDecoration2.copyWith(
+          hintText: 'Blood Type',
+        ),
+        items: _bloodTypeOptions.map((c) {
+          return DropdownMenuItem(
+            value: c,
+            child: Text('$c'),
+          );
+        }).toList(),
+        onChanged: (val) => _bloodType = val,
       );
-    }).toList(),
-    onChanged: (val) => _bloodType = val,
-  );
 
   Widget get _buildInsurance => DropdownButtonFormField(
-    onTap: () {
-      FocusScope.of(context).unfocus();
-    },
-    value: _isInsured,
-    decoration: editInputDecoration2.copyWith(
-      hintText: 'Insured?',
-    ),
-    items: _insuranceOptions.map((c) {
-      return DropdownMenuItem(
-        value: c,
-        child: Text('$c'),
-      );
-    }).toList(),
-    onChanged: (val) => _isInsured = val,
-  );
-
-  Widget get _expandableEmergencyInfo
-  => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: () => setState(() {
-          _isExpandedEInfo = !_isExpandedEInfo;
-        }),
-        child: _buildFormLabel('Emergency Information', _isExpandedEInfo, FontAwesomeIcons.solidBuilding,),
-      ),
-      vSpacer(h: 4.0,),
-      AnimatedSize(
-        vsync: this,
-        duration: Duration(milliseconds: 350),
-        child: ConstrainedBox(
-          constraints: _isExpandedEInfo
-              ? BoxConstraints()
-              : BoxConstraints(maxHeight: 0.0),
-          child: Column(
-            children: [
-              _buildContactPerson,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Name of person you wish to contact in case of emergency'),
-              vSpacer(h: 8.0,),
-              _buildRelationship,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Relationship to contact person'),
-              vSpacer(h: 8.0,),
-              _buildContactNumber,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Contact Number of your contact person'),
-              vSpacer(h: 8.0,),
-              _buildContactAddress,
-              vSpacer(h: 4.0,),
-              _buildLabel('* Address of your contact person'),
-              vSpacer(h: 8.0,),
-              _buildBloodType,
-              vSpacer(h: 4.0,),
-              _buildLabel('Blood Type'),
-              vSpacer(h: 8.0,),
-              _buildInsurance,
-              vSpacer(h: 4.0,),
-              _buildLabel('Do you have an insurance policy?'),
-              vSpacer(h: 8.0,),
-            ],
-          ),
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        value: _isInsured,
+        decoration: editInputDecoration2.copyWith(
+          hintText: 'Insured?',
         ),
-      ),
-    ],
-  );
+        items: _insuranceOptions.map((c) {
+          return DropdownMenuItem(
+            value: c,
+            child: Text('$c'),
+          );
+        }).toList(),
+        onChanged: (val) => _isInsured = val,
+      );
+
+  Widget get _expandableEmergencyInfo => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => setState(() {
+              _isExpandedEInfo = !_isExpandedEInfo;
+            }),
+            child: _buildFormLabel(
+              'Emergency Information',
+              _isExpandedEInfo,
+              FontAwesomeIcons.solidBuilding,
+            ),
+          ),
+          vSpacer(
+            h: 4.0,
+          ),
+          AnimatedSize(
+            vsync: this,
+            duration: Duration(milliseconds: 350),
+            child: ConstrainedBox(
+              constraints: _isExpandedEInfo
+                  ? BoxConstraints()
+                  : BoxConstraints(maxHeight: 0.0),
+              child: Column(
+                children: [
+                  _buildContactPerson,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel(
+                      '* Name of person you wish to contact in case of emergency'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildRelationship,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Relationship to contact person'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildContactNumber,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Contact Number of your contact person'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildContactAddress,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('* Address of your contact person'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildBloodType,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('Blood Type'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildInsurance,
+                  vSpacer(
+                    h: 4.0,
+                  ),
+                  _buildLabel('Do you have an insurance policy?'),
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
 
   Widget get _buildTwitter => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      FaIcon(
-        FontAwesomeIcons.twitter,
-        size: 24.0,
-        color: Color(0xff38a1f3),
-      ),
-      hSpacer(w: 11.5,),
-      Expanded(
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TextFormField(
-            key: Key('twUrl'),
-            validator: (value) =>
-            value.isEmpty ? 'Twitter URL' : null,
-            controller: _twUrlController,
-            autovalidateMode: AutovalidateMode.disabled,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black,
-            ),
-            textAlignVertical: TextAlignVertical.top,
-            decoration: editInputDecoration2.copyWith(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 16.0,
-                horizontal: 16.0,
-              ),
-              hintText: 'Twitter URL',
-            ),
-            keyboardType: TextInputType.text,
-            maxLines: 1,
-            minLines: 1,
-            onSaved: (String val) {
-              _twUrl = val;
-            },
-            onChanged: (String val) {
-              _twUrl = val;
-            },
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.twitter,
+            size: 24.0,
+            color: Color(0xff38a1f3),
           ),
-        ),
-      ),
-    ],
-  );
-
-  Widget get _buildFacebook => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      FaIcon(
-        FontAwesomeIcons.facebook,
-        size: 24.0,
-        color: Color(0xff3b5998),
-      ),
-      hSpacer(w: 11.5,),
-      Expanded(
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TextFormField(
-            key: Key('fbUrl'),
-            validator: (value) =>
-            value.isEmpty ? 'Facebook URL' : null,
-            controller: _fbUrlController,
-            autovalidateMode: AutovalidateMode.disabled,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black,
-            ),
-            textAlignVertical: TextAlignVertical.top,
-            decoration: editInputDecoration2.copyWith(
-              hintText: 'Facebook URL',
-            ),
-            keyboardType: TextInputType.text,
-            maxLines: 1,
-            minLines: 1,
-            onSaved: (String val) {
-              _fbUrl = val;
-            },
-            onChanged: (String val) {
-              _fbUrl = val;
-            },
+          hSpacer(
+            w: 11.5,
           ),
-        ),
-      ),
-    ],
-  );
-
-  Widget get _buildYoutube => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      FaIcon(
-        FontAwesomeIcons.youtube,
-        size: 24.0,
-        color: Color(0xffc4302b),
-      ),
-      hSpacer(w: 8.0,),
-      Expanded(
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TextFormField(
-            key: Key('ytUrl'),
-            validator: (value) =>
-            value.isEmpty ? 'Youtube URL' : null,
-            controller: _ytUrlController,
-            autovalidateMode: AutovalidateMode.disabled,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black,
-            ),
-            textAlignVertical: TextAlignVertical.top,
-            decoration: editInputDecoration2.copyWith(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 16.0,
-                horizontal: 16.0,
-              ),
-              hintText: 'Youtube URL',
-            ),
-            keyboardType: TextInputType.text,
-            maxLines: 1,
-            minLines: 1,
-            onSaved: (String val) {
-              _ytUrl = val;
-            },
-            onChanged: (String val) {
-              _ytUrl = val;
-            },
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget get _buildLinkedIn => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      FaIcon(
-        FontAwesomeIcons.linkedin,
-        size: 24.0,
-        color: Color(0xff0077b5),
-      ),
-      hSpacer(w: 14.0,),
-      Expanded(
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TextFormField(
-            key: Key('inUrl'),
-            validator: (value) =>
-            value.isEmpty ? 'LinkedIn URL' : null,
-            controller: _inUrlController,
-            autovalidateMode: AutovalidateMode.disabled,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black,
-            ),
-            textAlignVertical: TextAlignVertical.top,
-            decoration: editInputDecoration2.copyWith(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 16.0,
-                horizontal: 16.0,
-              ),
-              hintText: 'LinkedIn URL',
-            ),
-            keyboardType: TextInputType.text,
-            maxLines: 1,
-            minLines: 1,
-            onSaved: (String val) {
-              _inUrl = val;
-            },
-            onChanged: (String val) {
-              _inUrl = val;
-            },
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget get _buildInstagram => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      FaIcon(
-        FontAwesomeIcons.instagram,
-        size: 24.0,
-        color: Color(0xff3f729b),
-      ),
-      hSpacer(w: 13.5,),
-      Expanded(
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: TextFormField(
-            key: Key('igUrl'),
-            validator: (value) =>
-            value.isEmpty ? 'Instagram URL' : null,
-            controller: _igUrlController,
-            autovalidateMode: AutovalidateMode.disabled,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black,
-            ),
-            textAlignVertical: TextAlignVertical.top,
-            decoration: editInputDecoration2.copyWith(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 16.0,
-                horizontal: 16.0,
-              ),
-              hintText: 'Instagram URL',
-            ),
-            keyboardType: TextInputType.text,
-            maxLines: 1,
-            minLines: 1,
-            onSaved: (String val) {
-              _igUrl = val;
-            },
-            onChanged: (String val) {
-              _igUrl = val;
-            },
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget get _expandableSocialNetworkLinks
-  => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: () => setState(() {
-          _isExpandedSNInfo = !_isExpandedSNInfo;
-        }),
-        child: _buildFormLabel('Social Network Links', _isExpandedSNInfo, FontAwesomeIcons.desktop,),
-      ),
-      vSpacer(h: 4.0,),
-      AnimatedSize(
-        vsync: this,
-        duration: Duration(milliseconds: 350),
-        child: ConstrainedBox(
-          constraints: _isExpandedSNInfo
-              ? BoxConstraints()
-              : BoxConstraints(maxHeight: 0.0),
-          child: Column(
-            children: [
-              _buildTwitter,
-              vSpacer(h: 8.0,),
-              _buildFacebook,
-              vSpacer(h: 8.0,),
-              _buildYoutube,
-              vSpacer(h: 8.0,),
-              _buildLinkedIn,
-              vSpacer(h: 8.0,),
-              _buildInstagram,
-              vSpacer(h: 8.0,),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget get _submitBtn => TextButton(
-    style: TextButton.styleFrom(
-      backgroundColor: colorPrimary,
-      primary: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 16.0,),
-    ),
-    onPressed: () {
-      FocusScope.of(context).unfocus();
-      if (_validatePersonalInfo()) {
-        if (_isExpandedOInfo) {
-
-        }
-        if (_isExpandedEInfo) {
-
-        }
-        else {
-          if (_imageFile == null && _nHomeAddress.isEmpty && _nGender.isEmpty &&
-              _nCivilStatus.isEmpty && _nBirthDate.isEmpty && _nBio.isEmpty) {
-            final _snackBar = SnackBar(
-              duration: Duration(seconds: 3),
-              backgroundColor: Colors.redAccent,
-              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              content: Text(
-                'No changes were made',
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TextFormField(
+                key: Key('twUrl'),
+                validator: (value) => value.isEmpty ? 'Twitter URL' : null,
+                controller: _twUrlController,
+                autovalidateMode: AutovalidateMode.disabled,
                 style: TextStyle(
                   fontSize: 16.0,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
+                textAlignVertical: TextAlignVertical.top,
+                decoration: editInputDecoration2.copyWith(
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
+                  hintText: 'Twitter URL',
+                ),
+                keyboardType: TextInputType.text,
+                maxLines: 1,
+                minLines: 1,
+                onSaved: (String val) {
+                  _twUrl = val;
+                },
+                onChanged: (String val) {
+                  _twUrl = val;
+                },
               ),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-          } else {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: ((BuildContext context) {
-                return Dialog(
-                  backgroundColor: colorPrimary1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${widget.isUpdate ? 'Updating' : 'Creating'} Profile',
-                          style: TextStyle(
-                            fontSize: 36.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                        vSpacer(h: 16.0,),
-                        CircularProgressIndicator(
-                          color: Colors.white,
-                        ),
-                      ],
+            ),
+          ),
+        ],
+      );
+
+  Widget get _buildFacebook => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.facebook,
+            size: 24.0,
+            color: Color(0xff3b5998),
+          ),
+          hSpacer(
+            w: 11.5,
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TextFormField(
+                key: Key('fbUrl'),
+                validator: (value) => value.isEmpty ? 'Facebook URL' : null,
+                controller: _fbUrlController,
+                autovalidateMode: AutovalidateMode.disabled,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+                textAlignVertical: TextAlignVertical.top,
+                decoration: editInputDecoration2.copyWith(
+                  hintText: 'Facebook URL',
+                ),
+                keyboardType: TextInputType.text,
+                maxLines: 1,
+                minLines: 1,
+                onSaved: (String val) {
+                  _fbUrl = val;
+                },
+                onChanged: (String val) {
+                  _fbUrl = val;
+                },
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget get _buildYoutube => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.youtube,
+            size: 24.0,
+            color: Color(0xffc4302b),
+          ),
+          hSpacer(
+            w: 8.0,
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TextFormField(
+                key: Key('ytUrl'),
+                validator: (value) => value.isEmpty ? 'Youtube URL' : null,
+                controller: _ytUrlController,
+                autovalidateMode: AutovalidateMode.disabled,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+                textAlignVertical: TextAlignVertical.top,
+                decoration: editInputDecoration2.copyWith(
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
+                  hintText: 'Youtube URL',
+                ),
+                keyboardType: TextInputType.text,
+                maxLines: 1,
+                minLines: 1,
+                onSaved: (String val) {
+                  _ytUrl = val;
+                },
+                onChanged: (String val) {
+                  _ytUrl = val;
+                },
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget get _buildLinkedIn => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.linkedin,
+            size: 24.0,
+            color: Color(0xff0077b5),
+          ),
+          hSpacer(
+            w: 14.0,
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TextFormField(
+                key: Key('inUrl'),
+                validator: (value) => value.isEmpty ? 'LinkedIn URL' : null,
+                controller: _inUrlController,
+                autovalidateMode: AutovalidateMode.disabled,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+                textAlignVertical: TextAlignVertical.top,
+                decoration: editInputDecoration2.copyWith(
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
+                  hintText: 'LinkedIn URL',
+                ),
+                keyboardType: TextInputType.text,
+                maxLines: 1,
+                minLines: 1,
+                onSaved: (String val) {
+                  _inUrl = val;
+                },
+                onChanged: (String val) {
+                  _inUrl = val;
+                },
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget get _buildInstagram => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.instagram,
+            size: 24.0,
+            color: Color(0xff3f729b),
+          ),
+          hSpacer(
+            w: 13.5,
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TextFormField(
+                key: Key('igUrl'),
+                validator: (value) => value.isEmpty ? 'Instagram URL' : null,
+                controller: _igUrlController,
+                autovalidateMode: AutovalidateMode.disabled,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+                textAlignVertical: TextAlignVertical.top,
+                decoration: editInputDecoration2.copyWith(
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
+                  hintText: 'Instagram URL',
+                ),
+                keyboardType: TextInputType.text,
+                maxLines: 1,
+                minLines: 1,
+                onSaved: (String val) {
+                  _igUrl = val;
+                },
+                onChanged: (String val) {
+                  _igUrl = val;
+                },
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget get _expandableSocialNetworkLinks => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => setState(() {
+              _isExpandedSNInfo = !_isExpandedSNInfo;
+            }),
+            child: _buildFormLabel(
+              'Social Network Links',
+              _isExpandedSNInfo,
+              FontAwesomeIcons.desktop,
+            ),
+          ),
+          vSpacer(
+            h: 4.0,
+          ),
+          AnimatedSize(
+            vsync: this,
+            duration: Duration(milliseconds: 350),
+            child: ConstrainedBox(
+              constraints: _isExpandedSNInfo
+                  ? BoxConstraints()
+                  : BoxConstraints(maxHeight: 0.0),
+              child: Column(
+                children: [
+                  _buildTwitter,
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildFacebook,
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildYoutube,
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildLinkedIn,
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                  _buildInstagram,
+                  vSpacer(
+                    h: 8.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget get _submitBtn => TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: colorPrimary,
+          primary: Colors.white,
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.0,
+          ),
+        ),
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          if (_validatePersonalInfo()) {
+            if (_isExpandedOInfo) {}
+            if (_isExpandedEInfo) {
+            } else {
+              if (_imageFile == null &&
+                  _nHomeAddress.isEmpty &&
+                  _nGender.isEmpty &&
+                  _nCivilStatus.isEmpty &&
+                  _nBirthDate.isEmpty &&
+                  _nBio.isEmpty) {
+                final _snackBar = SnackBar(
+                  duration: Duration(seconds: 3),
+                  backgroundColor: Colors.redAccent,
+                  padding:
+                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  content: Text(
+                    'No changes were made',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
                     ),
                   ),
                 );
-              }),
-            );
-            _submitEdit();
+                ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+              } else {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: ((BuildContext context) {
+                    return Dialog(
+                      backgroundColor: colorPrimary1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${widget.isUpdate ? 'Updating' : 'Creating'} Profile',
+                              style: TextStyle(
+                                fontSize: 36.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                            vSpacer(
+                              h: 16.0,
+                            ),
+                            CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                );
+                _submitEdit();
+              }
+            }
           }
-        }
-      }
-    },
-    child: Text(
-      'Submit',
-      style: TextStyle(
-        fontSize: 16.0,
-        letterSpacing: 0.5,
-        fontWeight: FontWeight.w400,
-      ),
-    ),
-  );
+        },
+        child: Text(
+          'Submit',
+          style: TextStyle(
+            fontSize: 16.0,
+            letterSpacing: 0.5,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      );
 
   Widget get _backBtn => TextButton(
-    style: TextButton.styleFrom(
-      backgroundColor: Colors.white,
-      primary: colorPrimary,
-      padding: EdgeInsets.symmetric(horizontal: 16.0,),
-    ),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-    child: Text(
-      'Go Back',
-      style: TextStyle(
-        fontSize: 16.0,
-        letterSpacing: 0.5,
-        fontWeight: FontWeight.w400,
-      ),
-    ),
-  );
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          primary: colorPrimary,
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.0,
+          ),
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text(
+          'Go Back',
+          style: TextStyle(
+            fontSize: 16.0,
+            letterSpacing: 0.5,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      );
 
   Widget get _buttons => Row(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      _submitBtn,
-      hSpacer(w: 2.0,),
-      _backBtn,
-    ],
-  );
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _submitBtn,
+          hSpacer(
+            w: 2.0,
+          ),
+          _backBtn,
+        ],
+      );
 
   void _submitEdit() {
     try {
@@ -2044,7 +2248,8 @@ class _EditProfileState extends State<EditProfile>
             _nBio = '';
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-            UserDetailsData d = UserDetailsData.fromJsonMap2(jsonDecode(val), widget.userVM.user);
+            UserDetailsData d = UserDetailsData.fromJsonMap2(
+                jsonDecode(val), widget.userVM.user);
             widget.refresh(UserProfileViewModel(userDetails: d));
           }
         });
@@ -2065,13 +2270,13 @@ class _EditProfileState extends State<EditProfile>
             );
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-            UserDetailsData d = UserDetailsData.fromJsonMap2(jsonDecode(val), widget.userVM.user);
+            UserDetailsData d = UserDetailsData.fromJsonMap2(
+                jsonDecode(val), widget.userVM.user);
             widget.refresh(UserProfileViewModel(userDetails: d));
           }
         });
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<String> _submitEditApiPic() async {
@@ -2082,12 +2287,12 @@ class _EditProfileState extends State<EditProfile>
       'x-auth-token': widget.token,
     };
     Map<String, String> params = {
-      'completeaddress' : '${_nHomeAddress.isEmpty
-          ? _homeAddress : _nHomeAddress}',
-      'gender' : '${_nGender.isEmpty ? _gender : _nGender}',
-      'civilstatus' : '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
-      'birthday' : '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
-      'bio' : '${_nBio.isEmpty ? _bio : _nBio}',
+      'completeaddress':
+          '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}',
+      'gender': '${_nGender.isEmpty ? _gender : _nGender}',
+      'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
+      'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
+      'bio': '${_nBio.isEmpty ? _bio : _nBio}',
     };
     var request = http.MultipartRequest(
         'POST', Uri.parse('$secretHollowsEndPoint/api/profile'));
@@ -2107,30 +2312,33 @@ class _EditProfileState extends State<EditProfile>
   Future<String> _submitEditApiNoPic() async {
     var url = Uri.parse('$secretHollowsEndPoint/api/profile');
     Map<String, String> params = {
-      'completeaddress' : '${_nHomeAddress.isEmpty
-          ? _homeAddress : _nHomeAddress}',
-      'gender' : '${_nGender.isEmpty ? _gender : _nGender}',
-      'civilstatus' : '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
-      'birthday' : '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
-      'bio' : '${_nBio.isEmpty ? _bio : _nBio}',
+      'completeaddress':
+          '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}',
+      'gender': '${_nGender.isEmpty ? _gender : _nGender}',
+      'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
+      'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
+      'bio': '${_nBio.isEmpty ? _bio : _nBio}',
     };
     var reqBody = json.encode(params);
-    var response = await http.post(
+    var response = await http
+        .post(
       url,
       headers: {
-        'Cache-Control' : 'no-cache',
-        'Accept' : '*/*',
-        'Accept-Encoding' : 'gzip, deflate, br',
-        'Connection' : 'keep-alive',
+        'Cache-Control': 'no-cache',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
         'Content-Type': 'application/json',
         'x-auth-token': widget.token,
       },
       body: reqBody,
-    ).onError((error, stackTrace) {
+    )
+        .onError((error, stackTrace) {
       // setState(() {
       //   _isLoading = false;
       // });
-      showMessageDialog(context,
+      showMessageDialog(
+          context,
           '${widget.isUpdate ? 'Editing' : 'Creating'} profile failed',
           '- can\'t connect to server.');
       return error;
@@ -2141,8 +2349,8 @@ class _EditProfileState extends State<EditProfile>
 
   void _showPopupMenu(Offset offset) {
     PopupMenu menu = PopupMenu(
-      // backgroundColor: Colors.teal,
-      // lineColor: Colors.tealAccent,
+        // backgroundColor: Colors.teal,
+        // lineColor: Colors.tealAccent,
         maxColumn: 1,
         items: [
           MenuItem(
@@ -2170,4 +2378,11 @@ class _EditProfileState extends State<EditProfile>
   void onDismiss() {
     // print('Menu is dismiss');
   }
+}
+
+class RespStatus {
+  String v;
+  String txt;
+
+  RespStatus({this.v, this.txt});
 }
