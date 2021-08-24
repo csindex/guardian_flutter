@@ -41,3 +41,16 @@ app.*.map.json
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+address.txt
+build.gradle
+GUARDIAN-FIX.txt
+ID-draft.txt
+ISSUES-GUARDIAN.txt
+PROFILE ELEMENTS.txt
+pubspec.lock
+.gradle/6.1.1/gc.properties
+.gradle/6.1.1/executionHistory/executionHistory.lock
+.gradle/6.1.1/fileChanges/last-build.bin
+.gradle/6.1.1/fileHashes/fileHashes.lock
+.gradle/checksums/checksums.lock
+android/settings_aar.gradle

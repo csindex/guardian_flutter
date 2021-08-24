@@ -16,7 +16,6 @@ import '../../provider/posts/viewmodel-post.dart';
 import '../../widgets/ExpandableText.dart';
 import '../../data/posts/data-like.dart';
 import 'like-button.dart';
-import 'expandable-form-create-post.dart';
 
 class Posts extends StatefulWidget {
   final String token;
@@ -25,13 +24,14 @@ class Posts extends StatefulWidget {
   final Function openProfileScreen;
   final List<UserProfileViewModel> userList;
 
-  Posts({
-    Key key,
-    @required this.openProfileScreen,
-    this.token,
-    this.vm,
-    this.userProfileVM,
-    this.userList}) : super(key: key);
+  Posts(
+      {Key key,
+      @required this.openProfileScreen,
+      this.token,
+      this.vm,
+      this.userProfileVM,
+      this.userList})
+      : super(key: key);
 
   @override
   _PostsState createState() => _PostsState();
@@ -39,7 +39,6 @@ class Posts extends StatefulWidget {
 
 class _PostsState extends State<Posts>
     with AutomaticKeepAliveClientMixin<Posts> {
-
   List<PostViewModel> _posts = <PostViewModel>[];
   List<VideoPlayerController> _videoCntrllrs = <VideoPlayerController>[];
 
@@ -50,9 +49,10 @@ class _PostsState extends State<Posts>
       if (mounted) {
         for (var v in value) {
           if (v.articleImage.contains('mp4')) {
-            _videoCntrllrs.add(new VideoPlayerController.network(v.articleImage)..initialize().then((_) {
-              setState(() {});
-            }));
+            _videoCntrllrs.add(new VideoPlayerController.network(v.articleImage)
+              ..initialize().then((_) {
+                setState(() {});
+              }));
           }
         }
         setState(() {
@@ -71,15 +71,16 @@ class _PostsState extends State<Posts>
 
   openProfileScreen2(var u) {
     NavigationHelper.openProfileScreen2(
-        context, widget.vm, u,
-        widget.userProfileVM, widget.token, 'post');
+        context, widget.vm, u, widget.userProfileVM, widget.token, 'post');
   }
 
   Widget _createPostItem(int index) {
     // print('${notification.uploads.length} X $index');
     // print('path : ${_post.avatar}');
     return Container(
-      margin: EdgeInsets.only(bottom: 4.0,),
+      margin: EdgeInsets.only(
+        bottom: 4.0,
+      ),
       // padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       // decoration: BoxDecoration(
       //   border: Border.all(color: Colors.grey.shade400),
@@ -109,14 +110,14 @@ class _PostsState extends State<Posts>
       } else if (widget.vm.id == _post.authorId) {
         _profilePic = (widget.userProfileVM != null)
             ? (widget.userProfileVM.profilePic != null ||
-            !widget.userProfileVM.profilePic.contains('null'))
-            ? widget.userProfileVM.profilePic
-            : '$secretHollowsEndPoint/img/Spotter.png'
+                    !widget.userProfileVM.profilePic.contains('null'))
+                ? widget.userProfileVM.profilePic
+                : '$secretHollowsEndPoint/img/Spotter.png'
             : '$secretHollowsEndPoint/img/Spotter.png';
         _fullName = (widget.userProfileVM != null)
             ? (widget.userProfileVM.user.name != null)
-            ? '${widget.userProfileVM.user.name} ${widget.userProfileVM.user.lname}'
-            : '${widget.vm.name}'
+                ? '${widget.userProfileVM.user.name} ${widget.userProfileVM.user.lname}'
+                : '${widget.vm.name}'
             : '${widget.vm.name}';
         _user = widget.userProfileVM;
       }
@@ -124,19 +125,21 @@ class _PostsState extends State<Posts>
     if (widget.vm.id == _post.authorId) {
       _profilePic = (widget.userProfileVM != null)
           ? (widget.userProfileVM.profilePic != null ||
-          !widget.userProfileVM.profilePic.contains('null'))
-          ? widget.userProfileVM.profilePic
-          : '$secretHollowsEndPoint/img/Spotter.png'
+                  !widget.userProfileVM.profilePic.contains('null'))
+              ? widget.userProfileVM.profilePic
+              : '$secretHollowsEndPoint/img/Spotter.png'
           : '$secretHollowsEndPoint/img/Spotter.png';
       _fullName = (widget.userProfileVM != null)
           ? (widget.userProfileVM.user.name != null)
-          ? '${widget.userProfileVM.user.name} ${widget.userProfileVM.user.lname}'
-          : '${widget.vm.name}'
+              ? '${widget.userProfileVM.user.name} ${widget.userProfileVM.user.lname}'
+              : '${widget.vm.name}'
           : '${widget.vm.name}';
       _user = widget.userProfileVM;
     }
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.0,),
+      margin: EdgeInsets.symmetric(
+        horizontal: 16.0,
+      ),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.grey.shade400,
@@ -145,7 +148,10 @@ class _PostsState extends State<Posts>
         borderRadius: BorderRadius.circular(8.0),
         color: Colors.white,
       ),
-      padding: EdgeInsets.only(top: 16.0, bottom: 8.0,),
+      padding: EdgeInsets.only(
+        top: 16.0,
+        bottom: 8.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -167,7 +173,7 @@ class _PostsState extends State<Posts>
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.shade900,
-                        spreadRadius:1.0,
+                        spreadRadius: 1.0,
                         blurRadius: 4.0,
                       ),
                     ],
@@ -180,7 +186,7 @@ class _PostsState extends State<Posts>
                       backgroundColor: Colors.white,
                       backgroundImage: NetworkImage(_profilePic),
                     ),
-                  ),/*ClipRRect(
+                  ), /*ClipRRect(
                     borderRadius: BorderRadius.circular(24.0),
                     child: FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
@@ -206,7 +212,8 @@ class _PostsState extends State<Posts>
                     ),
                     Text(
                       _post.date,
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey.shade500),
+                      style: TextStyle(
+                          fontSize: 12.0, color: Colors.grey.shade500),
                     ),
                   ],
                 ),
@@ -219,7 +226,9 @@ class _PostsState extends State<Posts>
           Container(
             height: 1.0,
             color: Colors.grey.shade400,
-            margin: EdgeInsets.symmetric(horizontal: 1.0,),
+            margin: EdgeInsets.symmetric(
+              horizontal: 1.0,
+            ),
           ),
           SizedBox(
             height: 8.0,
@@ -245,9 +254,10 @@ class _PostsState extends State<Posts>
                   placeholder: kTransparentImage,
                   image: (_post.articleImage == '')
                       ? 'https://vignette.wikia.nocookie.net/codegeass/images/7/7'
-                      'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
-                      'cb=20140311192830'
-                      : _post.articleImage, //notification.uploads[0].fileFullPath,
+                          'e/1295504746.jpg/revision/latest/scale-to-width-down/340?'
+                          'cb=20140311192830'
+                      : _post
+                          .articleImage, //notification.uploads[0].fileFullPath,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -257,452 +267,474 @@ class _PostsState extends State<Posts>
             height: 8.0,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0,),
-            child: (widget.vm.id == _post.authorId) ?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                /*Expanded(
-                  child: */LikeButton(
-                  token: widget.token,
-                  isChecked: _isLiker,
-                  id: widget.vm.id,
-                  postId: _post.id,
-                  likes: _postLikes,
-                  onLikeButtonChanged: (_likes, isChecked) {
-                    if (isChecked) {
-                      _posts[index].likes.clear();
-                      _posts[index].likes.addAll(_likes);
-                    }
-                  },
-                ),
-                // ),
-                /*Expanded(
-                  child: */ClipRRect(
-                  // borderRadius: BorderRadius.circular(4.0),
-                  child: Material(
-                    // color: Colors.grey.shade400,
-                    child: InkWell(
-                      onTap: () {
-                        // if (_isLiker) {
-                        // print('isLiker $_isLiker');
-                        unlikePost(_post.id).then((value) {
-                          Iterable body = jsonDecode(value);
-                          var newData = body
-                              .map((data) => LikeData.fromJsonMap(data))
-                              .toList();
-                          if (newData.isEmpty) {
-                            _posts[index].likes.clear();
-                          } else {
-                            _posts[index].likes.clear();
-                            _posts[index].likes.addAll(newData);
-                          }
-                          setState(() {
-                            _isLiker = false;
-                          });
-                        });
-                        // }
-                      },
-                      splashColor: Colors.grey.shade700,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.thumbsDown,
-                              color: Colors.black,
-                              size: 12.0,
-                            ),
-                            SizedBox(
-                              width: 4.0,
-                            ),
-                            Text(
-                              'Unlike',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Visibility(
-                              // visible: (post.likes.length > 0) ? true : false,
-                              visible: false,
-                              child: SizedBox(
-                                width: 8.0,
-                              ),
-                            ),
-                            Visibility(
-                              // visible: (post.likes.length > 0) ? true : false,
-                              visible: false,
-                              child: Text(
-                                '',
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // ),
-                /*Expanded(
-                  child: */ClipRRect(
-                  borderRadius: BorderRadius.circular(4.0),
-                  child: Material(
-                    // color: colorPrimary,
-                    child: InkWell(
-                      onTap: () {
-                        NavigationHelper.openComments(
-                          context,
-                          widget.token,
-                          widget.vm,
-                          widget.userProfileVM,
-                          widget.userList,
-                          _post,
-                          _refresh,
-                        );
-                      },
-                      splashColor: Colors.grey.shade700,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.comment,
-                              color: Colors.black,
-                              size: 12.0,
-                            ),
-                            SizedBox(
-                              width: 4.0,
-                            ),
-                            Text(
-                              'Comments',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
-                              child: SizedBox(
-                                width: 4.0,
-                              ),
-                            ),
-                            Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(2.0),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 2.0, vertical: 2.0,),
-                                  color: colorPrimary,
-                                  child: Text(
-                                    '${_post.comments.length}',
-                                    style: TextStyle(
-                                      fontSize: 10.0,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4.0),
-                  child: Material(
-                    // color: colorPrimary,
-                    child: InkWell(
-                      onTap: () {
-                        print('HOY GISING!');
-                      },
-                      splashColor: Colors.grey.shade700,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: Row(
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.shareSquare,
-                              color: Colors.black,
-                              size: 12.0,
-                            ),
-                            SizedBox(
-                              width: 4.0,
-                            ),
-                            Text(
-                              'Share',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                /*(widget.viewModel.id == _post.authorId)
-                    ? *//*Expanded(
-                  child: */Visibility(
-                  visible: (widget.vm.id == _post.authorId) ? true : false,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4.0),
-                    child: Material(
-                      // color: Colors.redAccent,
-                      child: InkWell(
-                        onTap: () {
-                          // TODO: DELETE POST
-                          deletePost(_post.id).then((value) {
-                            print('DELETE - $value');
-                            if (value.contains('removed')) {
-                              _refresh();
-                            }
-                          });
-                        },
-                        splashColor: Colors.grey.shade700,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0,
-                            vertical: 8.0,
-                          ),
-                          child: FaIcon(
-                            FontAwesomeIcons.trashAlt,
-                            color: Colors.black,
-                            size: 12.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // )
-                /*: Visibility(visible: false, child: Container(),),*/
-              ],
-            ) :
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                /*Expanded(
-                  child: */LikeButton(
-                  token: widget.token,
-                  isChecked: _isLiker,
-                  id: widget.vm.id,
-                  postId: _post.id,
-                  likes: _postLikes,
-                  onLikeButtonChanged: (_likes, isChecked) {
-                    if (isChecked) {
-                      _posts[index].likes.clear();
-                      _posts[index].likes.addAll(_likes);
-                    }
-                  },
-                ),
-                // ),
-                /*Expanded(
-                  child: */ClipRRect(
-                  // borderRadius: BorderRadius.circular(4.0),
-                  child: Material(
-                    // color: Colors.grey.shade400,
-                    child: InkWell(
-                      onTap: () {
-                        // if (_isLiker) {
-                        // print('isLiker $_isLiker');
-                        unlikePost(_post.id).then((value) {
-                          Iterable body = jsonDecode(value);
-                          var newData = body
-                              .map((data) => LikeData.fromJsonMap(data))
-                              .toList();
-                          if (newData.isEmpty) {
-                            _posts[index].likes.clear();
-                          } else {
-                            _posts[index].likes.clear();
-                            _posts[index].likes.addAll(newData);
-                          }
-                          setState(() {
-                            _isLiker = false;
-                          });
-                        });
-                        // }
-                      },
-                      splashColor: Colors.grey.shade700,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.thumbsDown,
-                              color: Colors.black,
-                              size: 12.0,
-                            ),
-                            SizedBox(
-                              width: 4.0,
-                            ),
-                            Text(
-                              'Unlike',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Visibility(
-                              // visible: (post.likes.length > 0) ? true : false,
-                              visible: false,
-                              child: SizedBox(
-                                width: 8.0,
-                              ),
-                            ),
-                            Visibility(
-                              // visible: (post.likes.length > 0) ? true : false,
-                              visible: false,
-                              child: Text(
-                                '',
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // ),
-                /*Expanded(
-                  child: */ClipRRect(
-                  borderRadius: BorderRadius.circular(4.0),
-                  child: Material(
-                    // color: colorPrimary,
-                    child: InkWell(
-                      onTap: () {
-                        NavigationHelper.openComments(
-                          context,
-                          widget.token,
-                          widget.vm,
-                          widget.userProfileVM,
-                          widget.userList,
-                          _post,
-                          _refresh,
-                        );
-                      },
-                      splashColor: Colors.grey.shade700,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.comment,
-                              color: Colors.black,
-                              size: 12.0,
-                            ),
-                            SizedBox(
-                              width: 4.0,
-                            ),
-                            Text(
-                              'Comments',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
-                              child: SizedBox(
-                                width: 4.0,
-                              ),
-                            ),
-                            Visibility(
-                              visible: (_post.comments.length > 0) ? true : false,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(2.0),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 2.0, vertical: 2.0,),
-                                  color: colorPrimary,
-                                  child: Text(
-                                    '${_post.comments.length}',
-                                    style: TextStyle(
-                                      fontSize: 10.0,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4.0),
-                  child: Material(
-                    // color: colorPrimary,
-                    child: InkWell(
-                      onTap: () {},
-                      splashColor: Colors.grey.shade700,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: Row(
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.shareSquare,
-                              color: Colors.black,
-                              size: 12.0,
-                            ),
-                            SizedBox(
-                              width: 4.0,
-                            ),
-                            Text(
-                              'Share',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            padding: EdgeInsets.symmetric(
+              horizontal: 8.0,
             ),
+            child: (widget.vm.id == _post.authorId)
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      /*Expanded(
+                  child: */
+                      LikeButton(
+                        token: widget.token,
+                        isChecked: _isLiker,
+                        id: widget.vm.id,
+                        postId: _post.id,
+                        likes: _postLikes,
+                        onLikeButtonChanged: (_likes, isChecked) {
+                          if (isChecked) {
+                            _posts[index].likes.clear();
+                            _posts[index].likes.addAll(_likes);
+                          }
+                        },
+                      ),
+                      // ),
+                      /*Expanded(
+                  child: */
+                      ClipRRect(
+                        // borderRadius: BorderRadius.circular(4.0),
+                        child: Material(
+                          // color: Colors.grey.shade400,
+                          child: InkWell(
+                            onTap: () {
+                              // if (_isLiker) {
+                              // print('isLiker $_isLiker');
+                              unlikePost(_post.id).then((value) {
+                                Iterable body = jsonDecode(value);
+                                var newData = body
+                                    .map((data) => LikeData.fromJsonMap(data))
+                                    .toList();
+                                if (newData.isEmpty) {
+                                  _posts[index].likes.clear();
+                                } else {
+                                  _posts[index].likes.clear();
+                                  _posts[index].likes.addAll(newData);
+                                }
+                                setState(() {
+                                  _isLiker = false;
+                                });
+                              });
+                              // }
+                            },
+                            splashColor: Colors.grey.shade700,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.thumbsDown,
+                                    color: Colors.black,
+                                    size: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text(
+                                    'Unlike',
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    // visible: (post.likes.length > 0) ? true : false,
+                                    visible: false,
+                                    child: SizedBox(
+                                      width: 8.0,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    // visible: (post.likes.length > 0) ? true : false,
+                                    visible: false,
+                                    child: Text(
+                                      '',
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // ),
+                      /*Expanded(
+                  child: */
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4.0),
+                        child: Material(
+                          // color: colorPrimary,
+                          child: InkWell(
+                            onTap: () {
+                              NavigationHelper.openComments(
+                                context,
+                                widget.token,
+                                widget.vm,
+                                widget.userProfileVM,
+                                widget.userList,
+                                _post,
+                                _refresh,
+                              );
+                            },
+                            splashColor: Colors.grey.shade700,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.comment,
+                                    color: Colors.black,
+                                    size: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text(
+                                    'Comments',
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: (_post.comments.length > 0)
+                                        ? true
+                                        : false,
+                                    child: SizedBox(
+                                      width: 4.0,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: (_post.comments.length > 0)
+                                        ? true
+                                        : false,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(2.0),
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 2.0,
+                                          vertical: 2.0,
+                                        ),
+                                        color: colorPrimary,
+                                        child: Text(
+                                          '${_post.comments.length}',
+                                          style: TextStyle(
+                                            fontSize: 10.0,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4.0),
+                        child: Material(
+                          // color: colorPrimary,
+                          child: InkWell(
+                            onTap: () {
+                              print('HOY GISING!');
+                            },
+                            splashColor: Colors.grey.shade700,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.shareSquare,
+                                    color: Colors.black,
+                                    size: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text(
+                                    'Share',
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      /*(widget.viewModel.id == _post.authorId)
+                    ? */ /*Expanded(
+                  child: */
+                      Visibility(
+                        visible:
+                            (widget.vm.id == _post.authorId) ? true : false,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4.0),
+                          child: Material(
+                            // color: Colors.redAccent,
+                            child: InkWell(
+                              onTap: () {
+                                // TODO: DELETE POST
+                                deletePost(_post.id).then((value) {
+                                  print('DELETE - $value');
+                                  if (value.contains('removed')) {
+                                    _refresh();
+                                  }
+                                });
+                              },
+                              splashColor: Colors.grey.shade700,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 8.0,
+                                ),
+                                child: FaIcon(
+                                  FontAwesomeIcons.trashAlt,
+                                  color: Colors.black,
+                                  size: 12.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // )
+                      /*: Visibility(visible: false, child: Container(),),*/
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      /*Expanded(
+                  child: */
+                      LikeButton(
+                        token: widget.token,
+                        isChecked: _isLiker,
+                        id: widget.vm.id,
+                        postId: _post.id,
+                        likes: _postLikes,
+                        onLikeButtonChanged: (_likes, isChecked) {
+                          if (isChecked) {
+                            _posts[index].likes.clear();
+                            _posts[index].likes.addAll(_likes);
+                          }
+                        },
+                      ),
+                      // ),
+                      /*Expanded(
+                  child: */
+                      ClipRRect(
+                        // borderRadius: BorderRadius.circular(4.0),
+                        child: Material(
+                          // color: Colors.grey.shade400,
+                          child: InkWell(
+                            onTap: () {
+                              // if (_isLiker) {
+                              // print('isLiker $_isLiker');
+                              unlikePost(_post.id).then((value) {
+                                Iterable body = jsonDecode(value);
+                                var newData = body
+                                    .map((data) => LikeData.fromJsonMap(data))
+                                    .toList();
+                                if (newData.isEmpty) {
+                                  _posts[index].likes.clear();
+                                } else {
+                                  _posts[index].likes.clear();
+                                  _posts[index].likes.addAll(newData);
+                                }
+                                setState(() {
+                                  _isLiker = false;
+                                });
+                              });
+                              // }
+                            },
+                            splashColor: Colors.grey.shade700,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.thumbsDown,
+                                    color: Colors.black,
+                                    size: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text(
+                                    'Unlike',
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    // visible: (post.likes.length > 0) ? true : false,
+                                    visible: false,
+                                    child: SizedBox(
+                                      width: 8.0,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    // visible: (post.likes.length > 0) ? true : false,
+                                    visible: false,
+                                    child: Text(
+                                      '',
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // ),
+                      /*Expanded(
+                  child: */
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4.0),
+                        child: Material(
+                          // color: colorPrimary,
+                          child: InkWell(
+                            onTap: () {
+                              NavigationHelper.openComments(
+                                context,
+                                widget.token,
+                                widget.vm,
+                                widget.userProfileVM,
+                                widget.userList,
+                                _post,
+                                _refresh,
+                              );
+                            },
+                            splashColor: Colors.grey.shade700,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.comment,
+                                    color: Colors.black,
+                                    size: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text(
+                                    'Comments',
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: (_post.comments.length > 0)
+                                        ? true
+                                        : false,
+                                    child: SizedBox(
+                                      width: 4.0,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: (_post.comments.length > 0)
+                                        ? true
+                                        : false,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(2.0),
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 2.0,
+                                          vertical: 2.0,
+                                        ),
+                                        color: colorPrimary,
+                                        child: Text(
+                                          '${_post.comments.length}',
+                                          style: TextStyle(
+                                            fontSize: 10.0,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4.0),
+                        child: Material(
+                          // color: colorPrimary,
+                          child: InkWell(
+                            onTap: () {},
+                            splashColor: Colors.grey.shade700,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0,
+                                vertical: 8.0,
+                              ),
+                              child: Row(
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.shareSquare,
+                                    color: Colors.black,
+                                    size: 12.0,
+                                  ),
+                                  SizedBox(
+                                    width: 4.0,
+                                  ),
+                                  Text(
+                                    'Share',
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -742,25 +774,25 @@ class _PostsState extends State<Posts>
   }
 
   Widget get _header => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      FaIcon(
-        FontAwesomeIcons.solidUser,
-        color: Colors.grey.shade700,
-        size: 16.0,
-      ),
-      SizedBox(
-        width: 8.0,
-      ),
-      Text(
-        'Welcome to GUARDIAN community',
-        style: TextStyle(
-          fontSize: 16.0,
-          color: Colors.grey.shade900,
-        ),
-      ),
-    ],
-  );
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.solidUser,
+            color: Colors.grey.shade700,
+            size: 16.0,
+          ),
+          SizedBox(
+            width: 8.0,
+          ),
+          Text(
+            'Welcome to GUARDIAN community',
+            style: TextStyle(
+              fontSize: 16.0,
+              color: Colors.grey.shade900,
+            ),
+          ),
+        ],
+      );
 
   @override
   bool get wantKeepAlive => true;
@@ -783,21 +815,24 @@ class _PostsState extends State<Posts>
         child: ListView.builder(
           padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
-            return (index == 0) ?
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
-              child: _header,
-            ) : (index == 1) ?
-            ExpandableCreatePostForm(token: widget.token, refresh: _refresh) :
-            _createPostItem(index - 2);
+            // return (index == 0) ?
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+            //   child: _header,
+            // ) : (index == 1) ?
+            // ExpandableCreatePostForm(token: widget.token, refresh: _refresh) :
+            // _createPostItem(index - 2);
+            return (index == 0)
+                ? vSpacer(
+                    h: 16.0,
+                  )
+                : _createPostItem(index - 1);
           },
-          itemCount: _posts.length + 2,
+          itemCount: _posts.length + 1,
           shrinkWrap: true,
           physics: ClampingScrollPhysics(),
         ),
       ),
     );
   }
-
 }
-

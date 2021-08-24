@@ -24,7 +24,7 @@ class UserProfileViewModel {
   }
 
   String get profilePic {
-    return '$secretHollowsEndPoint/img/${this.userDetails?.profilePic}';
+    return '$secretHollowsEndPoint:5000/${this.userDetails?.profilePic}';
   }
 
   String get positionStatus {
@@ -56,7 +56,8 @@ class UserProfileViewModel {
   }
 
   String get birthDate {
-    return DateFormat('MM/dd/yyyy').format(DateTime.parse(this.userDetails?.birthDate).add(Duration(hours: 8)));
+    return DateFormat('MM/dd/yyyy').format(
+        DateTime.parse(this.userDetails?.birthDate).add(Duration(hours: 8)));
   }
 
   String get homeAddress {
