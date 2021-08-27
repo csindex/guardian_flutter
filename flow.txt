@@ -1,0 +1,91 @@
+if (checkForChangesPrsnl) {
+   if (validatePrsnlDetails) {
+      if (checkForChangesOrg) {
+         if (validateOrgDetails) {
+            if (checkForChangesEmrgncy) {
+               if (validateEmrgncyDetails) {
+                  if (checkForChangesSocMed) {
+                     if (validateSocMedDetails) {
+                        updatePrsnlOrgEmrgncySocMedDetails
+                     }
+                  } else {
+                     updatePrsnlOrgEmrgncyDetails
+                  }
+               }
+            } else {
+               if (checkForChangesSocMed) {
+                  if (validateSocMedDetails) {
+                     updatePrsnlOrgSocMedDetails
+                  }
+               } else {
+                  updatePrsnlOrgDetails
+               }
+            }
+         }
+      } else {
+         if (checkForChangesEmrgncy) {
+            if (validateEmrgncyDetails) {
+               if (checkForChangesSocMed) {
+                  if (validateSocMedDetails) {
+                     updatePrsnlEmrgncySocMedDetails
+                  }
+               } else {
+                  updatePrsnlEmrgncyDetails
+               }
+            }
+         } else {
+            if (checkForChangesSocMed) {
+               if (validateSocMedDetails) {
+                  updatePrsnlSocMedDetails
+               }
+            } else {
+               updatePrsnlDetails
+            }
+         }
+      }
+   }
+} else {
+   if (checkForChangesOrg) {
+    w  if (validateOrgDetails) {
+         if (checkForChangesEmrgncy) {
+            if (validateEmrgncyDetails) {
+               if (checkForChangesSocMed) {
+                  if (validateSocMedDetails) {
+                     updateOrgEmrgncySocMedDetails
+                  }
+               } else {
+                  updateOrgEmrgncyDetails
+               }
+            }
+         } else {
+            if (checkForChangesSocMed) {
+               if (validateSocMedDetails) {
+                  updateOrgSocMedDetails
+               }
+            } else {
+               updateOrgDetails
+            }
+         }
+      }
+   } else {
+      if (checkForChangesEmrgncy) {
+         if (validateEmrgncyDetails) {
+            if (checkForChangesSocMed) {
+               if (validateSocMedDetails) {
+                  updateEmrgncySocMedDetails
+               }
+            } else {
+               updateEmrgncyDetails
+            }
+         }
+      } else {
+         if (checkForChangesSocMed) {
+            if (validateSocMedDetails) {
+               updateSocMedDetails
+            }
+         } else {
+            No Changes
+         }
+      }
+   }
+}

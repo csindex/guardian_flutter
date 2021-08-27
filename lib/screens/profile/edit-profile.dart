@@ -20,6 +20,7 @@ import 'package:address_search_field/address_search_field.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart' as gmws;
 import 'package:popup_menu/popup_menu.dart';
+import 'package:validators/validators.dart';
 
 import '../../provider/user/viewmodel-user-profile.dart';
 import '../../utils/constants/utils.dart';
@@ -200,23 +201,42 @@ class _EditProfileState extends State<EditProfile>
     'O+',
   ];
 
-  String _contactPerson;
-  String _relationship;
-  String _contactNumber;
-  String _contactAddress;
+  String _contactPerson = '';
+  String _relationship = '';
+  String _contactNumber = '';
+  String _contactAddress = '';
   String _bloodType;
   String _isInsured;
+
+  String _nContactPerson = '';
+  String _nRelationship = '';
+  String _nContactNumber = '';
+  String _nContactAddress = '';
+  String _nBloodType = '';
+  String _nIsInsured = '';
+
+  bool _errEInfo = false;
+  String _errCPerson, _errCRel, _errCNum, _errCAdd, _errBType, _errIsInsured;
 
   TextEditingController _contactPersonController;
   TextEditingController _relationshipController;
   TextEditingController _contactNumberController;
   TextEditingController _contactAddressController;
 
-  String _twUrl;
-  String _fbUrl;
-  String _ytUrl;
-  String _inUrl;
-  String _igUrl;
+  String _twUrl = '';
+  String _fbUrl = '';
+  String _ytUrl = '';
+  String _inUrl = '';
+  String _igUrl = '';
+
+  String _nTwUrl = '';
+  String _nFbUrl = '';
+  String _nYtUrl = '';
+  String _nInUrl = '';
+  String _nIgUrl = '';
+
+  bool _errSMInfo = false;
+  String _errTwUrl, _errFbUrl, _errYtUrl, _errInUrl, _errIgUrl;
 
   TextEditingController _twUrlController;
   TextEditingController _fbUrlController;
@@ -446,58 +466,6 @@ class _EditProfileState extends State<EditProfile>
     }
   }
 
-  bool _validatePersonalInfo() {
-    bool flag = true;
-    String errorMsg = '';
-    if (_homeAddress.isEmpty && _nHomeAddress.isEmpty) {
-      errorMsg += '- home address is empty.\n';
-      _errHomeAdd = 'error';
-      flag = false;
-    } else {
-      _errHomeAdd = null;
-    }
-    if ((_gender == null || _gender.isEmpty) && _nGender.isEmpty) {
-      errorMsg += '- gender is empty.\n';
-      _errGender = 'error';
-      flag = false;
-    } else {
-      _errGender = null;
-    }
-    if ((_civilStatus == null || _civilStatus.isEmpty) &&
-        _nCivilStatus.isEmpty) {
-      errorMsg += '- civil status is empty.\n';
-      _errCivilStatus = 'error';
-      flag = false;
-    } else {
-      _errCivilStatus = null;
-    }
-    if ((_birthDate == null || _birthDate.isEmpty) && _nBirthDate.isEmpty) {
-      errorMsg += '- birth date is empty.\n';
-      _isBDayError = true;
-      flag = false;
-    } else if (!_isValidMinAge()) {
-      errorMsg +=
-          '- birth date is invalid. You are too young to use this application.\n';
-      _isBDayError = true;
-      flag = false;
-    } else if (!_isValidMaxAge()) {
-      errorMsg +=
-          '- birth date is invalid. You are too old to use this application.\n';
-      _isBDayError = true;
-      flag = false;
-    } else {
-      _isBDayError = false;
-    }
-    if (!flag) {
-      setState(() {});
-      showMessageDialog(
-          context,
-          '${widget.isUpdate ? 'Editing' : 'Creating'} Profile failed',
-          errorMsg);
-    }
-    return flag;
-  }
-
   Future<Null> displayPrediction(gmws.Prediction p) async {
     if (p != null) {
       gmws.PlacesDetailsResponse detail =
@@ -513,6 +481,186 @@ class _EditProfileState extends State<EditProfile>
       // print(lng);
       _addMarker(new LatLng(lat, lng));
     }
+  }
+
+  /// Methods for checking changes
+
+  bool _checkForChangesPrsnl() => (_imageFile == null &&
+      _nHomeAddress.isEmpty &&
+      _nGender.isEmpty &&
+      _nCivilStatus.isEmpty &&
+      _nBirthDate.isEmpty &&
+      _nBio.isEmpty);
+
+  bool _checkForChangesOrg() => (_nResponderStatus.isEmpty &&
+      _nOrg.isEmpty &&
+      _nOrgAddress.isEmpty &&
+      _nWebsite.isEmpty &&
+      _nSkills.isEmpty);
+
+  bool _checkForChangesEmrgncy() => (_nContactPerson.isEmpty &&
+      _nRelationship.isEmpty &&
+      _nContactNumber.isEmpty &&
+      _nContactAddress.isEmpty &&
+      _nBloodType.isEmpty &&
+      _nIsInsured.isEmpty);
+
+  bool _checkForChangesSocMed() => (_nTwUrl.isEmpty &&
+      _nFbUrl.isEmpty &&
+      _nYtUrl.isEmpty &&
+      _nInUrl.isEmpty &&
+      _nIgUrl.isEmpty);
+
+  /// ----END---- Methods for checking changes
+
+  /// Methods for validation
+
+  String _validatePrsnlInfo() {
+    // bool flag = true;
+    String errorMsg = '';
+    if (_homeAddress.isEmpty && _nHomeAddress.isEmpty) {
+      errorMsg += '- home address is empty.\n';
+      _errHomeAdd = 'error';
+      // flag = false;
+    } else {
+      _errHomeAdd = null;
+    }
+    if ((_gender == null || _gender.isEmpty) && _nGender.isEmpty) {
+      errorMsg += '- gender is empty.\n';
+      _errGender = 'error';
+      // flag = false;
+    } else {
+      _errGender = null;
+    }
+    if ((_civilStatus == null || _civilStatus.isEmpty) &&
+        _nCivilStatus.isEmpty) {
+      errorMsg += '- civil status is empty.\n';
+      _errCivilStatus = 'error';
+      // flag = false;
+    } else {
+      _errCivilStatus = null;
+    }
+    if ((_birthDate == null || _birthDate.isEmpty) && _nBirthDate.isEmpty) {
+      errorMsg += '- birth date is empty.\n';
+      _isBDayError = true;
+      // flag = false;
+    } else if (!_isValidMinAge()) {
+      errorMsg +=
+          '- birth date is invalid. You are too young to use this application.\n';
+      _isBDayError = true;
+      // flag = false;
+    } else if (!_isValidMaxAge()) {
+      errorMsg +=
+          '- birth date is invalid. You are too old to use this application.\n';
+      _isBDayError = true;
+      // flag = false;
+    } else {
+      _isBDayError = false;
+    }
+    // if (!flag) {
+    //   setState(() {});
+    //   showMessageDialog(
+    //       context,
+    //       '${widget.isUpdate ? 'Editing' : 'Creating'} Profile failed',
+    //       errorMsg);
+    // }
+    return errorMsg;
+  }
+
+  String _validateOrgInfo() {
+    String errorMsg = '';
+    if (_nResponderStatus.isEmpty &&
+        _nOrg.isEmpty &&
+        _nOrgAddress.isEmpty &&
+        _nWebsite.isEmpty &&
+        _nSkills.isEmpty) {
+      _errOrg = null;
+      _errOrgAddress = null;
+      _errRespStatus = null;
+      _errWebsite = null;
+      _errSkills = null;
+    } else {
+      if ((_responderStatus != null && _responderStatus.isNotEmpty) ||
+          _nResponderStatus.isNotEmpty ||
+          _orgAddress.isNotEmpty ||
+          _nOrgAddress.isNotEmpty ||
+          _skills.isNotEmpty ||
+          _nSkills.isNotEmpty) {
+        if (_org.isEmpty && _nOrg.isEmpty) {
+          errorMsg += '- organization is empty.\n';
+          _errOrg = 'error';
+        } else {
+          _errOrg = null;
+        }
+      } else {
+        _errOrg = null;
+      }
+
+      if (_org.isNotEmpty ||
+          _nOrg.isNotEmpty ||
+          _orgAddress.isNotEmpty ||
+          _nOrgAddress.isNotEmpty ||
+          _skills.isNotEmpty ||
+          _nSkills.isNotEmpty) {
+        if ((_responderStatus == null || _responderStatus.isEmpty) &&
+            _nResponderStatus.isEmpty) {
+          errorMsg += '- emergency response status is empty.\n';
+          _errRespStatus = 'error';
+        } else {
+          _errRespStatus = null;
+        }
+      } else {
+        _errRespStatus = null;
+      }
+
+      if ((_responderStatus != null && _responderStatus.isNotEmpty) ||
+          _org.isNotEmpty ||
+          _nOrg.isNotEmpty ||
+          _skills.isNotEmpty ||
+          _nSkills.isNotEmpty) {
+        if (_orgAddress.isEmpty && _nOrgAddress.isEmpty) {
+          errorMsg += '- organization address is empty.\n';
+          _errOrgAddress = 'error';
+        } else {
+          _errOrgAddress = null;
+        }
+      } else {
+        _errOrgAddress = null;
+      }
+
+      if ((_responderStatus != null && _responderStatus.isNotEmpty) ||
+          _orgAddress.isNotEmpty ||
+          _nOrgAddress.isNotEmpty ||
+          _org.isNotEmpty ||
+          _nOrg.isNotEmpty) {
+        if (_skills.isEmpty && _nSkills.isEmpty) {
+          errorMsg += '- skill is empty.\n';
+          _errSkills = 'error';
+        } else {
+          _errSkills = null;
+        }
+      } else {
+        _errSkills = null;
+      }
+
+      if (_website.isNotEmpty || _nWebsite.isNotEmpty) {
+        if (isURL(_website) || isURL(_nWebsite)) {
+          _errWebsite = null;
+        } else {
+          errorMsg += '- website is invalid.\n';
+          _errWebsite = 'error';
+        }
+      }
+    }
+    return errorMsg;
+  }
+
+  /// ----END---- Methods for validation
+
+  void _displayErrMsg(String msg) {
+    setState(() {});
+    showMessageDialog(context,
+        '${widget.isUpdate ? 'Editing' : 'Creating'} Profile failed', msg);
   }
 
   @override
@@ -545,9 +693,9 @@ class _EditProfileState extends State<EditProfile>
           }
         }
       }
-      _org = widget.userVM.company;
-      _orgAddress = widget.userVM.location;
-      _website = widget.userVM.website;
+      _org = widget.userVM.company ?? '';
+      _orgAddress = widget.userVM.location ?? '';
+      _website = widget.userVM.website ?? '';
       _skills = widget.userVM.skills
           .toString()
           .replaceAll('[', '')
@@ -587,7 +735,10 @@ class _EditProfileState extends State<EditProfile>
     _skillsController = TextEditingController(
         text: (widget.userVM == null || widget.userVM.skills.length == 0)
             ? ''
-            : widget.userVM.skills.toString());
+            : widget.userVM.skills
+                .toString()
+                .replaceAll('[', '')
+                .replaceAll(']', ''));
 
     _contactPersonController = TextEditingController(text: '');
     _relationshipController = TextEditingController(text: '');
@@ -2121,65 +2272,128 @@ class _EditProfileState extends State<EditProfile>
         ),
         onPressed: () {
           FocusScope.of(context).unfocus();
-          if (_validatePersonalInfo()) {
-            if (_isExpandedOInfo) {}
-            if (_isExpandedEInfo) {
-            } else {
-              if (_imageFile == null &&
-                  _nHomeAddress.isEmpty &&
-                  _nGender.isEmpty &&
-                  _nCivilStatus.isEmpty &&
-                  _nBirthDate.isEmpty &&
-                  _nBio.isEmpty) {
-                final _snackBar = SnackBar(
-                  duration: Duration(seconds: 3),
-                  backgroundColor: Colors.redAccent,
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  content: Text(
-                    'No changes were made',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+          if (_checkForChangesPrsnl()) {
+            print('cPrsnl');
+            String errMsg = _validatePrsnlInfo();
+            if (errMsg.isEmpty) {
+              print('cPrsnl-v');
+              if (_checkForChangesOrg()) {
+                print('cPrsnl-v-cOrg');
+                errMsg = _validateOrgInfo();
+                if (errMsg.isEmpty) {
+                  print('cPrsnl-v-cOrg-v');
+                  //TODO: All data are valid. Proceed update Prsnl and Org Info
+                } else {
+                  //TODO: Display errMsg
+                  _displayErrMsg(errMsg);
+                  print('cPrsnl-v-cOrg-$errMsg');
+                }
               } else {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: ((BuildContext context) {
-                    return Dialog(
-                      backgroundColor: colorPrimary1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '${widget.isUpdate ? 'Updating' : 'Creating'} Profile',
-                              style: TextStyle(
-                                fontSize: 36.0,
-                                color: Colors.white,
-                              ),
-                            ),
-                            vSpacer(
-                              h: 16.0,
-                            ),
-                            CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                );
-                _submitEdit();
+                //TODO: Update Personal Info Only
+                print('cPrsnl-v-XcOrg');
+              }
+            } else {
+              print('cPrsnl-$errMsg');
+              if (_checkForChangesOrg()) {
+                errMsg += _validateOrgInfo();
+                //TODO: Display errMsg
+                _displayErrMsg(errMsg);
+                print('cPrsnl-$errMsg-cOrg');
+              } else {
+                //TODO: Display errMsg
+                _displayErrMsg(errMsg);
+                print('cPrsnl-$errMsg-XcOrg');
               }
             }
+          } else {
+            if (_checkForChangesOrg()) {
+              String errMsg = _validateOrgInfo();
+              print('XcPrsnl-cOrg');
+              if (errMsg.isEmpty) {
+                //TODO: Update Org Info Only
+                print('XcPrsnl-cOrg-v');
+              } else {
+                //TODO: Display errMsg
+                _displayErrMsg(errMsg);
+                print('XcPrsnl-cOrg-$errMsg');
+              }
+            } else {
+              print('XcPrsnl-XcOrg');
+              //TODO: Display No Changes
+              final _snackBar = SnackBar(
+                duration: Duration(seconds: 3),
+                backgroundColor: Colors.redAccent,
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                content: Text(
+                  'No changes were made',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                  ),
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+            }
           }
+          // if (_validatePersonalInfo()) {
+          //   if (_isExpandedOInfo) {}
+          //   if (_isExpandedEInfo) {
+          //   } else {
+          //     if (_imageFile == null &&
+          //         _nHomeAddress.isEmpty &&
+          //         _nGender.isEmpty &&
+          //         _nCivilStatus.isEmpty &&
+          //         _nBirthDate.isEmpty &&
+          //         _nBio.isEmpty) {
+          //       final _snackBar = SnackBar(
+          //         duration: Duration(seconds: 3),
+          //         backgroundColor: Colors.redAccent,
+          //         padding:
+          //             EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          //         content: Text(
+          //           'No changes were made',
+          //           style: TextStyle(
+          //             fontSize: 16.0,
+          //             color: Colors.white,
+          //           ),
+          //         ),
+          //       );
+          //       ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+          //     } else {
+          //       showDialog(
+          //         context: context,
+          //         barrierDismissible: false,
+          //         builder: ((BuildContext context) {
+          //           return Dialog(
+          //             backgroundColor: colorPrimary1,
+          //             child: Padding(
+          //               padding: const EdgeInsets.all(16.0),
+          //               child: Column(
+          //                 mainAxisSize: MainAxisSize.min,
+          //                 children: [
+          //                   Text(
+          //                     '${widget.isUpdate ? 'Updating' : 'Creating'} Profile',
+          //                     style: TextStyle(
+          //                       fontSize: 36.0,
+          //                       color: Colors.white,
+          //                     ),
+          //                   ),
+          //                   vSpacer(
+          //                     h: 16.0,
+          //                   ),
+          //                   CircularProgressIndicator(
+          //                     color: Colors.white,
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           );
+          //         }),
+          //       );
+          //       _submitEdit();
+          //     }
+          //   }
+          // }
         },
         child: Text(
           'Submit',
@@ -2377,6 +2591,11 @@ class _EditProfileState extends State<EditProfile>
 
   void onDismiss() {
     // print('Menu is dismiss');
+  }
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('_responderStatus', _responderStatus));
   }
 }
 
