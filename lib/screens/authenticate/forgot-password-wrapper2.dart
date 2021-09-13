@@ -649,6 +649,20 @@ class _ForgotPasswordState2 extends State<ForgotPasswordWrapper2> {
 
   Future<String> _sendOtp() async {
     _pin = '${100000 + Random().nextInt(999999 - 100000)}';
+    final _snackBar = SnackBar(
+      duration: Duration(seconds: 5),
+      backgroundColor: Colors.black,
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      content: Text(
+        'PIN: $_pin',
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.white,
+        ),
+      ),
+    );
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
     var url = Uri.parse('$secretHollowsEndPoint/api/sms/sendOtp');
     Map data = {'number': _number, 'msg': 'Hi $_name, Proceed with your Change Password for GUARDIAN Account, Your One-Time PIN is $_pin. OTP will expire 15 minutes. If you did not initiate this request, please call your Operation Center Administrator.'};
     var reqBody = json.encode(data);

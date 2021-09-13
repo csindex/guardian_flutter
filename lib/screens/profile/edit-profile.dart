@@ -485,31 +485,35 @@ class _EditProfileState extends State<EditProfile>
 
   /// Methods for checking changes
 
-  bool _checkForChangesPrsnl() => (_imageFile == null &&
-      _nHomeAddress.isEmpty &&
-      _nGender.isEmpty &&
-      _nCivilStatus.isEmpty &&
-      _nBirthDate.isEmpty &&
-      _nBio.isEmpty);
+  bool _checkForChangesPrsnl() {
+    print('$_imageFile--$_nHomeAddress--$_nGender--$_nCivilStatus--$_nBirthDate--$_nBio');
+    print('${_imageFile==null}--${_nHomeAddress.isEmpty}--${_nGender.isEmpty}--${_nCivilStatus.isEmpty}--${_nBirthDate.isEmpty}--${_nBio.isEmpty}');
+    return (_imageFile != null ||
+        _nHomeAddress.isNotEmpty ||
+        _nGender.isNotEmpty ||
+        _nCivilStatus.isNotEmpty ||
+        _nBirthDate.isNotEmpty ||
+        _nBio.isNotEmpty);
+  }
 
-  bool _checkForChangesOrg() => (_nResponderStatus.isEmpty &&
-      _nOrg.isEmpty &&
-      _nOrgAddress.isEmpty &&
-      _nWebsite.isEmpty &&
-      _nSkills.isEmpty);
+  bool _checkForChangesOrg() => (_nResponderStatus.isNotEmpty ||
+      _nOrg.isNotEmpty ||
+      _nOrgAddress.isNotEmpty ||
+      _nWebsite.isNotEmpty ||
+      _nSkills.isNotEmpty);
 
-  bool _checkForChangesEmrgncy() => (_nContactPerson.isEmpty &&
-      _nRelationship.isEmpty &&
-      _nContactNumber.isEmpty &&
-      _nContactAddress.isEmpty &&
-      _nBloodType.isEmpty &&
-      _nIsInsured.isEmpty);
+  bool _checkForChangesEmrgncy() => (_nContactPerson.isNotEmpty ||
+      _nRelationship.isNotEmpty ||
+      _nContactNumber.isNotEmpty ||
+      _nContactAddress.isNotEmpty ||
+      _nBloodType.isNotEmpty ||
+      _nIsInsured.isNotEmpty);
 
-  bool _checkForChangesSocMed() => (_nTwUrl.isEmpty &&
-      _nFbUrl.isEmpty &&
-      _nYtUrl.isEmpty &&
-      _nInUrl.isEmpty &&
-      _nIgUrl.isEmpty);
+  bool _checkForChangesSocMed() => (_nTwUrl.isNotEmpty ||
+      _nFbUrl.isNotEmpty ||
+      _nYtUrl.isNotEmpty ||
+      _nInUrl.isNotEmpty ||
+      _nIgUrl.isNotEmpty);
 
   /// ----END---- Methods for checking changes
 
@@ -1294,6 +1298,7 @@ class _EditProfileState extends State<EditProfile>
               '${_nBirthDate.isEmpty ? _birthDate ?? '* Select Birth date (mm/dd/yyyy)' : _nBirthDate}',
               style: TextStyle(
                 fontSize: 16.0,
+                color: (_nBirthDate.isNotEmpty || _birthDate.isNotEmpty) ? Colors.black : Colors.grey,
                 fontWeight: FontWeight.normal,
               ),
             ),
@@ -2282,7 +2287,7 @@ class _EditProfileState extends State<EditProfile>
                 errMsg = _validateOrgInfo();
                 if (errMsg.isEmpty) {
                   print('cPrsnl-v-cOrg-v');
-                  //TODO: All data are valid. Proceed update Prsnl and Org Info
+                  _submitEdit('PO');
                 } else {
                   //TODO: Display errMsg
                   _displayErrMsg(errMsg);
@@ -2438,10 +2443,10 @@ class _EditProfileState extends State<EditProfile>
         ],
       );
 
-  void _submitEdit() {
+  void _submitEdit(String code) {
     try {
       if (_imageFile == null) {
-        _submitEditApiNoPic().then((val) {
+        _submitEditApiNoPic(code).then((val) {
           if (!val.toLowerCase().contains('error')) {
             final _snackBar = SnackBar(
               duration: Duration(seconds: 3),
@@ -2468,7 +2473,7 @@ class _EditProfileState extends State<EditProfile>
           }
         });
       } else {
-        _submitEditApiPic().then((val) {
+        _submitEditApiPic(code).then((val) {
           if (!val.toLowerCase().contains('error')) {
             final _snackBar = SnackBar(
               duration: Duration(seconds: 3),
@@ -2484,30 +2489,95 @@ class _EditProfileState extends State<EditProfile>
             );
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-            UserDetailsData d = UserDetailsData.fromJsonMap2(
-                jsonDecode(val), widget.userVM.user);
-            widget.refresh(UserProfileViewModel(userDetails: d));
+            if (widget.userVM == null) {
+              widget.refresh(null);
+            } else {
+              UserDetailsData d = UserDetailsData.fromJsonMap2(
+                  jsonDecode(val), widget.userVM?.user);
+              widget.refresh(UserProfileViewModel(userDetails: d));
+            }
           }
         });
       }
     } catch (e) {}
   }
 
-  Future<String> _submitEditApiPic() async {
+  Future<String> _submitEditApiPic(String code) async {
     Map<String, String> header = {
       'Content-Type': 'multipart/form-data;',
       'Connection': 'keep-alive',
       'Accept': '*/*',
       'x-auth-token': widget.token,
     };
-    Map<String, String> params = {
-      'completeaddress':
+    Map<String, String> params;
+    switch (code) {
+      case 'PO': { /// Personal-Organization
+        params = {
+          'completeaddress':
           '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}',
-      'gender': '${_nGender.isEmpty ? _gender : _nGender}',
-      'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
-      'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
-      'bio': '${_nBio.isEmpty ? _bio : _nBio}',
-    };
+          'gender': '${_nGender.isEmpty ? _gender : _nGender}',
+          'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
+          'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
+          'bio': '${_nBio.isEmpty ? _bio : _nBio}',
+          'organization': '${_nOrg.isEmpty ? _org : _nOrg}',
+          'status': '${_nResponderStatus.isEmpty ? _responderStatus : _nResponderStatus}',
+          'website': '${_nWebsite.isEmpty ? _website : _nWebsite}',
+          'location': '${_nOrgAddress.isEmpty ? _orgAddress : _nOrgAddress}',
+          'skills': '${_nSkills.isEmpty ? _skills : _nSkills}',
+        };
+        break;
+      }
+      case 'POE': { /// Personal-Organization-Emergency
+        break;
+      }
+      case 'POS': { /// Personal-Organization-SocMed
+        break;
+      }
+      case 'A': { /// Personal-Organization-Emergency-SocMed
+        break;
+      }
+      case 'PE': { /// Personal-Emergency
+        break;
+      }
+      case 'PES': { /// Personal-Emergency-SocMed
+        break;
+      }
+      case 'PS': { /// Personal-SocMed
+        break;
+      }
+      case 'O': { /// Organization
+        break;
+      }
+      case 'OE': { /// Organization-Emergency
+        break;
+      }
+      case 'OES': { /// Organization-Emergency-SocMed
+        break;
+      }
+      case 'OS': { /// Organization-SocMed
+        break;
+      }
+      case 'E': { /// Emergency
+        break;
+      }
+      case 'ES': { /// Emergency-SocMed
+        break;
+      }
+      case 'S': { /// SocMed
+        break;
+      }
+      default: { /// Personal
+        params = {
+          'completeaddress':
+          '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}',
+          'gender': '${_nGender.isEmpty ? _gender : _nGender}',
+          'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
+          'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
+          'bio': '${_nBio.isEmpty ? _bio : _nBio}',
+        };
+        break;
+      }
+    }
     var request = http.MultipartRequest(
         'POST', Uri.parse('$secretHollowsEndPoint/api/profile'));
     request.headers.addAll(header);
@@ -2523,16 +2593,77 @@ class _EditProfileState extends State<EditProfile>
     return r;
   }
 
-  Future<String> _submitEditApiNoPic() async {
+  Future<String> _submitEditApiNoPic(String code) async {
     var url = Uri.parse('$secretHollowsEndPoint/api/profile');
-    Map<String, String> params = {
-      'completeaddress':
+    Map<String, String> params;
+    switch (code) {
+      case 'PO': { /// Personal-Organization
+        params = {
+          'completeaddress':
           '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}',
-      'gender': '${_nGender.isEmpty ? _gender : _nGender}',
-      'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
-      'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
-      'bio': '${_nBio.isEmpty ? _bio : _nBio}',
-    };
+          'gender': '${_nGender.isEmpty ? _gender : _nGender}',
+          'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
+          'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
+          'bio': '${_nBio.isEmpty ? _bio : _nBio}',
+          'organization': '${_nOrg.isEmpty ? _org : _nOrg}',
+          'status': '${_nResponderStatus.isEmpty ? _responderStatus : _nResponderStatus}',
+          'website': '${_nWebsite.isEmpty ? _website : _nWebsite}',
+          'location': '${_nOrgAddress.isEmpty ? _orgAddress : _nOrgAddress}',
+          'skills': '${_nSkills.isEmpty ? _skills : _nSkills}',
+        };
+        break;
+      }
+      case 'POE': { /// Personal-Organization-Emergency
+        break;
+      }
+      case 'POS': { /// Personal-Organization-SocMed
+        break;
+      }
+      case 'A': { /// Personal-Organization-Emergency-SocMed
+        break;
+      }
+      case 'PE': { /// Personal-Emergency
+        break;
+      }
+      case 'PES': { /// Personal-Emergency-SocMed
+        break;
+      }
+      case 'PS': { /// Personal-SocMed
+        break;
+      }
+      case 'O': { /// Organization
+        break;
+      }
+      case 'OE': { /// Organization-Emergency
+        break;
+      }
+      case 'OES': { /// Organization-Emergency-SocMed
+        break;
+      }
+      case 'OS': { /// Organization-SocMed
+        break;
+      }
+      case 'E': { /// Emergency
+        break;
+      }
+      case 'ES': { /// Emergency-SocMed
+        break;
+      }
+      case 'S': { /// SocMed
+        break;
+      }
+      default: { /// Personal
+        params = {
+          'completeaddress':
+          '${_nHomeAddress.isEmpty ? _homeAddress : _nHomeAddress}',
+          'gender': '${_nGender.isEmpty ? _gender : _nGender}',
+          'civilstatus': '${_nCivilStatus.isEmpty ? _civilStatus : _nCivilStatus}',
+          'birthday': '${_nBirthDate.isEmpty ? _birthDate : _nBirthDate}',
+          'bio': '${_nBio.isEmpty ? _bio : _nBio}',
+        };
+        break;
+      }
+    }
     var reqBody = json.encode(params);
     var response = await http
         .post(

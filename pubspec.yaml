@@ -48,7 +48,7 @@ dependencies:
   # -0.17.0
   intl: 0.17.0
 
-  socket_io_client: 1.0.1
+  socket_io_client: 2.0.0-beta.4-nullsafety.0
 
   flutter_simple_dependency_injection: 2.0.0
 
@@ -66,7 +66,7 @@ dependencies:
 
   device_info: 2.0.2
 
-  flutter_facebook_login: ^3.0.0
+#  flutter_facebook_login: ^3.0.0
 
   # -1.0.0
   firebase_auth: 1.2.0
@@ -116,7 +116,7 @@ dependencies:
 
   textfield_tags: 1.2.0
 
-  network_to_file_image: ^3.0.0
+  network_to_file_image: 2.3.8
 
   transparent_image: ^2.0.0
 

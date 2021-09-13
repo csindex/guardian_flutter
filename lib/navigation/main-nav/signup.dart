@@ -670,10 +670,10 @@ class _SignUpState extends State<SignUp> {
           color: fbBtnColor,
           splashColor: Colors.grey.shade500,
           onPressed: () {
-            FBAuthenticationHelper auth = FBAuthenticationHelper();
+            /*FBAuthenticationHelper auth = FBAuthenticationHelper();
             auth.signInFB().then((value) {
               // NavigationHelper.navigateToHome(ctx, '');
-            });
+            });*/
           },
         ),
       );

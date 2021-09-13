@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import '../data/user/data-user.dart';
 import '../data/user/data-user2.dart';
 import '../data/user/data-user-details.dart';
 import '../data/data.dart';
@@ -92,6 +91,25 @@ class Webservice {
       return body.map((data) => UserDetailsData.fromJsonMap(data)).toList();
     } else {
       throw Exception("Failed to fetch users!");
+    }
+  }
+
+  Future<bool> fetchResponderRole(String token) async {
+    // print('token: $token');
+    final url = Uri.parse('$secretHollowsEndPoint/api/auth/responderRole');
+    final response = await http.get(
+      url,
+      headers: {
+        'x-auth-token': token,
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      },
+    );
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      return body;
+    } else {
+      return false;
     }
   }
 }

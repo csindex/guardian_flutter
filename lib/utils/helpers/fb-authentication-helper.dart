@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 // import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 
 class FBAuthenticationHelper {
-  final fbLogin = FacebookLogin();
+  /*final fbLogin = FacebookLogin();
 
   Future<void> signInFB() async {
     final FacebookLoginResult result =
@@ -29,5 +29,5 @@ class FBAuthenticationHelper {
             'Here\'s the error Facebook gave us: ${result.errorMessage}');
         break;
     }
-  }
+  }*/
 }

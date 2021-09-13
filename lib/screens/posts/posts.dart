@@ -14,6 +14,7 @@ import '../../provider/user/viewmodel-user-profile.dart';
 import '../../provider/posts/viewmodel-posts-list.dart';
 import '../../provider/posts/viewmodel-post.dart';
 import '../../widgets/ExpandableText.dart';
+import '../../widgets/posts/controls-overlay.dart';
 import '../../data/posts/data-like.dart';
 import 'like-button.dart';
 
@@ -41,19 +42,30 @@ class _PostsState extends State<Posts>
     with AutomaticKeepAliveClientMixin<Posts> {
   List<PostViewModel> _posts = <PostViewModel>[];
   List<VideoPlayerController> _videoCntrllrs = <VideoPlayerController>[];
+  List<int> _vCntrllrsCtr = <int>[];
 
   void _fetchPosts() {
+    if (_videoCntrllrs.length > 0) {
+      for (int i = 0; i < _videoCntrllrs.length; i++) {
+        _videoCntrllrs[i].dispose();
+      }
+      _videoCntrllrs.clear();
+      _vCntrllrsCtr.clear();
+    }
     final vm = Provider.of<PostsListViewModel>(context, listen: false);
     vm.fetchPosts(widget.token).then((value) {
       print('post: $value');
       if (mounted) {
+        int ctr = 0;
         for (var v in value) {
           if (v.articleImage.contains('mp4')) {
-            _videoCntrllrs.add(new VideoPlayerController.network(v.articleImage)
+            print('video--${v.articleImage}');
+            _videoCntrllrs.add(new VideoPlayerController.network('http://dev.guardian.ph:5000/Post-1630391108659.mp4'/*v.articleImage*/)
               ..initialize().then((_) {
-                setState(() {});
               }));
           }
+          _vCntrllrsCtr.add(ctr);
+          ctr++;
         }
         setState(() {
           _posts.clear();
@@ -102,6 +114,11 @@ class _PostsState extends State<Posts>
     var _profilePic = '';
     var _fullName = '';
     var _user;
+    if (_post.articleImage.contains('.mp4')) {
+      print('AS-${_videoCntrllrs[_vCntrllrsCtr[index]].value.aspectRatio}\n'
+          'W-${_videoCntrllrs[_vCntrllrsCtr[index]].value.size.width}\n'
+          'H-${_videoCntrllrs[_vCntrllrsCtr[index]].value.size.height}');
+    }
     for (var user in widget.userList) {
       if (user.user.id == _post.authorId) {
         _profilePic = user.profilePic;
@@ -240,6 +257,24 @@ class _PostsState extends State<Posts>
           SizedBox(
             height: 8.0,
           ),
+          (_post.articleImage.contains('.mp4')) ?
+          Container(
+            height: 220.0,
+            color: Colors.grey.shade100,
+            padding: EdgeInsets.all(4.0),
+            child: _videoCntrllrs[_vCntrllrsCtr[index]].value.isInitialized ?
+            AspectRatio(
+              aspectRatio: _videoCntrllrs[_vCntrllrsCtr[index]].value.size.width / _videoCntrllrs[_vCntrllrsCtr[index]].value.size.height,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  VideoPlayer(_videoCntrllrs[_vCntrllrsCtr[index]]),
+                  ControlsOverlay(controller: _videoCntrllrs[_vCntrllrsCtr[index]]),
+                  VideoProgressIndicator(_videoCntrllrs[_vCntrllrsCtr[index]], allowScrubbing: true),
+                ],
+              ),
+            ) : CircularProgressIndicator(),
+          ) :
           Visibility(
             visible: true,
             child: GestureDetector(
@@ -801,6 +836,16 @@ class _PostsState extends State<Posts>
   void initState() {
     super.initState();
     _fetchPosts();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_videoCntrllrs.length > 0) {
+      for (int i = 0; i < _videoCntrllrs.length; i++) {
+        _videoCntrllrs[i].dispose();
+      }
+    }
   }
 
   @override

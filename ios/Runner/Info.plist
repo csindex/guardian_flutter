@@ -47,5 +47,10 @@
     <string>pk.eyJ1Ijoic2NvcnBpb25tb25rZXkiLCJhIjoiY2syY3JvZnUyMDNxYjNqc2t6bHVwM3M1ciJ9.XoNafqpSdabDpREktf1pzQ</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>My Explanation is this...WoW!</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
 </dict>
 </plist>

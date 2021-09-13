@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../bottom-nav/home.dart';
 import '../bottom-nav/report.dart';
 import '../bottom-nav/special.dart';
@@ -12,6 +14,7 @@ import '../../screens/profile/profile-main.dart';
 import '../../screens/posts/posts.dart';
 import '../../screens/incident/incident-main.dart';
 import '../../screens/id/id.dart';
+import '../../screens/messenger/messenger-main.dart';
 
 class GuardianHome extends StatefulWidget {
   final String token;
@@ -34,7 +37,9 @@ class _GuardianHomeState extends State<GuardianHome> {
   final _scrollController = ScrollController();
   List _children;
 
-  bool _selectVol = true;
+  // bool _selectVol = true;
+  bool _isResponder = false;
+  bool _isVolScreen = true;
 
   /*void _selectVolunteer() {
     setState(() {
@@ -101,6 +106,8 @@ class _GuardianHomeState extends State<GuardianHome> {
         userList = value;
       });
     });*/
+
+    _fetchResponderRoleApi().then((v) => setState(() => _isResponder = v));
   }
 
   /*void _updateProfile(UserProfileViewModel userVM) {
@@ -133,6 +140,11 @@ class _GuardianHomeState extends State<GuardianHome> {
     return result;
   }
 
+  Future<bool> _fetchResponderRoleApi() async {
+    final response = await Webservice().fetchResponderRole(widget.token);
+    return response;
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -163,7 +175,7 @@ class _GuardianHomeState extends State<GuardianHome> {
     // _register();
     print('authToken - ${widget.token}');
     return DefaultTabController(
-      length: (userProfileVM == null || userProfileVM.company == null) ? 3 : 4,
+      length: _isVolScreen ? (userProfileVM == null || userProfileVM.company == null) ? 3 : 4 : 2,
       initialIndex: (userProfileVM == null || userProfileVM.company == null) ? 1 : 2,
       child: Scaffold(
         body: NestedScrollView(
@@ -185,7 +197,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                 actions: [
                   PopupMenuButton(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 8.0, right: 16.0,),
+                      padding: const EdgeInsets.only(top: 4.0, right: 16.0),
                       child: CircleAvatar(
                         radius: 20.0,
                         backgroundColor: Colors.white,
@@ -203,43 +215,104 @@ class _GuardianHomeState extends State<GuardianHome> {
                         ),
                       ),
                     ),
+                    color: colorPrimary1,
                     itemBuilder: (context) => [
-                      PopupMenuItem(
+                      /*PopupMenuItem(
                         padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
                         enabled: false,
-                        child: Text("Log-in as:"),
+                        child: Row(
+                          children: [
+                            Icon(Icons.add, color: Colors.black,),
+                            Text("Log-in as:"),
+                          ],
+                        ),
                         value: "login",
-                      ),
+                      ),*/
                       PopupMenuItem(
-                        child: Text("Volunteer"),
+                        enabled: !_isVolScreen,
+                        padding: EdgeInsets.zero,
+                        child: Container(
+                          padding: EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: colorPrimary1,
+                            border: Border(bottom: BorderSide(color: Colors.white),),
+                          ),
+                          child: Row(
+                            children: [
+                              FaIcon(FontAwesomeIcons.child,),
+                              hSpacer(w: 4.0),
+                              Text(
+                                "Volunteer",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         value: "volunteer",
                       ),
+                      if (_isResponder)
+                        PopupMenuItem(
+                          enabled: _isVolScreen,
+                          padding: EdgeInsets.zero,
+                          child: Container(
+                            padding: EdgeInsets.all(12.0),
+                            decoration: BoxDecoration(
+                              color: colorPrimary1,
+                              border: Border(bottom: BorderSide(color: Colors.white),),
+                            ),
+                            child: Row(
+                              children: [
+                                FaIcon(FontAwesomeIcons.idBadge,),
+                                hSpacer(w: 4.0),
+                                Text(
+                                  "Responder",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          value: "responder",
+                        ),
                       PopupMenuItem(
-                        child: Text("Responder"),
-                        value: "responder",
-                      ),
-                      PopupMenuItem(
-                        enabled: false,
-                        child: Text("------------------"),
-                        value: "-",
-                      ),
-                      PopupMenuItem(
-                        child: Text("Log-out"),
+                        padding: EdgeInsets.zero,
+                        child: Container(
+                          padding: EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: colorPrimary1,
+                            border: Border(bottom: BorderSide(color: Colors.white),),
+                          ),
+                          child: Row(
+                            children: [
+                              FaIcon(FontAwesomeIcons.signOutAlt,),
+                              hSpacer(w: 4.0),
+                              Text(
+                                "Log-out",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         value: "logout",
                       ),
                     ],
                     onSelected: (choice) async {
                       switch (choice) {
-                        case 'logout': {
-                          NavigationHelper.login(context);
+                        case 'responder': {
+                          setState(() => _isVolScreen = !_isVolScreen);
                           break;
                         }
                         case 'volunteer': {
+                          setState(() => _isVolScreen = !_isVolScreen);
                           break;
                         }
-                        case '-':
-                        case 'login':
                         default: {
+                          NavigationHelper.login(context);
                           break;
                         }
                       }
@@ -284,7 +357,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                   ),
                   indicatorColor: Colors.white,
                   tabs: [
-                    if (_selectVol) ... [
+                    if (_isVolScreen) ... [
                       Tab(
                         icon: ImageIcon(
                           AssetImage('assets/inc_ti.png'),
@@ -300,14 +373,15 @@ class _GuardianHomeState extends State<GuardianHome> {
                             color: Colors.white,
                           ),
                         ),
-                    ] else Container(),
-                    /*Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/ambu_ti.png'),
-                        size: 128,
-                        color: Colors.white,
+                    ] else ... [
+                      Tab(
+                        icon: ImageIcon(
+                          AssetImage('assets/mess_ti2.png'),
+                          size: 128,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),*/
+                    ],
                     Tab(
                       icon: ImageIcon(
                         AssetImage('assets/post_ti.png'),
@@ -315,77 +389,37 @@ class _GuardianHomeState extends State<GuardianHome> {
                         color: Colors.white,
                       ),
                     ),
-                    Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/prof_ti.png'),
-                        size: 128,
-                        color: Colors.white,
+                    if (_isVolScreen) ... [
+                      Tab(
+                        icon: ImageIcon(
+                          AssetImage('assets/prof_ti.png'),
+                          size: 128,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
-                )/* :
-                TabBar(
-                  labelStyle: TextStyle(
-                    fontSize: 16.0,
-                  ),
-                  unselectedLabelStyle: TextStyle(
-                    fontSize: 12.0,
-                  ),
-                  indicatorColor: Colors.white,
-                  tabs: [
-                    Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/inc_ti.png'),
-                        size: 128,
-                        color: Colors.white,
-                      ),
-                    ),
-                    *//*Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/ambu_ti.png'),
-                        size: 128,
-                        color: Colors.white,
-                      ),
-                    ),*//*
-                    Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/post_ti.png'),
-                        size: 128,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Tab(
-                      icon: ImageIcon(
-                        AssetImage('assets/prof_ti.png'),
-                        size: 128,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                )*/,
+                ),
               ),
             ];
           },
           body: TabBarView(
             children: [
-              IncidentMain(
-                userVM: userProfileVM,
-                token: widget.token,
-                uVM: vm,
-              ),
-              if (userProfileVM != null && userProfileVM.company != null)
-                ID(
-                  vm: vm,
-                  userProfileVM: userProfileVM,
-                  userOriginalVM: userProfileVM,
-                ),
-                /*Responders(
-                  vm: vm,
+              if (_isVolScreen) ... [
+                IncidentMain(
                   userVM: userProfileVM,
                   token: widget.token,
-                  origin: 'posts',
-                  responderList: userList,
-                ),*/
+                  uVM: vm,
+                ),
+                if (userProfileVM != null && userProfileVM.company != null)
+                  ID(
+                    vm: vm,
+                    userProfileVM: userProfileVM,
+                    userOriginalVM: userProfileVM,
+                  ),
+              ] else ... [
+                MessengerMain(token: widget.token),
+              ],
               Posts(
                 token: widget.token,
                 vm: vm,
@@ -393,15 +427,17 @@ class _GuardianHomeState extends State<GuardianHome> {
                 openProfileScreen: openProfileScreen,
                 userList: userList,
               ),
-              ProfileMain(
-                vm: vm,
-                userVM: userProfileVM,
-                token: widget.token,
-                origin: 'posts',
-                userOVM: userProfileVM,
-                refresh: _refreshUser,
-                viewProfile: _viewProfile,
-              ),
+              if (_isVolScreen) ... [
+                ProfileMain(
+                  vm: vm,
+                  userVM: userProfileVM,
+                  token: widget.token,
+                  origin: 'posts',
+                  userOVM: userProfileVM,
+                  refresh: _refreshUser,
+                  viewProfile: _viewProfile,
+                ),
+              ],
             ],
           )/* :
           TabBarView(
