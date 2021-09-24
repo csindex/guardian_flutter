@@ -458,7 +458,7 @@ class _EditProfileState extends State<EditProfile>
 
       // Date to check but moved 18 years ahead
       DateTime adultDate = DateTime(
-        birthDate.year + 140,
+        birthDate.year + 130,
         birthDate.month,
         birthDate.day,
       );
@@ -820,9 +820,7 @@ class _EditProfileState extends State<EditProfile>
                       size: 16.0,
                       color: Colors.grey,
                     ),
-                    hSpacer(
-                      w: 8.0,
-                    ),
+                    hSpacer(8.0),
                     Text(
                       'Take a Photo',
                       style: TextStyle(
@@ -853,9 +851,7 @@ class _EditProfileState extends State<EditProfile>
                       size: 16.0,
                       color: Colors.grey,
                     ),
-                    hSpacer(
-                      w: 8.0,
-                    ),
+                    hSpacer(8.0,),
                     Text(
                       'Select a Photo',
                       style: TextStyle(
@@ -912,16 +908,12 @@ class _EditProfileState extends State<EditProfile>
                                   ],
                                 ),
                               ),
-                              vSpacer(
-                                h: 16.0,
-                              ),
+                              vSpacer(16.0,),
                               _expandablePersonalInfo,
                               _expandableOrganizationInfo,
                               _expandableEmergencyInfo,
                               _expandableSocialNetworkLinks,
-                              vSpacer(
-                                h: 8.0,
-                              ),
+                              vSpacer(8.0,),
                               _buttons,
                             ],
                           ),
@@ -965,16 +957,12 @@ class _EditProfileState extends State<EditProfile>
                             ],
                           ),
                         ),
-                        vSpacer(
-                          h: 16.0,
-                        ),
+                        vSpacer(16.0),
                         _expandablePersonalInfo,
                         _expandableOrganizationInfo,
                         _expandableEmergencyInfo,
                         _expandableSocialNetworkLinks,
-                        vSpacer(
-                          h: 8.0,
-                        ),
+                        vSpacer(8.0),
                         _buttons,
                       ],
                     ),
@@ -997,9 +985,7 @@ class _EditProfileState extends State<EditProfile>
               ),
             ),
           ),
-          vSpacer(
-            h: 16.0,
-          ),
+          vSpacer(16.0),
           Row(
             children: [
               FaIcon(
@@ -1007,9 +993,7 @@ class _EditProfileState extends State<EditProfile>
                 size: 16.0,
                 color: Colors.black,
               ),
-              hSpacer(
-                w: 8.0,
-              ),
+              hSpacer(8.0),
               Flexible(
                 child: Text(
                   '${(widget.isUpdate ? 'Update' : 'Let\'s get some')} '
@@ -1023,9 +1007,7 @@ class _EditProfileState extends State<EditProfile>
               ),
             ],
           ),
-          vSpacer(
-            h: 16.0,
-          ),
+          vSpacer(16.0),
           Text(
             '* = required field',
             style: TextStyle(
@@ -1033,9 +1015,7 @@ class _EditProfileState extends State<EditProfile>
               fontWeight: FontWeight.w400,
             ),
           ),
-          vSpacer(
-            h: 16.0,
-          ),
+          vSpacer(16.0),
         ],
       );
 
@@ -1107,9 +1087,7 @@ class _EditProfileState extends State<EditProfile>
               size: 16.0,
               color: colorPrimary,
             ),
-            hSpacer(
-              w: 8.0,
-            ),
+            hSpacer(8.0),
             Expanded(
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -1384,9 +1362,7 @@ class _EditProfileState extends State<EditProfile>
               FontAwesomeIcons.solidAddressBook,
             ),
           ),
-          vSpacer(
-            h: 4.0,
-          ),
+          vSpacer(4.0),
           AnimatedSize(
             vsync: this,
             duration: Duration(milliseconds: 350),
@@ -1506,49 +1482,27 @@ class _EditProfileState extends State<EditProfile>
                 builder: AddressDialogBuilder(),
                 onDone: (Address address) => null,
               ),*/
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildHomeAddress,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('* Home Address'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildGender,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('* Gender'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildCivilStatus,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('* Civil Status'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildBirthDate,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('* Birth Date'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildBio,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('Please tell us a little about yourself'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                 ],
               ),
             ),
@@ -1700,9 +1654,7 @@ class _EditProfileState extends State<EditProfile>
               FontAwesomeIcons.solidBuilding,
             ),
           ),
-          vSpacer(
-            h: 4.0,
-          ),
+          vSpacer(4.0),
           AnimatedSize(
             vsync: this,
             duration: Duration(milliseconds: 350),
@@ -1713,47 +1665,37 @@ class _EditProfileState extends State<EditProfile>
               child: Column(
                 children: [
                   _buildResponderStatus,
-                  vSpacer(
-                    h: 4.0,
+                  vSpacer(4.0,
                   ),
                   _buildLabel(
                       '* Give us an idea of where you are at in your emergency response career'),
-                  vSpacer(
-                    h: 8.0,
+                  vSpacer(8.0,
                   ),
                   _buildOrganizationName,
-                  vSpacer(
-                    h: 4.0,
+                  vSpacer(4.0,
                   ),
                   _buildLabel('* Organization you are affiliated/member'),
-                  vSpacer(
-                    h: 8.0,
+                  vSpacer(8.0,
                   ),
                   _buildOrgWebsite,
-                  vSpacer(
-                    h: 4.0,
+                  vSpacer(4.0,
                   ),
                   _buildLabel('Organization Website'),
-                  vSpacer(
-                    h: 8.0,
+                  vSpacer(8.0,
                   ),
                   _buildOrgAddress,
-                  vSpacer(
-                    h: 4.0,
+                  vSpacer(4.0,
                   ),
                   _buildLabel(
                       '* City or Municipality where organization is located'),
-                  vSpacer(
-                    h: 8.0,
+                  vSpacer(8.0,
                   ),
                   _buildSkills,
-                  vSpacer(
-                    h: 4.0,
+                  vSpacer(4.0,
                   ),
                   _buildLabel(
                       '* Please use comma separated values (eg. Patient Care, EMS, EMT, CPR, Hazardous Materials, Trauma)'),
-                  vSpacer(
-                    h: 8.0,
+                  vSpacer(8.0,
                   ),
                 ],
               ),
@@ -1921,9 +1863,7 @@ class _EditProfileState extends State<EditProfile>
               FontAwesomeIcons.solidBuilding,
             ),
           ),
-          vSpacer(
-            h: 4.0,
-          ),
+          vSpacer(4.0),
           AnimatedSize(
             vsync: this,
             duration: Duration(milliseconds: 350),
@@ -1934,54 +1874,30 @@ class _EditProfileState extends State<EditProfile>
               child: Column(
                 children: [
                   _buildContactPerson,
-                  vSpacer(
-                    h: 4.0,
-                  ),
-                  _buildLabel(
-                      '* Name of person you wish to contact in case of emergency'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(4.0),
+                  _buildLabel('* Name of person you wish to contact '
+                      'in case of emergency'),
+                  vSpacer(8.0),
                   _buildRelationship,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('* Relationship to contact person'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildContactNumber,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('* Contact Number of your contact person'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildContactAddress,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('* Address of your contact person'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildBloodType,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('Blood Type'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildInsurance,
-                  vSpacer(
-                    h: 4.0,
-                  ),
+                  vSpacer(4.0),
                   _buildLabel('Do you have an insurance policy?'),
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                 ],
               ),
             ),
@@ -1997,9 +1913,7 @@ class _EditProfileState extends State<EditProfile>
             size: 24.0,
             color: Color(0xff38a1f3),
           ),
-          hSpacer(
-            w: 11.5,
-          ),
+          hSpacer(11.5),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -2043,9 +1957,7 @@ class _EditProfileState extends State<EditProfile>
             size: 24.0,
             color: Color(0xff3b5998),
           ),
-          hSpacer(
-            w: 11.5,
-          ),
+          hSpacer(11.5),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -2085,9 +1997,7 @@ class _EditProfileState extends State<EditProfile>
             size: 24.0,
             color: Color(0xffc4302b),
           ),
-          hSpacer(
-            w: 8.0,
-          ),
+          hSpacer(8.0),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -2131,9 +2041,7 @@ class _EditProfileState extends State<EditProfile>
             size: 24.0,
             color: Color(0xff0077b5),
           ),
-          hSpacer(
-            w: 14.0,
-          ),
+          hSpacer(14.0),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -2177,9 +2085,7 @@ class _EditProfileState extends State<EditProfile>
             size: 24.0,
             color: Color(0xff3f729b),
           ),
-          hSpacer(
-            w: 13.5,
-          ),
+          hSpacer(13.5),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -2228,9 +2134,7 @@ class _EditProfileState extends State<EditProfile>
               FontAwesomeIcons.desktop,
             ),
           ),
-          vSpacer(
-            h: 4.0,
-          ),
+          vSpacer(4.0),
           AnimatedSize(
             vsync: this,
             duration: Duration(milliseconds: 350),
@@ -2241,25 +2145,15 @@ class _EditProfileState extends State<EditProfile>
               child: Column(
                 children: [
                   _buildTwitter,
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildFacebook,
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildYoutube,
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildLinkedIn,
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                   _buildInstagram,
-                  vSpacer(
-                    h: 8.0,
-                  ),
+                  vSpacer(8.0),
                 ],
               ),
             ),
@@ -2436,9 +2330,7 @@ class _EditProfileState extends State<EditProfile>
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _submitBtn,
-          hSpacer(
-            w: 2.0,
-          ),
+          hSpacer(2.0),
           _backBtn,
         ],
       );

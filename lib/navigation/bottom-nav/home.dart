@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../main.dart';
@@ -11,12 +11,12 @@ import '../../provider/user/viewmodel-user-profile.dart';
 import '../../widgets/posts/list-posts.dart';
 import '../../widgets/profile/profile-dashboard.dart';
 import '../../utils/constants/utils.dart';
-import '../../utils/schedule-notifications.dart';
+// import '../../utils/schedule-notifications.dart';
 import '../../utils/helpers/navigation-helper.dart';
 import '../../services/socket-service.dart';
 
 
-NotificationAppLaunchDetails notificationAppLaunchDetails;
+// NotificationAppLaunchDetails notificationAppLaunchDetails;
 
 class Home extends StatefulWidget {
   final String token;
@@ -38,7 +38,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
-  FlutterLocalNotificationsPlugin plugin;
+  // FlutterLocalNotificationsPlugin plugin;
 
   String _page = 'posts';
 
@@ -51,12 +51,12 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
 
     print('home.dart initState called - ${widget.userList.length}');
 
-    plugin = FlutterLocalNotificationsPlugin();
-
-    var android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    var ios = IOSInitializationSettings();
-    var initSettings = InitializationSettings(android: android, iOS: ios);
-    plugin.initialize(initSettings, onSelectNotification: onSelectNotification);
+    // plugin = FlutterLocalNotificationsPlugin();
+    //
+    // var android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    // var ios = IOSInitializationSettings();
+    // var initSettings = InitializationSettings(android: android, iOS: ios);
+    // plugin.initialize(initSettings, onSelectNotification: onSelectNotification);
     // print('VM: ${widget.vm.name}');
   }
 
@@ -284,14 +284,14 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   }
 
   showNotification() async {
-    var android = new AndroidNotificationDetails(
-        'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
-        priority: Priority.high, importance: Importance.max);
-    var iOS = new IOSNotificationDetails();
-    var platform = new NotificationDetails(android: android, iOS: iOS);
-    await plugin.show(
-        0, 'New Video is out', 'Flutter Local Notification', platform,
-        payload: 'Sample notification by JorneL');
+    // var android = new AndroidNotificationDetails(
+    //     'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+    //     priority: Priority.high, importance: Importance.max);
+    // var iOS = new IOSNotificationDetails();
+    // var platform = new NotificationDetails(android: android, iOS: iOS);
+    // await plugin.show(
+    //     0, 'New Video is out', 'Flutter Local Notification', platform,
+    //     payload: 'Sample notification by JorneL');
   }
 
   // Future<Object> fetchUserProfile() async {

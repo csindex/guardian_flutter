@@ -240,7 +240,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                           child: Row(
                             children: [
                               FaIcon(FontAwesomeIcons.child,),
-                              hSpacer(w: 4.0),
+                              hSpacer(4.0),
                               Text(
                                 "Volunteer",
                                 style: TextStyle(
@@ -265,7 +265,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                             child: Row(
                               children: [
                                 FaIcon(FontAwesomeIcons.idBadge,),
-                                hSpacer(w: 4.0),
+                                hSpacer(4.0),
                                 Text(
                                   "Responder",
                                   style: TextStyle(
@@ -288,7 +288,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                           child: Row(
                             children: [
                               FaIcon(FontAwesomeIcons.signOutAlt,),
-                              hSpacer(w: 4.0),
+                              hSpacer(4.0),
                               Text(
                                 "Log-out",
                                 style: TextStyle(
@@ -418,7 +418,7 @@ class _GuardianHomeState extends State<GuardianHome> {
                     userOriginalVM: userProfileVM,
                   ),
               ] else ... [
-                MessengerMain(token: widget.token),
+                MessengerMain(token: widget.token, userId: widget.userProfileVM.user.id),
               ],
               Posts(
                 token: widget.token,

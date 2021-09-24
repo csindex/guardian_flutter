@@ -6,6 +6,9 @@ import '../data/user/data-user-details.dart';
 import '../data/data.dart';
 import '../data/posts/data-post.dart';
 import '../utils/constants/utils.dart';
+import '../data/messenger/data-conversation.dart';
+import '../data/messenger/data-message.dart';
+import '../data/messenger/data-responder.dart';
 
 class Webservice {
   Future<List<Data>> fetchNotifications(String keyword) async {
@@ -112,4 +115,62 @@ class Webservice {
       return false;
     }
   }
+
+  Future<List<ConversationData>> fetchConversations(String token, String userId) async {
+    final url = Uri.parse('$secretHollowsEndPoint/api/conversation_res/$userId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+        'x-auth-token': token,
+      },
+    );
+    if (response.statusCode == 200) {
+      print('con - ${response.body}');
+      final Iterable body = jsonDecode(response.body);
+      return body.map((data) => ConversationData.fromJsonMap(data)).toList();
+    } else {
+      throw Exception("Failed to fetch conversations!");
+    }
+  }
+
+  Future<List<MessageData>> fetchMessages(String token, String conversationId) async {
+    final url = Uri.parse('$secretHollowsEndPoint/api/messages_res/$conversationId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+        'x-auth-token': token,
+      },
+    );
+    if (response.statusCode == 200) {
+      print('msg - ${response.body}');
+      final Iterable body = jsonDecode(response.body);
+      return body.map((data) => MessageData.fromJsonMap(data)).toList();
+    } else {
+      throw Exception("Failed to fetch messages!");
+    }
+  }
+
+  Future<ResponderData> fetchResponderProfile(String token, String id) async {
+    final url = Uri.parse('$secretHollowsEndPoint/api/responder/user/$id');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+        'x-auth-token': token,
+      },
+    );
+    if (response.statusCode == 200) {
+      print('resp - ${response.body}');
+      final Iterable body = jsonDecode(response.body);
+      return body.map((it) => ResponderData.fromJsonMap(it)).first;
+    } else {
+      throw Exception("Failed to fetch resp!");
+    }
+  }
+
 }

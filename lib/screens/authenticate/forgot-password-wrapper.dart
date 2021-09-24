@@ -239,16 +239,16 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
             ),
           ),
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0),
         _labelEnterEmail,
-        vSpacer(h: 16.0,),
+        vSpacer(16.0),
         _emailAddressField,
-        vSpacer(h: 8.0,),
+        vSpacer(8.0),
         Align(
           alignment: Alignment.centerLeft,
           child: _sendOtpBtn,
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0),
         Align(
           alignment: Alignment.centerLeft,
           child: _footerSignUp,
@@ -267,7 +267,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
           size: 16.0,
         ),
       ),
-      hSpacer(w: 8.0,),
+      hSpacer(8.0),
       Flexible(
         child: Text(
           'Enter your email address, for verification.',
@@ -333,7 +333,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
           fontSize: 20.0,
         ),
       ),
-      hSpacer(w: 4.0,),
+      hSpacer(4.0,),
       GestureDetector(
         onTap: () {
           // Navigator.of(context).pop();
@@ -377,18 +377,18 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
             ),
           ),
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _labelEnterOTP,
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _otpField,
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Text(
           'Did you receive an OTP?',
           style: TextStyle(
             fontSize: 10.0,
           ),
         ),
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _time == 0 ?
         TextButton(
           style: TextButton.styleFrom(
@@ -420,7 +420,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
             fontSize: 10.0,
           ),
         ),
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Text(
           'If you need to change your mobile number, you may do so through Update Profile, or by reaching out to your Operation Center Administrator at admin@guardian.ph',
           style: TextStyle(
@@ -428,7 +428,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
           ),
           textAlign: TextAlign.center,
         ),
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _proceedBtn,
@@ -445,7 +445,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
         FontAwesomeIcons.key,
         size: 16.0,
       ),
-      hSpacer(w: 8.0,),
+      hSpacer(8.0,),
       Flexible(
         child: Text(
           'You will receive a One-Time Password (OTP) on your registered mobile number.',
@@ -538,13 +538,13 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
             ),
           ),
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _labelEnterNewPass,
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _newPassField,
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         _cPassField,
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _changePassBtn,
@@ -563,7 +563,7 @@ class _ForgotPasswordState extends State<ForgotPasswordWrapper> {
           size: 16.0,
         ),
       ),
-      hSpacer(w: 8.0,),
+      hSpacer(8.0),
       Flexible(
         child: Text(
           'Enter your new password.',

@@ -244,7 +244,7 @@ class _IncidentMainState extends State<IncidentMain>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            vSpacer(h: 16.0,),
+            vSpacer(16.0,),
             Text(
               '* Inactive / Past Incidents display here',
               style: TextStyle(
@@ -252,7 +252,7 @@ class _IncidentMainState extends State<IncidentMain>
                 color: Colors.black,
               ),
             ),
-            vSpacer(h: 8.0,),
+            vSpacer(8.0,),
             Text(
               '* Pull incident by user_id',
               style: TextStyle(
@@ -329,7 +329,7 @@ class _IncidentMainState extends State<IncidentMain>
                     color: colorPrimary,
                   ),
                 ),
-                vSpacer(h: 16.0,),
+                vSpacer(16.0,),
                 RichText(
                   text: TextSpan(
                     style: TextStyle(
@@ -348,7 +348,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ],
                   ),
                 ),
-                vSpacer(h: 8.0,),
+                vSpacer(8.0,),
                 Container(
                   width: double.infinity,
                   height: 228.0,
@@ -373,7 +373,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ].toSet(),
                   ),
                 ),
-                vSpacer(h: 8.0,),
+                vSpacer(8.0,),
                 TextFormField(
                   // key: Key('homeAddress'),
                   validator: (value) =>
@@ -407,7 +407,7 @@ class _IncidentMainState extends State<IncidentMain>
                     _reportAddress = val;
                   },
                 ),
-                vSpacer(h: 4.0,),
+                vSpacer(4.0,),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -418,7 +418,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ),
                   ),
                 ),
-                vSpacer(h: 12.0,),
+                vSpacer(12.0,),
                 TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: colorPrimary,
@@ -452,7 +452,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ),
                   ),
                 ),
-                vSpacer(h: 8.0,),
+                vSpacer(8.0,),
                 TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.redAccent,
@@ -548,7 +548,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ),
                   ),
                 ),
-                vSpacer(h: 6.0,),
+                vSpacer(6.0,),
                 Container(
                   // margin: EdgeInsets.all(16.0,),
                   padding: EdgeInsets.symmetric(vertical: 16.0,),
@@ -571,7 +571,7 @@ class _IncidentMainState extends State<IncidentMain>
                             color: Colors.grey,
                           ),
                         ),
-                        hSpacer(w: 56.0,),
+                        hSpacer(56.0,),
                         Text(
                           'ETA: ',
                           style: TextStyle(
@@ -583,7 +583,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ),
                   ),
                 ),
-                vSpacer(h: 6.0,),
+                vSpacer(6.0,),
                 Container(
                   // margin: EdgeInsets.all(16.0,),
                   padding: EdgeInsets.symmetric(vertical: 16.0,),
@@ -599,14 +599,14 @@ class _IncidentMainState extends State<IncidentMain>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        hSpacer(w: 8.0,),
+                        hSpacer(8.0,),
                         Image.asset(
                           iconAsset,
                           width: 48.0,
                           height: 48.0,
                           fit: BoxFit.contain,
                         ),
-                        hSpacer(w: 8.0,),
+                        hSpacer(8.0,),
                         Flexible(
                           child: Text(
                             _reportAddress ?? 'Address/Location',
@@ -620,7 +620,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ),
                   ),
                 ),
-                vSpacer(h: 6.0,),
+                vSpacer(6.0,),
                 Container(
                   // margin: EdgeInsets.all(16.0,),
                   padding: EdgeInsets.symmetric(vertical: 16.0,),
@@ -691,7 +691,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ),
                   ),
                 ),
-                vSpacer(h: 6.0,),
+                vSpacer(6.0,),
                 Container(
                   // margin: EdgeInsets.all(16.0,),
                   padding: EdgeInsets.symmetric(vertical: 16.0,),
@@ -713,7 +713,7 @@ class _IncidentMainState extends State<IncidentMain>
                     ),
                   ),
                 ),
-                vSpacer(h: 8.0,),
+                vSpacer(8.0,),
                 TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.redAccent,

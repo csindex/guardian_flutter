@@ -68,7 +68,7 @@ class _SmallLoadingState extends State<SmallLoading> {
               ),
             ),
             if (!widget.showTxt) ... [
-              vSpacer(h: 16.0),
+              vSpacer(16.0),
               SpinKitChasingDots(
                 color: Colors.white,
                 size: 64.0,

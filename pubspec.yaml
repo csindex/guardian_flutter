@@ -52,9 +52,9 @@ dependencies:
 
   flutter_simple_dependency_injection: 2.0.0
 
-  flutter_local_notifications: 5.0.0+4
+#  flutter_local_notifications: 5.0.0+4
 
-  flutter_custom_tabs: 0.7.0
+  flutter_custom_tabs: 1.0.3
 
   chopper: 4.0.1
 

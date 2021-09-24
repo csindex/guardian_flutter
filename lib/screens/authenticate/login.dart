@@ -152,7 +152,7 @@ class _LoginState extends State<Login> {
         FontAwesomeIcons.userAlt,
         size: 16.0,
       ),
-      hSpacer(w: 8.0,),
+      hSpacer(8.0,),
       Text(
         'Sign into your Account',
         style: TextStyle(
@@ -257,7 +257,7 @@ class _LoginState extends State<Login> {
           fontSize: 20.0,
         ),
       ),
-      hSpacer(w: 4.0,),
+      hSpacer(4.0,),
       GestureDetector(
         onTap: () {
           NavigationHelper.createAccount(context);
@@ -282,7 +282,7 @@ class _LoginState extends State<Login> {
           fontSize: 20.0,
         ),
       ),
-      hSpacer(w: 4.0,),
+      hSpacer(4.0,),
       GestureDetector(
         onTap: () {
           NavigationHelper.forgotPassword(context);
@@ -325,23 +325,23 @@ class _LoginState extends State<Login> {
             ),
           ),
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _labelSignIn,
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _userNameField,
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _pwordField,
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _loginBtn,
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _footerSignUp,
         ),
-        vSpacer(h: 12.0,),
+        vSpacer(12.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _footerForgotPass,

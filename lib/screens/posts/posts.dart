@@ -27,7 +27,7 @@ class Posts extends StatefulWidget {
 
   Posts(
       {Key key,
-      @required this.openProfileScreen,
+      this.openProfileScreen,
       this.token,
       this.vm,
       this.userProfileVM,
@@ -868,8 +868,7 @@ class _PostsState extends State<Posts>
             // ExpandableCreatePostForm(token: widget.token, refresh: _refresh) :
             // _createPostItem(index - 2);
             return (index == 0)
-                ? vSpacer(
-                    h: 16.0,
+                ? vSpacer(16.0,
                   )
                 : _createPostItem(index - 1);
           },

@@ -7,9 +7,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import './screens/wrapper.dart';
+import './screens/messenger/messenger-main.dart';
+import './widgets/messenger/online-responders.dart';
 import './provider/viewmodel-notification-list.dart';
 import './provider/posts/viewmodel-posts-list.dart';
-import './widgets/posts/list-posts.dart';
+import './provider/messenger/viewmodel-conversations-list.dart';
+import './screens/posts/posts.dart';
 import './news-feed.dart';
 import './utils/app-initializer.dart';
 import './utils/dependency-injection.dart';
@@ -30,7 +33,11 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => PostsListViewModel(),
-          child: PostsList(),
+          child: Posts(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ConversationsListViewModel(),
+          child: MessengerMain(),
         ),
       ],
       child: MainApp(),

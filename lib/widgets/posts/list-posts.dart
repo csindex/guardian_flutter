@@ -23,7 +23,7 @@ class PostsList extends StatefulWidget {
 }
 
 class _PostsListState extends State<PostsList> {
-  List<PostViewModel> posts = List<PostViewModel>();
+  List<PostViewModel> posts = <PostViewModel>[];
 
   void _fetchPosts() {
     final vm = Provider.of<PostsListViewModel>(context, listen: false);

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../navigation/main-nav/guardian-home.dart';
-import '../../navigation/main-nav/login.dart';
-import '../../navigation/main-nav/signup.dart';
 import '../../navigation/main-nav/verify-otp.dart';
 import '../../reporting/report-call-screen.dart';
 import '../../navigation/main-nav/screen-profile.dart';
@@ -24,6 +22,7 @@ import '../../screens/posts/comments/comments.dart';
 import '../../screens/profile/camera/camera-screen.dart' as cProfile;
 import '../../screens/authenticate/signup.dart' as nSignUp;
 import '../../screens/authenticate/login.dart' as nLogin;
+import '../../screens/messenger/conversation-screen.dart';
 
 class NavigationHelper {
   static createAccount(context) => Navigator.push(
@@ -247,4 +246,19 @@ class NavigationHelper {
       ),
     ),
   );
+
+  static openConversations(context, token, userId, cId, rData, msgList, r) =>
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConversationScreen(
+            token: token,
+            userId: userId,
+            cId: cId,
+            rData: rData,
+            msgList: msgList,
+            refresh: r,
+          ),
+        ),
+      );
 }

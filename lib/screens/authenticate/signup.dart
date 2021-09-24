@@ -367,15 +367,15 @@ class _SignUpState extends State<SignUp> {
             ),
           ),
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _labelSignUp,
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _firstNameField,
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _lastNameField,
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _mobileNumberField,
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         Text(
           'This site uses your mobile number for authentication, sending alerts and other communication.',
           style: TextStyle(
@@ -383,18 +383,18 @@ class _SignUpState extends State<SignUp> {
             color: Colors.grey,
           ),
         ),
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _emailAddressField,
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _passwordField,
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _cpwordField,
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _registerBtn,
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _footerSignIn,
@@ -411,7 +411,7 @@ class _SignUpState extends State<SignUp> {
         FontAwesomeIcons.userAlt,
         size: 16.0,
       ),
-      hSpacer(w: 8.0,),
+      hSpacer(8.0,),
       Text(
         'Create your Account',
         style: TextStyle(
@@ -590,7 +590,7 @@ class _SignUpState extends State<SignUp> {
           fontSize: 20.0,
         ),
       ),
-      hSpacer(w: 4.0,),
+      hSpacer(4.0,),
       GestureDetector(
         onTap: () {
           Navigator.of(context).pop();
@@ -634,18 +634,18 @@ class _SignUpState extends State<SignUp> {
             ),
           ),
         ),
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _labelEnterOTP,
-        vSpacer(h: 16.0,),
+        vSpacer(16.0,),
         _otpField,
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Text(
           'Did you receive an OTP?',
           style: TextStyle(
             fontSize: 10.0,
           ),
         ),
-        vSpacer(h: 4.0,),
+        vSpacer(4.0,),
         _time == 0 ?
         TextButton(
           style: TextButton.styleFrom(
@@ -677,7 +677,7 @@ class _SignUpState extends State<SignUp> {
             fontSize: 10.0,
           ),
         ),
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Text(
           'If you need to change your mobile number, you may do so through Update Profile, or by reaching out to your Operation Center Administrator at admin@guardian.ph',
           style: TextStyle(
@@ -685,7 +685,7 @@ class _SignUpState extends State<SignUp> {
           ),
           textAlign: TextAlign.center,
         ),
-        vSpacer(h: 8.0,),
+        vSpacer(8.0,),
         Align(
           alignment: Alignment.centerLeft,
           child: _proceedBtn,
@@ -702,7 +702,7 @@ class _SignUpState extends State<SignUp> {
         FontAwesomeIcons.key,
         size: 16.0,
       ),
-      hSpacer(w: 8.0,),
+      hSpacer(8.0,),
       Flexible(
         child: Text(
           'You will receive a One-Time Password (OTP) on your registered mobile number.',

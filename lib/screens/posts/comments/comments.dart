@@ -947,7 +947,7 @@ class _CommentsState extends State<Comments> with
                                           color: Colors.white,
                                         ),
                                       ),
-                                      vSpacer(h: 16.0,),
+                                      vSpacer(16.0,),
                                       CircularProgressIndicator(
                                         color: Colors.white,
                                       ),

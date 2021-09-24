@@ -98,7 +98,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                             debug: true,
                           ),
                         ),
-                        hSpacer(w: 16.0,),
+                        hSpacer(16.0,),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +112,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              vSpacer(h: 4.0,),
+                              vSpacer(4.0,),
                               Text(
                                 'View your profile',
                                 style: TextStyle(
@@ -126,7 +126,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                       ],
                     ),
                   ),
-                  vSpacer(h: 24.0,),
+                  vSpacer(24.0,),
                   Text(
                     'Logged in as: ',
                     style: TextStyle(
@@ -134,7 +134,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                       color: Colors.grey,
                     ),
                   ),
-                  vSpacer(h: 8.0,),
+                  vSpacer(8.0,),
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.symmetric(horizontal: 36.0,),
@@ -159,7 +159,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                       ),
                     ),
                   ),
-                  vSpacer(h: 16.0,),
+                  vSpacer(16.0,),
                   TextButton(
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -175,7 +175,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                           FontAwesomeIcons.signOutAlt,
                           size: 24.0,
                         ),
-                        hSpacer(w: 16.0,),
+                        hSpacer(16.0,),
                         Text(
                           'Logout',
                           style: TextStyle(
@@ -232,7 +232,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                     backgroundImage:
                     NetworkImage(widget.userVM.profilePic,),
                   ),
-                  hSpacer(w: 16.0,),
+                  hSpacer(16.0,),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +245,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        vSpacer(h: 4.0,),
+                        vSpacer(4.0,),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -262,7 +262,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                 ],
               ),
             ),
-            vSpacer(h: 24.0,),
+            vSpacer(24.0,),
             Text(
               'Logged in as: ',
               style: TextStyle(
@@ -270,7 +270,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                 color: Colors.grey,
               ),
             ),
-            vSpacer(h: 8.0,),
+            vSpacer(8.0,),
             Container(
               width: double.infinity,
               margin: EdgeInsets.symmetric(horizontal: 36.0,),
@@ -296,7 +296,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
               ),
             ),
             if (widget.vm.responderData.isNotEmpty) ... [
-              vSpacer(h: 4.0,),
+              vSpacer(4.0,),
               Container(
               width: double.infinity,
               margin: EdgeInsets.symmetric(horizontal: 36.0,),
@@ -322,7 +322,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
               ),
             ),
             ],
-            vSpacer(h: 16.0,),
+            vSpacer(16.0,),
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -338,7 +338,7 @@ class _ProfileMenuState extends State<ProfileMenu> {
                     FontAwesomeIcons.signOutAlt,
                     size: 16.0,
                   ),
-                  hSpacer(w: 8.0,),
+                  hSpacer(8.0,),
                   Text(
                     'Logout',
                     style: TextStyle(

@@ -107,9 +107,9 @@ const editInputDecoration2 = InputDecoration(
   ),
 );
 
-Widget vSpacer({double h = 0.0}) => SizedBox(height: h,);
+Widget vSpacer(double h) => SizedBox(height: h ?? 0.0,);
 
-Widget hSpacer({double w = 0.0}) => SizedBox(width: w,);
+Widget hSpacer(double w) => SizedBox(width: w ?? 0.0,);
 
 final List appBar = [
   CustomAppBarHome(

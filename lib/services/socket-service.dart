@@ -3,19 +3,13 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class SocketService {
   IO.Socket socket;
 
-  createSocketConnection() {
-    print('socket create');
+  IO.Socket createSocketConnection() {
     socket = IO.io('http://dev.guardian.ph:5000', <String, dynamic> {
       'transports': ['websocket'],
       'upgrade': false,
     });
-    socket.connect();
-    socket.onConnect((_) {
-      print('socket connect');
-      // socket.emit('msg', 'test');
-    });
-    socket.onError((data) => print('socket error - $data'));
-    socket.onDisconnect((_) => print('socket disconnect'));
+    print('socket created');
+    return socket.connect();
   }
 
   // createSocketConnection() {
