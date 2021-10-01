@@ -132,7 +132,11 @@ dependencies:
 
   threading: ^0.0.10
 
-  video_player: ^2.1.12
+  video_player: ^2.2.5
+
+#  fijkplayer: ^0.10.0
+
+#  webview_flutter: ^2.1.1
 
   address_search_field: ^4.0.1
 

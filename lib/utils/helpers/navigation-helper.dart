@@ -247,7 +247,7 @@ class NavigationHelper {
     ),
   );
 
-  static openConversations(context, token, userId, cId, rData, msgList, r) =>
+  static openConversations(context, token, userId, cId, rData, msgList, r, s) =>
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -258,6 +258,7 @@ class NavigationHelper {
             rData: rData,
             msgList: msgList,
             refresh: r,
+            socket: s,
           ),
         ),
       );

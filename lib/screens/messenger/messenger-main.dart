@@ -134,14 +134,25 @@ class _MessengerMainState extends State<MessengerMain>
     return Future.value();
   }
 
+  Future<void> _refresh2() {
+    // setState(() {
+    //   print('ONLINE ${_oRList.length}');
+    //   _isLoading = true;
+    // });
+    print('refresh2 called');
+    _fetchConversations();
+    return Future.value();
+  }
+
   void _openConversation(ConversationViewModel c) {
     if(c != null) {
       NavigationHelper.openConversations(context, widget.token, widget.userId,
-        c.conversationId, c.resp, c.messages, _fetchConversations,);
+        c.conversationId, c.resp, c.messages, _fetchConversations, _socket);
     } else {
 
     }
   }
+
   Widget _createConversationItem(int index) {
     var c = _cList[index];
     return GestureDetector(
@@ -206,6 +217,11 @@ class _MessengerMainState extends State<MessengerMain>
     });
     _socket.onError((data) => print('socket error - $data'));
     _socket.onDisconnect((_) => print('socket disconnected'));
+
+    _socket.on('getMessage', (val) {
+      print('getMessage $val');
+      _refresh2();
+    });
 
     _socket.on('getUsers', (resp) {
       print('r Online - ${resp.toString()

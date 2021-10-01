@@ -66,7 +66,7 @@ class _OnlineRespondersState extends State<OnlineResponders> {
       ),
     ) :
     Container(
-      height: 120.0,
+      height: 124.0,
       color: Colors.grey.shade100,
       margin: EdgeInsets.only(top: 4.0,),
       child: ListView.builder(
